@@ -1,0 +1,18 @@
+{
+  "name": "syncbridge",
+  "version": "1.0.0",
+  "description": "Cooperative Gig Services Platform",
+  "scripts": {
+    "dev:gateway": "node api-gateway/src/server.js",
+    "dev:user": "node services/user-service/src/server.js",
+    "dev:booking": "node services/booking-service/src/server.js",
+    "dev:payment": "node services/payment-service/src/server.js",
+    "prisma:generate": "prisma generate --schema=prisma/schema.prisma"
+  },
+  "devDependencies": {
+    "prisma": "^5.22.0"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.22.0"
+  }
+}
