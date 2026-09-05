@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "Cooperative Gig Services Platform",
   "scripts": {
+    "build": "npm run build --prefix frontend",
+    "start": "npm run start --prefix frontend",
+    "dev": "npm run dev --prefix frontend",
     "dev:gateway": "node api-gateway/src/server.js",
     "dev:user": "node services/user-service/src/server.js",
     "dev:booking": "node services/booking-service/src/server.js",
