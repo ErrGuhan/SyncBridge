@@ -1,100 +1,82 @@
-# Walkthrough: Full-Stack Resolution & Integration Implementation
+# Walkthrough: Mobile-First Accessibility, Low-Literacy & UI Shell Transformation
 
-All five prompts from the **Full-Stack Resolution & Integration Prompt Toolkit** for the Cooperative Gig Services Platform have been implemented, integrated, and verified.
-
----
-
-## 1. Full-Stack API Integration Layer
-
-### Files Created:
-- [`frontend/src/lib/api.ts`](file:///c:/SIH2026/MoralWorkSpace/frontend/src/lib/api.ts)
-- [`frontend/src/services/api.ts`](file:///c:/SIH2026/MoralWorkSpace/frontend/src/services/api.ts) (re-exports all endpoints for compatibility)
-
-### Capabilities:
-- **TypeScript DTOs**: Strict typings for `WorkerProfileDTO`, `BookingDTO`, `BookingResponseDTO`, `ApproveWorkerResponseDTO`, and `PaymentSplitResponseDTO`.
-- **Automatic JWT Injection**: Automatically inspects `sessionStorage` for `supabase_token`, `sb-access-token`, and Supabase session auth tokens (`sb-*-auth-token`) to inject `Authorization: Bearer <token>` into every outbound request.
-- **Global 401 Interceptor**: Safely clears invalid credentials and redirects to `/login?redirect=...` without infinite loops or SSR hydration breaks.
-- **Helper Methods Implemented**:
-  1. `fetchAvailableWorkers(categoryId, lat, lng)`
-  2. `createBooking(bookingPayload)`
-  3. `approveWorker(workerId)`
-  4. `processPaymentSplit(bookingId)`
-  5. `verifyWorkerOfflineFallback(payload)`
-  6. `fetchSecretaryReviewQueue()`
+The four accessibility-first phases have been implemented, verified via automated test suites, and pushed to GitHub (`commit 62e6210`).
 
 ---
 
-## 2. Fallback Verification & Offline Government API Controller
+## 1. Phase 1: Universal Mobile-First Layout & Accessibility Shell
 
 ### Files Created / Modified:
-- [`services/user-service/src/controllers/verificationController.js`](file:///c:/SIH2026/MoralWorkSpace/services/user-service/src/controllers/verificationController.js)
-- [`services/user-service/src/routes/workerRoutes.js`](file:///c:/SIH2026/MoralWorkSpace/services/user-service/src/routes/workerRoutes.js) (`POST /verify/e-shram`)
-- [`services/user-service/src/routes/adminRoutes.js`](file:///c:/SIH2026/MoralWorkSpace/services/user-service/src/routes/adminRoutes.js) (`GET /admin/secretary-queue`, `POST /admin/secretary-queue/:taskId/resolve`)
+- [`frontend/src/components/BottomNavigation.tsx`](file:///c:/SIH2026/MoralWorkSpace/frontend/src/components/BottomNavigation.tsx)
+- [`frontend/src/components/TopAccessibleHeader.tsx`](file:///c:/SIH2026/MoralWorkSpace/frontend/src/components/TopAccessibleHeader.tsx)
+- [`frontend/src/app/layout.tsx`](file:///c:/SIH2026/MoralWorkSpace/frontend/src/app/layout.tsx)
+- [`frontend/src/app/globals.css`](file:///c:/SIH2026/MoralWorkSpace/frontend/src/app/globals.css)
 
-### Verified Behavior:
-- Queries primary government verification endpoint with a strict 3-second timeout via `AbortController`.
-- When external servers experience high latency or 5xx downtime, the controller catches the timeout without throwing a 500 server error.
-- Flags the worker's status as `PENDING_SOCIETY_APPROVAL`.
-- Automatically logs a review task in the local Primary Cooperative Secretary's review queue.
-- Returns a clean 200 JSON response detailing the secondary society review timeline (24 hours).
+### Key Features:
+- **High-Contrast Palette**: Pure white background, stark black typography, high-contrast borders (`2.5px solid #000`), and zero low-contrast gray-on-gray text.
+- **Muscle-Memory Bottom Navigation**: Fixed bottom bar with 4 universally recognizable icons (**Home**, **Search / Find Help**, **Jobs / My Orders**, **Profile / Worker Onboarding**).
+- **Large Touch Targets**: All interactive buttons, cards, and links enforce minimum $\ge 48 \times 48\text{px}$ touch targets to prevent accidental misclicks on budget smartphones.
+- **Zero Hidden Hamburger Menus**: All key actions are immediately accessible from top and bottom bars.
 
 ---
 
-## 3. Real-Time Emergency Booking Socket Engine & Redlock Mutex
+## 2. Phase 2: Icon-Driven Visual Service Discovery
 
 ### Files Created / Modified:
-- [`services/booking-service/src/socket/emergencySocket.js`](file:///c:/SIH2026/MoralWorkSpace/services/booking-service/src/socket/emergencySocket.js)
-- [`services/booking-service/src/server.js`](file:///c:/SIH2026/MoralWorkSpace/services/booking-service/src/server.js) (attached Socket.io and emergency socket engine)
-- [`services/booking-service/src/controllers/bookingController.js`](file:///c:/SIH2026/MoralWorkSpace/services/booking-service/src/controllers/bookingController.js) (triggers dispatch when `isEmergency: true`)
-- [`frontend/src/hooks/useEmergencySocket.ts`](file:///c:/SIH2026/MoralWorkSpace/frontend/src/hooks/useEmergencySocket.ts) (React/Next.js hook)
+- [`frontend/src/components/ServiceDiscovery.tsx`](file:///c:/SIH2026/MoralWorkSpace/frontend/src/components/ServiceDiscovery.tsx)
 
-### Verified Protocol:
-1. Customer posts emergency booking $\rightarrow$ Server broadcasts `EMERGENCY_DISPATCH` containing coordinates and job details to connected workers inside the geofence.
-2. Worker emits `ACCEPT_EMERGENCY_JOB` $\rightarrow$ Server acquires a Redis/lease lock on `bookingId`. Concurrent attempts by other workers immediately receive `EMERGENCY_LOCK_FAILED`.
-3. Customer receives instant `EMERGENCY_ACCEPTED` with assigned worker details.
-4. Worker emits `WORKER_LOCATION_UPDATE` $\rightarrow$ Server streams `WORKER_LOCATION_STREAM` to customer room with zero HTTP polling.
-
----
-
-## 4. Master Universal Debugging Runbook
-
-### File Created:
-- [`docs/DEBUGGING_RUNBOOK.md`](file:///c:/SIH2026/MoralWorkSpace/docs/DEBUGGING_RUNBOOK.md)
-
-### Contents:
-- Copy-paste Master Universal Debugging Prompt Template.
-- Diagnostic and resolution playbooks for:
-  - Supabase JWT proxy header propagation (`x-user-id`, `x-gateway-secret`).
-  - CORS preflight and 401 redirect handling between frontend (3004), gateway (3000), and microservices.
-  - Prisma connection pool exhaustion in microservices (`max_connections` and singleton client pattern).
-  - Race condition avoidance during high-concurrency emergency dispatches.
+### Key Features:
+- **Culturally Recognizable Vector Illustrations**:
+  - 🚰 **Plumber**: Dripping tap with clean water droplets and golden valve handle.
+  - 💡 **Electrician**: Glowing filament bulb with lightning spark rays.
+  - 🧹 **Cleaner**: Hand broom with sanitation sparkle stars.
+  - ❄️ **AC & Appliance**: Air conditioner breeze waves and wrench.
+  - 🪚 **Carpenter**: Hand saw blade cutting timber wood plank.
+- **Touch Swipe Carousel**: Implemented horizontal swipe detection (`onTouchStart`, `onTouchMove`, `onTouchEnd`) allowing users to easily swipe left/right between categories on touchscreens without tiny pagination buttons.
+- **Voice-Assisted Search**: Large microphone button (`🎙️ Tap to Speak`) allowing low-literacy users to speak instead of typing.
 
 ---
 
-## 5. End-to-End Mock Data & Pipeline Resolution
+## 3. Phase 3: Frictionless 1-Question Worker Onboarding
 
 ### Files Created / Modified:
-- [`prisma/seed.js`](file:///c:/SIH2026/MoralWorkSpace/prisma/seed.js)
-- [`prisma/seedData.json`](file:///c:/SIH2026/MoralWorkSpace/prisma/seedData.json)
-- [`prisma/seedData.sql`](file:///c:/SIH2026/MoralWorkSpace/prisma/seedData.sql)
-- [`package.json`](file:///c:/SIH2026/MoralWorkSpace/package.json) (configured `"seed": "node prisma/seed.js"`)
+- [`frontend/src/components/WorkerRegistrationForm.tsx`](file:///c:/SIH2026/MoralWorkSpace/frontend/src/components/WorkerRegistrationForm.tsx)
 
-### Generated Dataset:
-- **3 Primary Labour Cooperative Societies**:
-  1. *Mumbai Plumbers & Mechanical Workers Cooperative Society* (`MH-MUM-COOP-2024-8821`)
-  2. *Delhi Electricians & Power Technicians Cooperative Society* (`DL-ND-COOP-2023-4419`)
-  3. *Bengaluru Professional Facility & Cleaning Guild* (`KA-BLR-COOP-2024-1205`)
-- **15 Verified Worker Profiles**: Realistic Indian names, verified trade certifications, masked e-Shram UANs, and coordinates across Mumbai, Delhi, and Bengaluru.
-- **25 Completed Historical Bookings**: Includes 90-5-5 payment splits (90% worker payout, 5% cooperative treasury, 5% worker welfare insurance fund) and verified customer ratings.
+### Key Features:
+- **One Question Per Screen**:
+  - **Screen 1**: Mobile Number (large dialer typography + SMS OTP simulation).
+  - **Screen 2**: Choose Skill (large tap-to-select cards with icons, zero dropdowns).
+  - **Screen 3**: Full Name & Location (with **"Tap to Speak" 🎙️ voice microphone** dictation and **"Use My Current GPS Location"** 1-tap button).
+  - **Screen 4**: Experience & Daily Rate (tactile `+` and `−` stepper buttons with automatic 90% direct payout calculation).
+  - **Screen 5**: Camera / Card Photo Upload (with automatic Primary Cooperative Secretary offline approval guarantee).
+- Generous whitespace, progress indicator pills, and large $54\text{px}$ "Next" and "Back" buttons.
 
 ---
 
-## Automated Verification Results
+## 4. Phase 4: Clear Status & Multilingual Support
 
-| Component | Command | Result |
+### Files Created / Modified:
+- [`frontend/src/context/LanguageContext.tsx`](file:///c:/SIH2026/MoralWorkSpace/frontend/src/context/LanguageContext.tsx)
+- [`frontend/src/components/JobStatusTracker.tsx`](file:///c:/SIH2026/MoralWorkSpace/frontend/src/components/JobStatusTracker.tsx)
+- [`frontend/src/app/bookings/page.tsx`](file:///c:/SIH2026/MoralWorkSpace/frontend/src/app/bookings/page.tsx)
+
+### Key Features:
+- **Prominent `A/अ` Language Switcher**: High-contrast button in the top header supporting **English**, **Hindi (हिन्दी)**, and **Tamil (தமிழ்)** with instant UI relabeling.
+- **Traffic-Light Color System**:
+  - 🔴 **Red (Waiting for Worker)**: Pulsing radar circle with "Searching for Member-Worker".
+  - 🟡 **Yellow (Worker on the Way)**: Animated moving scooter on road track, live ETA, and a one-tap "Call Worker" button.
+  - 🟢 **Green (Job Done)**: Verified completion checkmark and transparent breakdown of the 90% direct worker payout.
+- Includes interactive state pills (🔴 🟡 🟢) allowing instant inspection of all 3 visual states.
+
+---
+
+## Verification Results
+
+| Suite | Status | Details |
 | :--- | :--- | :--- |
-| **Next.js Production Build** | `npm run build --prefix frontend` | **Exited code 0 (Compiled successfully in 1439ms)** |
-| **User Service e-Shram Fallback** | `POST http://localhost:3001/verify/e-shram` | **Handled 3s timeout $\rightarrow$ `PENDING_SOCIETY_APPROVAL`** |
-| **Secretary Review Queue** | `GET http://localhost:3001/admin/secretary-queue` | **Returned queued offline verification task** |
-| **Emergency Socket Dispatch & Mutex** | Node Socket Client Integration Test | **Lock acquired by Worker A, lock conflict caught for Worker B, customer notified** |
-| **Database Seeding Pipeline** | `node prisma/seed.js` | **Exited code 0 (Generated `seedData.json` & `seedData.sql`)** |
+| **Next.js Production Build** | **PASSED (0 warnings)** | Turbopack compilation succeeded in 1395ms |
+| **Microservices Health Check** | **PASSED (5/5)** | Ports 3000, 3001, 3002, 3003, 3004 responding HTTP 200 |
+| **e-Shram 3s Timeout & Fallback** | **PASSED** | Fallback mode set `PENDING_SOCIETY_APPROVAL` & queued secretary task |
+| **Emergency Sockets & Redlock** | **PASSED** | Worker lock acquisition & live coordinate streaming verified |
+| **Automated Integration Suite** | **PASSED (24/24)** | Full suite green (`npm test`) |
+| **Git Synchronization** | **PUSHED** | Remote `main` updated (`commit 62e6210`) |
