@@ -7,6 +7,7 @@
     "dev:user": "node services/user-service/src/server.js",
     "dev:booking": "node services/booking-service/src/server.js",
     "dev:payment": "node services/payment-service/src/server.js",
+    "dev:frontend": "npm run dev --prefix frontend",
     "prisma:generate": "prisma generate --schema=prisma/schema.prisma"
   },
   "devDependencies": {
