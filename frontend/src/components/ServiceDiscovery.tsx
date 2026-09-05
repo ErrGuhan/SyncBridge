@@ -3,160 +3,79 @@
 import React, { useState, useRef, useMemo } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { 
+  Search, 
   Mic, 
   MicOff, 
-  Search, 
   MapPin, 
-  Phone, 
   Star, 
-  CheckCircle, 
-  AlertTriangle, 
+  Phone, 
+  ShieldCheck, 
   ArrowRight, 
   ChevronLeft, 
   ChevronRight,
-  ShieldCheck
+  Droplets,
+  Zap,
+  Sparkles,
+  Wind,
+  Hammer,
+  Clock,
+  CheckCircle2
 } from 'lucide-react';
-import { MOCK_CATEGORIES, MOCK_WORKERS, WorkerProfile } from '@/data/mockData';
+import { MOCK_WORKERS, WorkerProfile } from '@/data/mockData';
 
 // ----------------------------------------------------------------------------
-// CULTURALLY RECOGNIZABLE VECTOR ILLUSTRATIONS FOR LOW-LITERACY RECOGNITION
+// PROFESSIONAL CATEGORY METADATA & REFINED ICONS
 // ----------------------------------------------------------------------------
-
-function DrippingTapIllustration() {
-  return (
-    <svg viewBox="0 0 100 100" className="w-20 h-20 mx-auto fill-none stroke-black stroke-[3.5] stroke-linecap-round stroke-linejoin-round" aria-hidden="true">
-      {/* Tap Body & Handle */}
-      <path d="M40 20 H60 V28 H40 Z" fill="#FBBF24" />
-      <path d="M50 28 V40" />
-      <path d="M25 40 H68 C74 40 78 45 78 52 V60 H62 V52 C62 50 60 48 58 48 H25 V40 Z" fill="#E2E8F0" />
-      <path d="M62 60 H78 V66 H62 Z" fill="#CBD5E1" />
-      {/* Water Droplet */}
-      <path d="M70 76 C70 76 64 84 64 88 A6 6 0 0 0 76 88 C76 84 70 76 70 76 Z" fill="#0284C7" stroke="#000" />
-    </svg>
-  );
-}
-
-function GlowingBulbIllustration() {
-  return (
-    <svg viewBox="0 0 100 100" className="w-20 h-20 mx-auto fill-none stroke-black stroke-[3.5] stroke-linecap-round stroke-linejoin-round" aria-hidden="true">
-      {/* Filament & Bulb Glow */}
-      <circle cx="50" cy="45" r="26" fill="#FEF08A" />
-      <path d="M40 38 L46 48 L54 48 L60 38" stroke="#D97706" strokeWidth="2.5" />
-      {/* Screw Base */}
-      <path d="M38 68 H62 V74 H38 Z" fill="#94A3B8" />
-      <path d="M41 74 H59 V79 H41 Z" fill="#64748B" />
-      <path d="M45 79 H55 V83 H45 Z" fill="#000" />
-      {/* Radiating Light Rays */}
-      <path d="M50 10 V16" stroke="#F59E0B" strokeWidth="4" />
-      <path d="M20 25 L25 29" stroke="#F59E0B" strokeWidth="4" />
-      <path d="M80 25 L75 29" stroke="#F59E0B" strokeWidth="4" />
-      <path d="M12 48 H18" stroke="#F59E0B" strokeWidth="4" />
-      <path d="M82 48 H88" stroke="#F59E0B" strokeWidth="4" />
-    </svg>
-  );
-}
-
-function SweepingBroomIllustration() {
-  return (
-    <svg viewBox="0 0 100 100" className="w-20 h-20 mx-auto fill-none stroke-black stroke-[3.5] stroke-linecap-round stroke-linejoin-round" aria-hidden="true">
-      {/* Wooden Stick */}
-      <line x1="72" y1="16" x2="42" y2="56" stroke="#B45309" strokeWidth="6" />
-      {/* Broom Head Straws */}
-      <path d="M38 52 L54 62 L38 88 C32 89 22 84 18 78 L38 52 Z" fill="#FDE047" />
-      <line x1="42" y1="64" x2="26" y2="84" stroke="#A16207" strokeWidth="2.5" />
-      <line x1="46" y1="67" x2="33" y2="86" stroke="#A16207" strokeWidth="2.5" />
-      {/* Clean Sparkles */}
-      <path d="M75 60 L78 68 L86 71 L78 74 L75 82 L72 74 L64 71 L72 68 Z" fill="#38BDF8" stroke="#000" strokeWidth="2" />
-      <circle cx="82" cy="46" r="3" fill="#38BDF8" />
-    </svg>
-  );
-}
-
-function ApplianceFanIllustration() {
-  return (
-    <svg viewBox="0 0 100 100" className="w-20 h-20 mx-auto fill-none stroke-black stroke-[3.5] stroke-linecap-round stroke-linejoin-round" aria-hidden="true">
-      {/* AC Unit Body */}
-      <rect x="16" y="24" width="68" height="34" rx="6" fill="#F1F5F9" />
-      <line x1="24" y1="46" x2="76" y2="46" stroke="#000" strokeWidth="3" />
-      <rect x="66" y="32" width="10" height="6" rx="2" fill="#22C55E" />
-      {/* Cold Breeze Waves */}
-      <path d="M26 66 C30 72 36 72 40 66 C44 60 50 60 54 66" stroke="#0284C7" strokeWidth="3" />
-      <path d="M46 76 C50 82 56 82 60 76 C64 70 70 70 74 76" stroke="#0284C7" strokeWidth="3" />
-      {/* Wrench */}
-      <path d="M72 64 L86 78 C89 81 87 86 83 86 L79 82 L75 84 L72 79 Z" fill="#F59E0B" stroke="#000" strokeWidth="2" />
-    </svg>
-  );
-}
-
-function WoodSawIllustration() {
-  return (
-    <svg viewBox="0 0 100 100" className="w-20 h-20 mx-auto fill-none stroke-black stroke-[3.5] stroke-linecap-round stroke-linejoin-round" aria-hidden="true">
-      {/* Timber Wood Plank */}
-      <rect x="14" y="60" width="72" height="22" rx="3" fill="#D97706" />
-      <line x1="20" y1="71" x2="80" y2="71" stroke="#92400E" strokeWidth="2" />
-      {/* Hand Saw Blade */}
-      <path d="M30 30 L74 54 L30 54 Z" fill="#CBD5E1" />
-      <path d="M30 54 L34 50 L38 54 L42 50 L46 54 L50 50 L54 54 L58 50 L62 54 L66 50 L70 54 L74 54" stroke="#000" strokeWidth="3" />
-      {/* Wooden Handle */}
-      <rect x="20" y="22" width="16" height="24" rx="4" fill="#B45309" />
-      <circle cx="28" cy="34" r="4" fill="#FFF" />
-    </svg>
-  );
-}
-
-// ----------------------------------------------------------------------------
-// VISUAL SERVICE CATEGORIES METADATA
-// ----------------------------------------------------------------------------
-const visualCategories = [
+const professionalCategories = [
   {
     id: 'plumbing',
     translationKey: 'plumbing',
     descKey: 'plumbingDesc',
-    component: DrippingTapIllustration,
-    bgColor: 'bg-sky-100',
-    borderColor: 'border-sky-500',
-    badgeColor: 'bg-sky-600',
-    rate: '₹450/hr'
+    icon: Droplets,
+    colorClass: 'text-blue-600 bg-blue-50 border-blue-200 group-hover:bg-blue-600 group-hover:text-white',
+    tileGradient: 'from-blue-500 to-indigo-600',
+    startingRate: '₹450/hr',
+    activeWorkers: 12
   },
   {
     id: 'electrical',
     translationKey: 'electrical',
     descKey: 'electricalDesc',
-    component: GlowingBulbIllustration,
-    bgColor: 'bg-yellow-100',
-    borderColor: 'border-yellow-500',
-    badgeColor: 'bg-yellow-600',
-    rate: '₹500/hr'
+    icon: Zap,
+    colorClass: 'text-amber-600 bg-amber-50 border-amber-200 group-hover:bg-amber-600 group-hover:text-white',
+    tileGradient: 'from-amber-500 to-orange-600',
+    startingRate: '₹500/hr',
+    activeWorkers: 18
   },
   {
     id: 'cleaning',
     translationKey: 'cleaning',
     descKey: 'cleaningDesc',
-    component: SweepingBroomIllustration,
-    bgColor: 'bg-emerald-100',
-    borderColor: 'border-emerald-500',
-    badgeColor: 'bg-emerald-600',
-    rate: '₹420/hr'
+    icon: Sparkles,
+    colorClass: 'text-emerald-600 bg-emerald-50 border-emerald-200 group-hover:bg-emerald-600 group-hover:text-white',
+    tileGradient: 'from-emerald-500 to-teal-600',
+    startingRate: '₹420/hr',
+    activeWorkers: 15
   },
   {
     id: 'appliance-repair',
     translationKey: 'appliance',
     descKey: 'applianceDesc',
-    component: ApplianceFanIllustration,
-    bgColor: 'bg-cyan-100',
-    borderColor: 'border-cyan-500',
-    badgeColor: 'bg-cyan-600',
-    rate: '₹550/hr'
+    icon: Wind,
+    colorClass: 'text-cyan-600 bg-cyan-50 border-cyan-200 group-hover:bg-cyan-600 group-hover:text-white',
+    tileGradient: 'from-cyan-500 to-blue-600',
+    startingRate: '₹550/hr',
+    activeWorkers: 9
   },
   {
     id: 'carpentry',
     translationKey: 'carpentry',
     descKey: 'carpentryDesc',
-    component: WoodSawIllustration,
-    bgColor: 'bg-orange-100',
-    borderColor: 'border-orange-500',
-    badgeColor: 'bg-orange-600',
-    rate: '₹520/hr'
+    icon: Hammer,
+    colorClass: 'text-orange-700 bg-orange-50 border-orange-200 group-hover:bg-orange-700 group-hover:text-white',
+    tileGradient: 'from-amber-700 to-yellow-800',
+    startingRate: '₹520/hr',
+    activeWorkers: 11
   }
 ];
 
@@ -168,48 +87,22 @@ export default function ServiceDiscovery() {
   const [bookingWorker, setBookingWorker] = useState<WorkerProfile | null>(null);
   const [bookingSuccess, setBookingSuccess] = useState<string | null>(null);
 
-  // Carousel swipe ref & drag coordinates
   const carouselRef = useRef<HTMLDivElement>(null);
-  const touchStartX = useRef<number>(0);
-  const touchEndX = useRef<number>(0);
-
-  // Handle Touch Swipe Gesture
-  const handleTouchStart = (e: React.TouchEvent) => {
-    touchStartX.current = e.targetTouches[0].clientX;
-  };
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    touchEndX.current = e.targetTouches[0].clientX;
-  };
-
-  const handleTouchEnd = () => {
-    const distance = touchStartX.current - touchEndX.current;
-    if (Math.abs(distance) > 50) {
-      if (distance > 0) {
-        // Swiped Left -> scroll next
-        carouselRef.current?.scrollBy({ left: 240, behavior: 'smooth' });
-      } else {
-        // Swiped Right -> scroll prev
-        carouselRef.current?.scrollBy({ left: -240, behavior: 'smooth' });
-      }
-    }
-  };
 
   const scrollCarousel = (direction: 'left' | 'right') => {
     if (carouselRef.current) {
-      const scrollAmount = direction === 'left' ? -260 : 260;
+      const scrollAmount = direction === 'left' ? -280 : 280;
       carouselRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
     }
   };
 
-  // Voice Search Mockup (Simulates speech-to-text on budget phone)
+  // Voice Search Mockup
   const toggleVoiceSearch = () => {
     if (isListening) {
       setIsListening(false);
       return;
     }
     setIsListening(true);
-    // Simulate auto-dictation
     setTimeout(() => {
       setSearchQuery('Plumber Dadar');
       setSelectedCategory('plumbing');
@@ -217,7 +110,7 @@ export default function ServiceDiscovery() {
     }, 2200);
   };
 
-  // Filter Workers based on active category
+  // Filter Workers
   const filteredWorkers = useMemo(() => {
     return MOCK_WORKERS.filter((worker) => {
       const matchesCat =
@@ -238,209 +131,213 @@ export default function ServiceDiscovery() {
     });
   }, [selectedCategory, searchQuery]);
 
-
-  const handleQuickBook = (worker: WorkerProfile) => {
-    setBookingWorker(worker);
-  };
-
   const confirmBooking = () => {
     if (!bookingWorker) return;
-    setBookingSuccess(`Job requested! ${bookingWorker.name} has been alerted.`);
+    setBookingSuccess(`Booking request confirmed! ${bookingWorker.name} has received your order.`);
     setTimeout(() => {
       setBookingWorker(null);
       setBookingSuccess(null);
-    }, 4000);
+    }, 3800);
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
+      
       {/* -------------------------------------------------------------------- */}
-      {/* 1. HEADER & HIGH-CONTRAST VOICE SEARCH BAR */}
+      {/* 1. SEARCH & HEADING */}
       {/* -------------------------------------------------------------------- */}
-      <section className="space-y-3">
-        <div className="text-left">
-          <h1 className="text-2xl sm:text-3xl font-black text-black tracking-tight leading-snug">
-            {t('findServiceTitle')}
-          </h1>
-          <p className="text-sm sm:text-base font-bold text-slate-700 mt-1">
-            {t('findServiceSubtitle')}
-          </p>
+      <div className="space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+          <div>
+            <h2 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+              {t('findServiceTitle')}
+            </h2>
+            <p className="text-sm text-slate-500 mt-0.5">
+              Select a trade category below or speak to find verified member-workers.
+            </p>
+          </div>
+
+          <div className="text-xs font-semibold text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-full border border-emerald-200 self-start sm:self-auto flex items-center gap-1.5">
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+            <span>90% of fee paid directly to worker</span>
+          </div>
         </div>
 
-        {/* Large Voice Search Input Bar */}
-        <div className="flex items-center gap-2 bg-white border-2 border-black rounded-2xl p-1.5 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
-          <Search className="w-6 h-6 ml-2 text-black stroke-[2.5]" />
+        {/* Professional Search Input Bar */}
+        <div className="relative flex items-center bg-white border border-slate-200 rounded-xl shadow-xs focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-100 transition-all p-1.5">
+          <Search className="w-5 h-5 ml-2.5 text-slate-400 stroke-[2]" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Type or tap mic (e.g. Plumber, Electrician)..."
-            className="flex-1 py-3 px-2 text-base sm:text-lg font-bold text-black placeholder:text-slate-500 outline-none bg-transparent"
+            placeholder="Search by trade, skill or area (e.g., Plumber, Andheri)..."
+            className="flex-1 py-2 px-3 text-sm sm:text-base text-slate-900 placeholder:text-slate-400 outline-none bg-transparent"
           />
           {searchQuery && (
             <button
               onClick={() => setSearchQuery('')}
-              className="p-2 text-black font-black text-lg hover:bg-slate-100 rounded-lg min-h-[44px] min-w-[44px]"
+              className="p-1.5 text-slate-400 hover:text-slate-600 rounded-md text-sm font-medium mr-1"
             >
               ✕
             </button>
           )}
-          {/* Tap to Speak Microphone Button */}
+          {/* Subtle Microphone Button */}
           <button
             onClick={toggleVoiceSearch}
-            className={`min-h-[48px] min-w-[48px] px-3.5 py-2 rounded-xl border-2 border-black flex items-center justify-center font-black transition-all ${
+            className={`h-9 px-3 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all ${
               isListening
-                ? 'bg-red-600 text-white animate-voice-pulse shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]'
-                : 'bg-emerald-500 text-black hover:bg-emerald-600 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]'
+                ? 'bg-rose-600 text-white animate-voice-wave'
+                : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
             }`}
-            aria-label={t('tapToSpeak')}
+            aria-label="Voice Search"
           >
-            {isListening ? (
-              <MicOff className="w-6 h-6 animate-pulse" />
-            ) : (
-              <Mic className="w-6 h-6 stroke-[2.5]" />
-            )}
+            {isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4 text-slate-600" />}
+            <span className="hidden xs:inline">{isListening ? 'Listening...' : 'Voice'}</span>
           </button>
         </div>
 
         {isListening && (
-          <div className="bg-red-50 border-2 border-red-500 rounded-xl p-2.5 text-center text-red-700 font-extrabold text-sm flex items-center justify-center gap-2 animate-pulse">
-            <span className="w-3 h-3 rounded-full bg-red-600 animate-ping" />
-            {t('listening')} Speak now (बोलें...)
+          <div className="bg-rose-50 border border-rose-200 rounded-xl p-2.5 text-center text-xs font-medium text-rose-700 flex items-center justify-center gap-2 animate-pulse">
+            <span className="w-2 h-2 rounded-full bg-rose-600 animate-ping" />
+            <span>Listening... Speak your requested service or area now (बोलें...)</span>
           </div>
         )}
-      </section>
+      </div>
 
       {/* -------------------------------------------------------------------- */}
-      {/* 2. GESTURE-BASED TOUCH SWIPE CAROUSEL (LARGE VISUAL CARDS) */}
+      {/* 2. REFINED HORIZONTAL CAROUSEL OF SERVICE CATEGORIES */}
       {/* -------------------------------------------------------------------- */}
-      <section className="space-y-2">
+      <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-1.5 font-black text-sm text-black">
-            <span>{t('swipePrompt')}</span>
-          </div>
-
-          {/* Touch-Friendly Swipe Navigation Arrows */}
-          <div className="flex items-center gap-2">
+          <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
+            Service Categories
+          </span>
+          <div className="flex items-center gap-1.5">
             <button
               onClick={() => scrollCarousel('left')}
-              className="min-h-[44px] min-w-[44px] rounded-xl border-2 border-black bg-white hover:bg-slate-100 flex items-center justify-center font-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-y-[1px]"
-              aria-label="Previous services"
+              className="w-8 h-8 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 flex items-center justify-center text-slate-600 shadow-2xs transition-colors"
+              aria-label="Previous categories"
             >
-              <ChevronLeft className="w-6 h-6 stroke-[3]" />
+              <ChevronLeft className="w-4 h-4" />
             </button>
             <button
               onClick={() => scrollCarousel('right')}
-              className="min-h-[44px] min-w-[44px] rounded-xl border-2 border-black bg-white hover:bg-slate-100 flex items-center justify-center font-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-y-[1px]"
-              aria-label="Next services"
+              className="w-8 h-8 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 flex items-center justify-center text-slate-600 shadow-2xs transition-colors"
+              aria-label="Next categories"
             >
-              <ChevronRight className="w-6 h-6 stroke-[3]" />
+              <ChevronRight className="w-4 h-4" />
             </button>
           </div>
         </div>
 
-        {/* Horizontal Swipe Carousel Container */}
+        {/* Carousel Container */}
         <div
           ref={carouselRef}
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
-          className="swipe-carousel flex gap-3.5 py-2 px-1 overflow-x-auto select-none"
+          className="smooth-carousel pb-2 select-none"
         >
-          {visualCategories.map((cat) => {
-            const IconIllustration = cat.component;
+          {professionalCategories.map((cat) => {
+            const Icon = cat.icon;
             const isSelected = selectedCategory === cat.id;
 
             return (
               <div
                 key={cat.id}
                 onClick={() => setSelectedCategory(cat.id)}
-                className={`swipe-slide flex-shrink-0 cursor-pointer p-4 rounded-2xl border-[3px] border-black transition-all text-center flex flex-col justify-between ${
+                className={`smooth-carousel-item p-4 rounded-xl border transition-all cursor-pointer group ${
                   isSelected
-                    ? `${cat.bgColor} shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] scale-[1.02]`
-                    : 'bg-white hover:bg-slate-50 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]'
+                    ? 'bg-blue-50/40 border-blue-500 shadow-sm ring-1 ring-blue-500/20'
+                    : 'bg-white border-slate-200/80 hover:border-slate-300 hover:shadow-sm'
                 }`}
               >
-                {/* Large Culturally Recognized Vector Illustration */}
-                <div className="py-2">
-                  <IconIllustration />
+                <div className="flex items-start justify-between gap-2">
+                  <div className={`w-11 h-11 rounded-xl flex items-center justify-center border transition-all ${
+                    isSelected
+                      ? 'bg-blue-600 text-white border-blue-600 shadow-xs'
+                      : cat.colorClass
+                  }`}>
+                    <Icon className="w-5 h-5 stroke-[2]" />
+                  </div>
+                  <span className="text-xs font-semibold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full">
+                    {cat.startingRate}
+                  </span>
                 </div>
 
-                {/* Bold Large Service Name */}
-                <div className="space-y-1 my-2">
-                  <h3 className="text-xl sm:text-2xl font-black text-black tracking-tight leading-tight">
+                <div className="mt-3.5 space-y-0.5">
+                  <h3 className="font-bold text-slate-900 text-base leading-tight">
                     {t(cat.translationKey)}
                   </h3>
-                  <p className="text-xs font-bold text-slate-700 leading-snug line-clamp-2">
+                  <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed">
                     {t(cat.descKey)}
                   </p>
                 </div>
 
-                {/* Pricing & Selection Footer */}
-                <div className="pt-2 border-t-2 border-black/10 flex items-center justify-between mt-auto">
-                  <span className="text-sm font-black text-black bg-white px-2 py-0.5 rounded-md border border-black">
-                    {cat.rate}
+                <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-xs">
+                  <span className="text-slate-400 font-medium">
+                    {cat.activeWorkers} verified workers
                   </span>
-                  <span
-                    className={`text-xs font-black px-2.5 py-1 rounded-lg border border-black ${
-                      isSelected ? 'bg-black text-white' : 'bg-amber-300 text-black'
-                    }`}
-                  >
-                    {isSelected ? '✓ Selected' : 'Tap to Choose'}
+                  <span className={`font-semibold ${isSelected ? 'text-blue-600' : 'text-slate-600 group-hover:text-slate-900'}`}>
+                    {isSelected ? 'Active' : 'Select'} →
                   </span>
                 </div>
               </div>
             );
           })}
         </div>
-      </section>
+      </div>
 
       {/* -------------------------------------------------------------------- */}
       {/* 3. VERIFIED WORKER LIST FOR SELECTED CATEGORY */}
       {/* -------------------------------------------------------------------- */}
-      <section className="space-y-3 pt-2">
-        <div className="flex items-center justify-between border-b-2 border-black pb-2">
-          <h2 className="text-xl font-black text-black flex items-center gap-2">
-            <span>👷 Available Member-Workers</span>
-            <span className="text-xs font-extrabold bg-black text-white px-2 py-0.5 rounded-full">
-              {filteredWorkers.length}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between border-b border-slate-200 pb-3">
+          <div className="flex items-center gap-2">
+            <h3 className="text-base font-bold text-slate-900">
+              Verified Cooperative Workers
+            </h3>
+            <span className="text-xs font-semibold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full">
+              {filteredWorkers.length} available
             </span>
-          </h2>
-          <span className="text-xs font-bold text-emerald-800 bg-emerald-100 px-2 py-1 rounded-md border border-emerald-500">
-            {t('payoutBadge')}
+          </div>
+
+          <span className="text-xs font-medium text-slate-500">
+            Within your service radius
           </span>
         </div>
 
         {filteredWorkers.length === 0 ? (
-          <div className="p-8 text-center bg-slate-50 border-2 border-dashed border-black rounded-2xl">
-            <p className="font-extrabold text-black text-base">No workers found in this category.</p>
-            <p className="text-xs font-bold text-slate-600 mt-1">Try tapping another service card above.</p>
+          <div className="p-8 text-center bg-white border border-slate-200 rounded-xl">
+            <p className="font-semibold text-slate-700 text-sm">No workers found in this category.</p>
+            <p className="text-xs text-slate-400 mt-1">Try selecting another trade or clearing search filters.</p>
           </div>
         ) : (
-          <div className="space-y-3.5">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
             {filteredWorkers.map((worker) => (
               <div
                 key={worker.id}
-                className="accessible-card p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-white"
+                className="bg-white border border-slate-200/80 rounded-xl p-4 shadow-xs hover:shadow-md hover:border-slate-300 transition-all flex flex-col justify-between gap-3"
               >
-                {/* Worker Avatar & Identity */}
-                <div className="flex items-center gap-3.5">
-                  <div className="w-14 h-14 rounded-2xl bg-amber-200 border-2 border-black flex items-center justify-center text-2xl font-black shadow-sm overflow-hidden flex-shrink-0">
+                {/* Worker Identity & Badges */}
+                <div className="flex items-start gap-3.5">
+                  <div className="w-12 h-12 rounded-xl bg-slate-100 border border-slate-200 overflow-hidden flex-shrink-0 flex items-center justify-center text-slate-700 font-bold text-lg">
                     {worker.avatarUrl ? (
                       <img src={worker.avatarUrl} alt={worker.name} className="w-full h-full object-cover" />
                     ) : (
                       worker.name.charAt(0)
                     )}
                   </div>
-                  <div className="space-y-0.5">
+
+                  <div className="flex-1 min-w-0 space-y-0.5">
                     <div className="flex items-center gap-1.5 flex-wrap">
-                      <span className="font-black text-lg text-black">{worker.name}</span>
-                      <span className="text-[11px] font-black bg-emerald-500 text-black px-1.5 py-0.2 rounded border border-black">
-                        ✓ Verified Co-op
+                      <span className="font-bold text-slate-900 text-sm sm:text-base truncate">
+                        {worker.name}
+                      </span>
+                      <span className="inline-flex items-center text-[10px] font-semibold bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded border border-blue-200">
+                        ✓ Co-op Certified
                       </span>
                     </div>
-                    <div className="text-xs font-bold text-slate-700 flex items-center gap-2">
-                      <span className="flex items-center text-amber-600 font-extrabold">
+
+                    <div className="text-xs text-slate-500 flex items-center gap-2 flex-wrap">
+                      <span className="flex items-center text-amber-600 font-semibold">
                         <Star className="w-3.5 h-3.5 fill-amber-500 text-amber-500 mr-0.5" />
                         {worker.rating}
                       </span>
@@ -448,104 +345,117 @@ export default function ServiceDiscovery() {
                       <span>{worker.completedJobs} jobs</span>
                       <span>•</span>
                       <span className="flex items-center">
-                        <MapPin className="w-3 h-3 mr-0.5" /> {worker.locationName}
+                        <MapPin className="w-3 h-3 mr-0.5 text-slate-400" />
+                        {worker.locationName}
                       </span>
                     </div>
-                    <div className="text-xs font-extrabold text-blue-700">{worker.cooperativeName}</div>
+
+                    <p className="text-xs text-slate-500 font-medium truncate pt-0.5">
+                      {worker.cooperativeName}
+                    </p>
                   </div>
                 </div>
 
+                {/* Pricing & Direct Booking Buttons */}
+                <div className="pt-2 border-t border-slate-100 flex items-center justify-between gap-2">
+                  <div>
+                    <span className="text-sm font-bold text-slate-900">₹{worker.hourlyRate}</span>
+                    <span className="text-xs text-slate-500 font-normal">/hr</span>
+                    <span className="text-[10px] text-emerald-700 font-semibold block">90% directly to worker</span>
+                  </div>
 
-                {/* 1-Tap Booking & Direct Calling Buttons */}
-                <div className="flex items-center gap-2 w-full sm:w-auto mt-2 sm:mt-0">
-                  <a
-                    href={`tel:${worker.phone}`}
-                    className="flex-1 sm:flex-initial min-h-[48px] min-w-[48px] px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 border-2 border-black text-black font-black text-sm flex items-center justify-center gap-1 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-y-[1px]"
-                    aria-label={`Call ${worker.name}`}
-                  >
-                    <Phone className="w-4 h-4" />
-                    <span>Call</span>
-                  </a>
+                  <div className="flex items-center gap-2">
+                    <a
+                      href={`tel:${worker.phone}`}
+                      className="h-9 px-3 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold flex items-center gap-1 transition-colors"
+                      aria-label={`Call ${worker.name}`}
+                    >
+                      <Phone className="w-3.5 h-3.5" />
+                      <span>Call</span>
+                    </a>
 
-                  <button
-                    onClick={() => handleQuickBook(worker)}
-                    className="flex-1 sm:flex-initial min-h-[48px] px-4 py-2 rounded-xl bg-black text-white hover:bg-slate-800 font-black text-sm border-2 border-black flex items-center justify-center gap-1 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.4)] active:translate-y-[1px]"
-                  >
-                    <span>{t('bookNow')} (₹{worker.hourlyRate})</span>
-                    <ArrowRight className="w-4 h-4 ml-1" />
-                  </button>
+                    <button
+                      onClick={() => setBookingWorker(worker)}
+                      className="h-9 px-3.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold flex items-center gap-1.5 shadow-2xs transition-colors"
+                    >
+                      <span>Book Now</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}
           </div>
         )}
-      </section>
+      </div>
 
       {/* -------------------------------------------------------------------- */}
-      {/* 4. MODAL: ONE-TAP 1-STEP CONFIRMATION DRAWER */}
+      {/* 4. CLEAN CONFIRMATION DRAWER */}
       {/* -------------------------------------------------------------------- */}
       {bookingWorker && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-3">
-          <div className="bg-white border-[3px] border-black rounded-3xl p-5 w-full max-w-md shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] space-y-4 animate-in slide-in-from-bottom duration-200">
-            <div className="flex items-center justify-between border-b-2 border-black pb-2">
-              <h3 className="text-xl font-black text-black">Confirm Booking</h3>
+        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-end sm:items-center justify-center p-4 animate-in fade-in duration-150">
+          <div className="bg-white border border-slate-200 rounded-2xl p-6 w-full max-w-md shadow-xl space-y-4 animate-in zoom-in-95 duration-150">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <h3 className="text-lg font-bold text-slate-900">Confirm Service Booking</h3>
               <button
                 onClick={() => setBookingWorker(null)}
-                className="min-h-[44px] min-w-[44px] font-black text-xl hover:bg-slate-100 rounded-lg"
+                className="w-8 h-8 rounded-lg hover:bg-slate-100 flex items-center justify-center text-slate-500 font-medium"
               >
                 ✕
               </button>
             </div>
 
-            <div className="flex items-center gap-3 p-3 bg-amber-50 border-2 border-black rounded-2xl">
-              <div className="w-12 h-12 rounded-xl bg-amber-200 border-2 border-black flex items-center justify-center text-xl font-black">
-                🤝
+            <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-200">
+              <div className="w-10 h-10 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center font-bold">
+                {bookingWorker.name.charAt(0)}
               </div>
-              <div>
-                <p className="font-black text-base text-black">{bookingWorker.name}</p>
-                <p className="text-xs font-bold text-slate-700">{bookingWorker.trade} • {bookingWorker.cooperativeName}</p>
-                <p className="text-xs font-extrabold text-emerald-700">₹{bookingWorker.hourlyRate} / hour</p>
+              <div className="flex-1 min-w-0">
+                <p className="font-semibold text-slate-900 text-sm truncate">{bookingWorker.name}</p>
+                <p className="text-xs text-slate-500">{bookingWorker.trade} • {bookingWorker.cooperativeName}</p>
               </div>
+              <span className="font-bold text-slate-900 text-sm">₹{bookingWorker.hourlyRate}/hr</span>
             </div>
 
-            <div className="bg-slate-50 border-2 border-slate-200 rounded-xl p-3 text-xs font-bold text-slate-700 space-y-1">
-              <div className="flex justify-between">
-                <span>Worker Payout (90%):</span>
-                <span className="font-extrabold text-black">₹{Math.round(bookingWorker.hourlyRate * 0.9)}</span>
+            {/* Financial Transparency Breakdown */}
+            <div className="p-3 bg-slate-50/70 border border-slate-200/80 rounded-xl space-y-1.5 text-xs">
+              <div className="flex justify-between text-emerald-800 font-semibold">
+                <span>90% Direct Worker Take-Home:</span>
+                <span>₹{Math.round(bookingWorker.hourlyRate * 0.9)}</span>
               </div>
-              <div className="flex justify-between">
-                <span>Cooperative Reserve (5%):</span>
-                <span className="font-extrabold text-black">₹{Math.round(bookingWorker.hourlyRate * 0.05)}</span>
+              <div className="flex justify-between text-slate-500">
+                <span>5% Primary Cooperative Society:</span>
+                <span>₹{Math.round(bookingWorker.hourlyRate * 0.05)}</span>
               </div>
-              <div className="flex justify-between">
-                <span>Worker Welfare & Insurance (5%):</span>
-                <span className="font-extrabold text-black">₹{Math.round(bookingWorker.hourlyRate * 0.05)}</span>
+              <div className="flex justify-between text-slate-500">
+                <span>5% Mutual Aid & Welfare Insurance:</span>
+                <span>₹{Math.round(bookingWorker.hourlyRate * 0.05)}</span>
               </div>
             </div>
 
             {bookingSuccess ? (
-              <div className="bg-emerald-500 text-white font-black text-center p-3 rounded-xl border-2 border-black">
+              <div className="p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold rounded-xl text-center">
                 {bookingSuccess}
               </div>
             ) : (
-              <div className="flex gap-2">
+              <div className="flex items-center gap-2 pt-1">
                 <button
                   onClick={() => setBookingWorker(null)}
-                  className="flex-1 min-h-[48px] rounded-xl border-2 border-black bg-slate-100 font-black text-black hover:bg-slate-200"
+                  className="flex-1 h-10 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-semibold transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={confirmBooking}
-                  className="flex-1 min-h-[48px] rounded-xl border-2 border-black bg-emerald-500 hover:bg-emerald-600 font-black text-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-y-[1px]"
+                  className="flex-1 h-10 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold shadow-xs transition-colors"
                 >
-                  Confirm (पुष्टि करें)
+                  Confirm Order
                 </button>
               </div>
             )}
           </div>
         </div>
       )}
+
     </div>
   );
 }

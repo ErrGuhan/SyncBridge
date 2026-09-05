@@ -8,9 +8,8 @@ import {
   CheckCircle2, 
   Clock, 
   ShieldCheck, 
-  AlertCircle, 
-  ArrowRight,
-  Sparkles
+  Navigation,
+  Check
 } from 'lucide-react';
 
 export type JobTrafficState = 'RED' | 'YELLOW' | 'GREEN';
@@ -42,153 +41,128 @@ export default function JobStatusTracker({
   const welfareFund = Math.round(totalAmount * 0.05);
 
   return (
-    <div className="accessible-card p-5 bg-white space-y-5">
-      {/* Header & Booking Identifier */}
-      <div className="flex items-center justify-between border-b-2 border-black pb-3">
-        <div>
-          <span className="text-[11px] font-black uppercase tracking-wider text-slate-600 block">
-            Booking Reference
-          </span>
-          <span className="text-lg font-black text-black tracking-tight">
-            #{bookingNumber}
-          </span>
+    <div className="bg-white border border-slate-200/80 rounded-2xl p-5 sm:p-6 shadow-xs space-y-5">
+      
+      {/* Header & State Pill Controls */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+        <div className="space-y-0.5">
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-mono font-semibold text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">
+              #{bookingNumber}
+            </span>
+            <span className="text-xs font-medium text-slate-500">Live Cooperative Dispatch</span>
+          </div>
+          <h3 className="text-base font-bold text-slate-900">
+            {trafficState === 'RED' && 'Locating Available Member-Worker...'}
+            {trafficState === 'YELLOW' && 'Member-Worker is En Route'}
+            {trafficState === 'GREEN' && 'Service Completed & Settled'}
+          </h3>
         </div>
 
-        {/* Traffic Light State Selector Pills for Demo / Interactive Testing */}
-        <div className="flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl border-2 border-black">
+        {/* State Toggle Buttons for Testing */}
+        <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200 self-start sm:self-auto">
           <button
             onClick={() => setTrafficState('RED')}
-            className={`w-7 h-7 rounded-lg font-black text-xs flex items-center justify-center border transition-all ${
+            className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all ${
               trafficState === 'RED'
-                ? 'bg-red-600 text-white border-black scale-110 shadow-sm'
-                : 'bg-red-100 text-red-700 border-transparent hover:border-black'
+                ? 'bg-white text-rose-700 shadow-2xs font-bold'
+                : 'text-slate-600 hover:text-slate-900'
             }`}
-            aria-label="View Red State"
           >
-            🔴
+            Searching
           </button>
           <button
             onClick={() => setTrafficState('YELLOW')}
-            className={`w-7 h-7 rounded-lg font-black text-xs flex items-center justify-center border transition-all ${
+            className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all ${
               trafficState === 'YELLOW'
-                ? 'bg-amber-400 text-black border-black scale-110 shadow-sm'
-                : 'bg-yellow-100 text-yellow-700 border-transparent hover:border-black'
+                ? 'bg-white text-amber-700 shadow-2xs font-bold'
+                : 'text-slate-600 hover:text-slate-900'
             }`}
-            aria-label="View Yellow State"
           >
-            🟡
+            En Route
           </button>
           <button
             onClick={() => setTrafficState('GREEN')}
-            className={`w-7 h-7 rounded-lg font-black text-xs flex items-center justify-center border transition-all ${
+            className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all ${
               trafficState === 'GREEN'
-                ? 'bg-emerald-500 text-black border-black scale-110 shadow-sm'
-                : 'bg-emerald-100 text-emerald-700 border-transparent hover:border-black'
+                ? 'bg-white text-emerald-700 shadow-2xs font-bold'
+                : 'text-slate-600 hover:text-slate-900'
             }`}
-            aria-label="View Green State"
           >
-            🟢
+            Completed
           </button>
         </div>
       </div>
 
       {/* -------------------------------------------------------------------- */}
-      {/* 🔴 RED STATE: WAITING FOR WORKER (Pulsing Radar Circle) */}
+      {/* 🔴 RED STATE: SEARCHING (Clean, Minimalist Pulse) */}
       {/* -------------------------------------------------------------------- */}
       {trafficState === 'RED' && (
-        <div className="space-y-4 py-2 text-center animate-in fade-in duration-200">
-          <div className="relative w-24 h-24 mx-auto flex items-center justify-center">
-            {/* Animated Pulsing Rings */}
-            <div className="absolute inset-0 rounded-full bg-red-500/20 animate-ping" />
-            <div className="absolute inset-2 rounded-full bg-red-500/30 animate-pulse" />
-            <div className="relative w-16 h-16 rounded-full bg-red-600 text-white border-[3px] border-black flex items-center justify-center text-3xl shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
-              📡
+        <div className="p-6 rounded-xl bg-rose-50/40 border border-rose-200/80 text-center space-y-3 animate-in fade-in duration-150">
+          <div className="relative w-12 h-12 mx-auto flex items-center justify-center">
+            <span className="absolute inset-0 rounded-full bg-rose-400/20 animate-ping" />
+            <div className="w-10 h-10 rounded-full bg-rose-600 text-white flex items-center justify-center shadow-xs">
+              <Clock className="w-5 h-5 animate-spin" />
             </div>
           </div>
 
           <div className="space-y-1">
-            <span className="inline-block px-3 py-1 rounded-full bg-red-100 border-2 border-red-600 text-red-800 text-xs font-black uppercase tracking-wider">
-              Step 1: Finding Worker
-            </span>
-            <h3 className="text-2xl font-black text-black">
-              {t('waitingWorker')}
-            </h3>
-            <p className="text-sm font-bold text-slate-700 max-w-xs mx-auto">
-              Alerting verified cooperative workers in your 5km radius over WebSocket mesh.
+            <h4 className="font-bold text-slate-900 text-base">Alerting Local Cooperative Hub</h4>
+            <p className="text-xs text-slate-500 max-w-sm mx-auto">
+              Broadcasting your request to verified trade members within a 5 km perimeter. Average acceptance: 45 seconds.
             </p>
-          </div>
-
-          <div className="p-3 bg-red-50 border-2 border-red-300 rounded-xl text-xs font-bold text-red-900 flex items-center justify-center gap-2">
-            <Clock className="w-4 h-4 animate-spin" />
-            <span>Estimated response time: ~60 seconds</span>
           </div>
         </div>
       )}
 
       {/* -------------------------------------------------------------------- */}
-      {/* 🟡 YELLOW STATE: WORKER ON THE WAY (Animated Moving Scooter) */}
+      {/* 🟡 YELLOW STATE: EN ROUTE (Sleek Modern Progress Track) */}
       {/* -------------------------------------------------------------------- */}
       {trafficState === 'YELLOW' && (
-        <div className="space-y-4 animate-in fade-in duration-200">
-          {/* Status Banner */}
-          <div className="flex items-center justify-between bg-amber-300 border-2 border-black rounded-2xl p-3 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
-            <div className="flex items-center gap-2">
-              <span className="w-4 h-4 rounded-full bg-amber-600 animate-ping" />
-              <span className="font-black text-base text-black">
-                {t('workerOnWay')}
+        <div className="space-y-4 animate-in fade-in duration-150">
+          {/* Progress Timeline Bar */}
+          <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-2.5">
+            <div className="flex items-center justify-between text-xs font-semibold">
+              <span className="text-slate-600 flex items-center gap-1.5">
+                <Navigation className="w-3.5 h-3.5 text-blue-600" />
+                <span>Worker Dispatched from Hub</span>
+              </span>
+              <span className="text-amber-800 bg-amber-100 px-2.5 py-0.5 rounded-full text-[11px] font-bold">
+                ETA: ~{workerEtaMinutes} mins
               </span>
             </div>
-            <span className="font-black text-xs bg-black text-white px-2.5 py-1 rounded-lg">
-              ETA: ~{workerEtaMinutes} Mins
-            </span>
-          </div>
 
-          {/* Animated Scooter Track Visual */}
-          <div className="p-4 bg-amber-50 border-2 border-black rounded-2xl space-y-2 overflow-hidden">
-            <div className="flex justify-between text-xs font-black text-slate-700">
+            {/* Subtle Progress Bar */}
+            <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden relative">
+              <div className="bg-gradient-to-r from-blue-600 to-amber-500 h-full rounded-full w-[65%] transition-all duration-1000" />
+            </div>
+
+            <div className="flex justify-between text-[11px] text-slate-400">
               <span>Cooperative Hub (Dadar)</span>
-              <span>Your Location (Home)</span>
-            </div>
-
-            {/* Road Track with Moving Scooter */}
-            <div className="relative h-14 bg-slate-200 border-2 border-black rounded-xl flex items-center px-4 overflow-hidden">
-              {/* Dashed Road Line */}
-              <div className="absolute inset-x-0 h-0.5 border-b-2 border-dashed border-slate-400" />
-              {/* Moving Scooter Icon */}
-              <div className="relative animate-scooter z-10 flex items-center">
-                <span className="text-3xl filter drop-shadow-md">🛵</span>
-                <span className="text-[10px] font-black bg-black text-white px-1.5 py-0.5 rounded shadow ml-1">
-                  En Route
-                </span>
-              </div>
-              {/* Destination Pin */}
-              <div className="absolute right-3 z-10 text-2xl">
-                📍
-              </div>
+              <span>Your Address</span>
             </div>
           </div>
 
-          {/* Assigned Worker Profile & Direct Call Button (>= 48px) */}
-          <div className="p-3.5 bg-white border-2 border-black rounded-2xl flex items-center justify-between gap-3 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+          {/* Assigned Worker Profile Card */}
+          <div className="p-4 bg-white border border-slate-200 rounded-xl flex items-center justify-between gap-3 shadow-xs">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-xl bg-amber-200 border-2 border-black flex items-center justify-center text-xl font-black">
-                👨‍🔧
+              <div className="w-11 h-11 rounded-xl bg-blue-50 border border-blue-200 text-blue-700 font-bold flex items-center justify-center text-sm">
+                RC
               </div>
               <div>
-                <p className="font-black text-base text-black">{workerName}</p>
-                <p className="text-xs font-bold text-slate-600">{workerTrade}</p>
-                <span className="text-[10px] font-black text-emerald-800 bg-emerald-100 px-1.5 py-0.5 rounded border border-emerald-400">
-                  ✓ Verified Member-Owner
+                <p className="font-bold text-slate-900 text-sm">{workerName}</p>
+                <p className="text-xs text-slate-500">{workerTrade}</p>
+                <span className="text-[10px] text-emerald-700 font-semibold flex items-center gap-1 mt-0.5">
+                  <ShieldCheck className="w-3 h-3 inline" /> NCCT Certified Member
                 </span>
               </div>
             </div>
 
             <a
               href={`tel:${workerPhone}`}
-              className="min-h-[50px] min-w-[50px] px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-black font-black text-sm border-2 border-black flex items-center justify-center gap-1.5 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-y-[1px]"
-              aria-label="Call Worker"
+              className="h-10 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs flex items-center gap-1.5 shadow-xs transition-colors"
             >
-              <Phone className="w-5 h-5 stroke-[2.5]" />
+              <Phone className="w-3.5 h-3.5" />
               <span>Call</span>
             </a>
           </div>
@@ -196,54 +170,44 @@ export default function JobStatusTracker({
       )}
 
       {/* -------------------------------------------------------------------- */}
-      {/* 🟢 GREEN STATE: JOB DONE (Verified Stamp & 90% Worker Payout) */}
+      {/* 🟢 GREEN STATE: COMPLETED (Verified Receipt) */}
       {/* -------------------------------------------------------------------- */}
       {trafficState === 'GREEN' && (
-        <div className="space-y-4 py-1 animate-in fade-in duration-200 text-center">
-          <div className="w-20 h-20 mx-auto rounded-full bg-emerald-400 border-[3px] border-black flex items-center justify-center text-4xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-            ✓
+        <div className="space-y-4 animate-in fade-in duration-150">
+          <div className="p-4 rounded-xl bg-emerald-50/60 border border-emerald-200 flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-emerald-600 text-white flex items-center justify-center flex-shrink-0">
+              <Check className="w-5 h-5 stroke-[2.5]" />
+            </div>
+            <div>
+              <h4 className="font-bold text-slate-900 text-sm">Job Completed & Verified</h4>
+              <p className="text-xs text-slate-600">
+                Payment settled under the 90/5/5 cooperative patronage model with 0% venture commission.
+              </p>
+            </div>
           </div>
 
-          <div className="space-y-1">
-            <span className="inline-block px-3 py-1 rounded-full bg-emerald-100 border-2 border-emerald-600 text-emerald-900 text-xs font-black uppercase tracking-wider">
-              Service Finished
-            </span>
-            <h3 className="text-2xl font-black text-black">
-              {t('jobCompleted')}
-            </h3>
-            <p className="text-sm font-bold text-slate-700">
-              Payment settled via UPI under the 90-5-5 cooperative charter.
-            </p>
-          </div>
-
-          {/* Transparent Cooperative Payout Breakdown */}
-          <div className="accessible-card p-4 text-left bg-emerald-50 space-y-2 border-emerald-600">
-            <div className="text-xs font-black uppercase tracking-wider text-emerald-950 border-b border-emerald-300 pb-1 flex items-center justify-between">
-              <span>Cooperative Fair Payout</span>
-              <span className="text-sm font-black text-black">Total: ₹{totalAmount}</span>
+          {/* Clean Receipt Breakdown */}
+          <div className="p-4 bg-slate-50/70 border border-slate-200 rounded-xl space-y-2 text-xs">
+            <div className="flex justify-between text-slate-500 pb-1 border-b border-slate-200">
+              <span>Total Service Cost</span>
+              <span className="font-bold text-slate-900 text-sm">₹{totalAmount}</span>
             </div>
-
-            <div className="space-y-1 text-xs font-bold text-slate-800">
-              <div className="flex justify-between text-emerald-900">
-                <span className="font-extrabold">90% Direct to Worker Member:</span>
-                <span className="font-black text-base">₹{workerPayout}</span>
-              </div>
-              <div className="flex justify-between text-slate-600">
-                <span>5% Cooperative Treasury Reserve:</span>
-                <span>₹{coopTreasury}</span>
-              </div>
-              <div className="flex justify-between text-slate-600">
-                <span>5% Mutual Aid & Insurance Fund:</span>
-                <span>₹{welfareFund}</span>
-              </div>
+            <div className="flex justify-between text-emerald-800 font-semibold">
+              <span>• 90% Direct Worker Member Payout:</span>
+              <span>₹{workerPayout}</span>
             </div>
-
-            <p className="text-[11px] font-extrabold text-emerald-800 pt-1">
-              ✨ Zero corporate commissions deducted. 100% owned by member-workers.
-            </p>
+            <div className="flex justify-between text-slate-500">
+              <span>• 5% Primary Society Capital Fund:</span>
+              <span>₹{coopTreasury}</span>
+            </div>
+            <div className="flex justify-between text-slate-500">
+              <span>• 5% Healthcare & Social Security Pool:</span>
+              <span>₹{welfareFund}</span>
+            </div>
           </div>
         </div>
       )}
+
     </div>
   );
 }

@@ -53,7 +53,7 @@ function makeRequest(url, options = {}, body = null) {
     });
 
     req.on('error', (err) => reject(err));
-    req.setTimeout(5000, () => {
+    req.setTimeout(10000, () => {
       req.destroy();
       reject(new Error(`Timeout connecting to ${url}`));
     });

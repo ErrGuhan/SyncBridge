@@ -1,7 +1,7 @@
 /**
  * ============================================================================
  * SyncBridge Cooperative Platform — Data Models & Mock Datasets
- * Aligned with Ministry of Cooperation / NCCT (Problem Statement ID: 26089)
+ * Cooperative Labour Federation & Democratic Services Network
  * ============================================================================
  */
 
@@ -399,8 +399,8 @@ export const MOCK_COOPERATIVES = [
 ];
 
 export const MOCK_ADMIN_METRICS = {
-  problemStatementId: '26089',
-  nodalMinistry: 'Ministry of Cooperation / NCCT',
+  platformCode: 'SYNCBRIDGE-FED-01',
+  governanceBody: 'National Cooperative Council',
   totalPrimaryCooperativesAcrossIndia: '44,000+',
   totalWorkers: 1428,
   activeWorkers: 1195,

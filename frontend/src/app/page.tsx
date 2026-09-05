@@ -10,7 +10,7 @@ import {
   Users, 
   HeartHandshake, 
   ArrowRight,
-  Sparkles,
+  TrendingUp,
   Award
 } from 'lucide-react';
 
@@ -18,77 +18,116 @@ export default function HomePage() {
   const { t } = useLanguage();
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-10">
+      
       {/* -------------------------------------------------------------------- */}
-      {/* 1. HIGH-CONTRAST COOPERATIVE CHARTER BANNER (90 / 5 / 5 MODEL) */}
+      {/* 1. HERO & 90/5/5 COOPERATIVE CHARTER TRANSPARENCY SECTION */}
       {/* -------------------------------------------------------------------- */}
-      <section className="accessible-card p-4 sm:p-5 bg-amber-50 space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b-2 border-black pb-3">
-          <div>
-            <div className="flex items-center gap-1.5 text-xs font-black uppercase tracking-wider text-black">
-              <span className="w-2.5 h-2.5 rounded-full bg-emerald-600" />
-              <span>Cooperative Worker-Owned Platform</span>
+      <section className="bg-white border border-slate-200/80 rounded-2xl p-6 sm:p-8 shadow-xs relative overflow-hidden">
+        {/* Subtle decorative ambient gradient in corner */}
+        <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-bl from-blue-50/60 via-indigo-50/30 to-transparent rounded-full blur-2xl pointer-events-none" />
+
+        <div className="relative z-10 space-y-6">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-5">
+            <div className="space-y-1.5 max-w-2xl">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                <span>Cooperative Worker-Owned Charter</span>
+              </div>
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 tracking-tight">
+                90% Payout to Workers. <span className="text-blue-600">Zero Corporate Cut.</span>
+              </h1>
+              <p className="text-sm text-slate-600 leading-relaxed">
+                SyncBridge eliminates extractive gig intermediaries. Member-workers own the cooperative platform, receive fair wages on same-day settlement, and retain 100% of emergency surge premiums.
+              </p>
             </div>
-            <h2 className="text-xl sm:text-2xl font-black text-black mt-0.5 tracking-tight">
-              90% Payout to Workers. Zero Corporate Cuts.
-            </h2>
+
+            <div className="flex items-center gap-3 self-start md:self-center">
+              <Link
+                href="/register/worker"
+                className="h-11 px-5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs sm:text-sm font-semibold flex items-center gap-2 shadow-xs transition-colors"
+              >
+                <span>Join as Worker</span>
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+              <Link
+                href="/dashboard"
+                className="h-11 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs sm:text-sm font-semibold flex items-center gap-1.5 transition-colors"
+              >
+                <span>Federation Portal</span>
+              </Link>
+            </div>
           </div>
 
-          <div className="flex items-center gap-2 self-start sm:self-auto">
-            <Link
-              href="/register/worker"
-              className="min-h-[48px] px-3.5 py-2 rounded-xl bg-black text-white hover:bg-slate-800 font-black text-xs sm:text-sm flex items-center gap-1.5 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.3)] active:translate-y-[1px]"
-            >
-              <span>Join as Worker</span>
-              <ArrowRight className="w-4 h-4 stroke-[2.5]" />
-            </Link>
-          </div>
-        </div>
-
-        {/* 3 Large Accessible Split Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          {/* 90% Worker Card */}
-          <div className="p-3.5 rounded-xl border-2 border-black bg-white space-y-1 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
-            <div className="flex items-center justify-between">
-              <span className="text-3xl font-black text-black">90%</span>
-              <Wallet className="w-6 h-6 text-emerald-600 stroke-[2.5]" />
+          {/* 3 Modern Metric Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            
+            {/* 90% Worker Take-Home */}
+            <div className="p-5 rounded-xl bg-slate-50/60 border border-slate-200/80 hover:border-emerald-200 hover:bg-emerald-50/30 transition-all space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-3xl font-extrabold text-emerald-700 tracking-tight">90%</span>
+                <div className="w-9 h-9 rounded-lg bg-emerald-100/80 flex items-center justify-center text-emerald-700">
+                  <Wallet className="w-5 h-5" />
+                </div>
+              </div>
+              <div>
+                <h3 className="text-sm font-bold text-slate-900">Direct Worker Take-Home</h3>
+                <p className="text-xs text-slate-600 mt-1 leading-normal">
+                  Immediate UPI payout to the member's wallet. In on-demand dispatches, 100% of surge pricing passes straight to the worker.
+                </p>
+              </div>
+              <div className="w-full bg-emerald-200/60 h-1.5 rounded-full overflow-hidden">
+                <div className="bg-emerald-600 h-full rounded-full w-[90%]" />
+              </div>
             </div>
-            <h3 className="text-sm font-black text-black leading-tight">Direct Worker Wallet</h3>
-            <p className="text-xs font-bold text-slate-700">
-              Paid straight to the worker member upon job completion with 100% emergency surge pass-through.
-            </p>
-          </div>
 
-          {/* 5% Society Card */}
-          <div className="p-3.5 rounded-xl border-2 border-black bg-white space-y-1 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
-            <div className="flex items-center justify-between">
-              <span className="text-3xl font-black text-black">5%</span>
-              <Users className="w-6 h-6 text-blue-600 stroke-[2.5]" />
+            {/* 5% Primary Society Reserve */}
+            <div className="p-5 rounded-xl bg-slate-50/60 border border-slate-200/80 hover:border-blue-200 hover:bg-blue-50/30 transition-all space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-3xl font-extrabold text-blue-700 tracking-tight">5%</span>
+                <div className="w-9 h-9 rounded-lg bg-blue-100/80 flex items-center justify-center text-blue-700">
+                  <Users className="w-5 h-5" />
+                </div>
+              </div>
+              <div>
+                <h3 className="text-sm font-bold text-slate-900">Primary Society Treasury</h3>
+                <p className="text-xs text-slate-600 mt-1 leading-normal">
+                  Retained democratically by the local cooperative chapter for shared power tool libraries, testing gear, and secretary ops.
+                </p>
+              </div>
+              <div className="w-full bg-blue-200/60 h-1.5 rounded-full overflow-hidden">
+                <div className="bg-blue-600 h-full rounded-full w-[5%]" />
+              </div>
             </div>
-            <h3 className="text-sm font-black text-black leading-tight">Co-op Tool Library</h3>
-            <p className="text-xs font-bold text-slate-700">
-              Retained democratically for shared tools, testing equipment, and local cooperative secretary support.
-            </p>
-          </div>
 
-          {/* 5% Welfare Card */}
-          <div className="p-3.5 rounded-xl border-2 border-black bg-white space-y-1 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
-            <div className="flex items-center justify-between">
-              <span className="text-3xl font-black text-black">5%</span>
-              <HeartHandshake className="w-6 h-6 text-amber-600 stroke-[2.5]" />
+            {/* 5% Social Security & Healthcare */}
+            <div className="p-5 rounded-xl bg-slate-50/60 border border-slate-200/80 hover:border-amber-200 hover:bg-amber-50/30 transition-all space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-3xl font-extrabold text-amber-700 tracking-tight">5%</span>
+                <div className="w-9 h-9 rounded-lg bg-amber-100/80 flex items-center justify-center text-amber-700">
+                  <HeartHandshake className="w-5 h-5" />
+                </div>
+              </div>
+              <div>
+                <h3 className="text-sm font-bold text-slate-900">Welfare & Social Security</h3>
+                <p className="text-xs text-slate-600 mt-1 leading-normal">
+                  Funds ₹5 Lakh emergency medical hospitalization cover, disability insurance, and a 1% customer guarantee escrow reserve.
+                </p>
+              </div>
+              <div className="w-full bg-amber-200/60 h-1.5 rounded-full overflow-hidden">
+                <div className="bg-amber-600 h-full rounded-full w-[5%]" />
+              </div>
             </div>
-            <h3 className="text-sm font-black text-black leading-tight">Welfare & Insurance</h3>
-            <p className="text-xs font-bold text-slate-700">
-              ₹5 Lakh family medical safety net, injury coverage, and 1% customer service guarantee fund.
-            </p>
+
           </div>
         </div>
       </section>
 
       {/* -------------------------------------------------------------------- */}
-      {/* 2. ICON-DRIVEN SERVICE DISCOVERY WITH TOUCH SWIPE CAROUSEL */}
+      {/* 2. REFINED VISUAL SERVICE DISCOVERY */}
       {/* -------------------------------------------------------------------- */}
       <ServiceDiscovery />
+
     </div>
   );
 }

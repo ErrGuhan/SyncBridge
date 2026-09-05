@@ -4,7 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useLanguage } from '../context/LanguageContext';
-import { Home, Search, ClipboardList, UserCheck } from 'lucide-react';
+import { Home, Search, ClipboardList, User } from 'lucide-react';
 
 export default function BottomNavigation() {
   const pathname = usePathname();
@@ -32,36 +32,43 @@ export default function BottomNavigation() {
     {
       label: t('navProfile'),
       href: '/register/worker',
-      icon: UserCheck,
+      icon: User,
       isActive: pathname.startsWith('/register') || pathname.startsWith('/dashboard')
     }
   ];
 
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t-2 border-black shadow-[0px_-4px_12px_rgba(0,0,0,0.08)] py-1.5 px-2 safe-area-pb"
-      aria-label="Bottom Navigation Bar"
+      className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200/80 shadow-[0_-2px_10px_rgba(0,0,0,0.04)] py-1 safe-area-pb"
+      aria-label="Mobile Navigation"
     >
-      <div className="max-w-md md:max-w-2xl mx-auto flex items-center justify-around gap-1">
+      <div className="max-w-md mx-auto flex items-center justify-around px-2">
         {navItems.map((item) => {
           const Icon = item.icon;
           return (
             <Link
               key={item.href}
               href={item.href}
-              className={`flex-1 flex flex-col items-center justify-center min-h-[56px] min-w-[48px] py-1 px-1 rounded-xl transition-all active:scale-95 ${
+              className={`flex-1 flex flex-col items-center justify-center py-1.5 px-2 rounded-xl transition-all relative ${
                 item.isActive
-                  ? 'bg-black text-white font-black shadow-[2px_2px_0px_0px_rgba(0,0,0,0.3)]'
-                  : 'text-black hover:bg-slate-100 font-bold'
+                  ? 'text-blue-600'
+                  : 'text-slate-500 hover:text-slate-900 active:scale-95'
               }`}
               aria-current={item.isActive ? 'page' : undefined}
             >
-              <Icon
-                className={`w-6 h-6 mb-0.5 transition-transform ${
-                  item.isActive ? 'scale-110 stroke-[2.5]' : 'stroke-2'
-                }`}
-              />
-              <span className="text-[11px] sm:text-xs leading-none tracking-tight text-center truncate max-w-[72px]">
+              <div className="relative">
+                <Icon
+                  className={`w-5 h-5 transition-transform ${
+                    item.isActive ? 'scale-105 stroke-[2.2]' : 'stroke-[1.8]'
+                  }`}
+                />
+                {item.isActive && (
+                  <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-blue-600 rounded-full" />
+                )}
+              </div>
+              <span className={`text-[11px] mt-1 tracking-tight truncate ${
+                item.isActive ? 'font-semibold text-blue-700' : 'font-medium text-slate-500'
+              }`}>
                 {item.label}
               </span>
             </Link>
