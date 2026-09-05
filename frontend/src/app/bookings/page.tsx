@@ -81,7 +81,7 @@ export default function BookingsPage() {
             My Service Bookings
           </h1>
           <p className="text-xs sm:text-sm text-slate-400 mt-1">
-            Track active service dispatches, inspect worker coordinates, and verify 80/15/5 cooperative escrow payout splits.
+            Track active service dispatches, inspect worker coordinates, and verify 90/5/5 cooperative escrow payout splits.
           </p>
         </div>
 
@@ -158,7 +158,7 @@ export default function BookingsPage() {
                 </div>
               </div>
 
-              {/* Escrow Payment Tri-Split (80/15/5) */}
+              {/* Escrow Payment 90/5/5 Split */}
               <div className="bg-slate-950/80 p-4 rounded-2xl border border-white/10 space-y-2.5">
                 <div className="flex items-center justify-between border-b border-white/5 pb-2">
                   <span className="text-slate-400 font-semibold flex items-center gap-1.5">
@@ -172,16 +172,20 @@ export default function BookingsPage() {
 
                 <div className="space-y-1 text-[11px]">
                   <div className="flex justify-between text-emerald-300">
-                    <span>• 80% Direct Worker Payout:</span>
+                    <span>• 90% Direct Worker Payout (+100% Surge):</span>
                     <span className="font-semibold">₹{booking.workerPayout}</span>
                   </div>
                   <div className="flex justify-between text-cyan-300">
-                    <span>• 15% Cooperative Operating Fund:</span>
+                    <span>• 5% Primary Cooperative Society:</span>
                     <span className="font-semibold">₹{booking.coopFee}</span>
                   </div>
-                  <div className="flex justify-between text-indigo-300">
-                    <span>• 5% Worker Mutual Aid & Insurance:</span>
+                  <div className="flex justify-between text-amber-300">
+                    <span>• 5% Worker Social Security & Mutual Aid:</span>
                     <span className="font-semibold">₹{booking.welfareFund}</span>
+                  </div>
+                  <div className="flex justify-between text-indigo-300 border-t border-white/5 pt-1">
+                    <span>• 1% Cooperative Guarantee Fund:</span>
+                    <span className="font-semibold">₹{(booking.totalAmount * 0.01).toFixed(0)}</span>
                   </div>
                 </div>
               </div>
@@ -191,7 +195,7 @@ export default function BookingsPage() {
             <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2">
               <div className="text-xs text-slate-400 flex items-center gap-2">
                 <Phone className="w-3.5 h-3.5 text-cyan-400" />
-                <span>Contact Dispatcher: 1800-COOP-GIG</span>
+                <span>Cooperative NCD Dispatcher: 1800-COOP-26089</span>
               </div>
 
               {booking.status === 'IN_PROGRESS' && (
@@ -214,7 +218,7 @@ export default function BookingsPage() {
               {booking.status === 'COMPLETED' && (
                 <span className="text-xs text-emerald-400 font-medium flex items-center gap-1">
                   <CheckCircle2 className="w-4 h-4" />
-                  <span>Escrow Distributed via 80/15/5 Tri-Split Protocol</span>
+                  <span>Escrow Distributed via 90/5/5 Protocol (PS ID: 26089)</span>
                 </span>
               )}
             </div>

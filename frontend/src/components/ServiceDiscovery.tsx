@@ -50,6 +50,7 @@ export default function ServiceDiscovery() {
   const [bookingDate, setBookingDate] = useState('2026-09-07');
   const [bookingTime, setBookingTime] = useState('10:30 AM');
   const [bookingAddress, setBookingAddress] = useState('14, 2nd Cross, Indiranagar, Bengaluru');
+  const [isEmergencySos, setIsEmergencySos] = useState<boolean>(false);
 
   // Filter categories based on search
   const filteredCategories = useMemo(() => {
@@ -59,7 +60,7 @@ export default function ServiceDiscovery() {
     );
   }, [searchQuery]);
 
-  // Filter workers based on search and selected category
+  // Filter workers based on search, selected category, and emergency SOS
   const filteredWorkers = useMemo(() => {
     return MOCK_WORKERS.filter(worker => {
       const matchesSearch = 
@@ -72,16 +73,18 @@ export default function ServiceDiscovery() {
         selectedCategory === 'all' || 
         worker.trade.toLowerCase().includes(selectedCategory.toLowerCase());
 
-      return matchesSearch && matchesCategory;
+      const matchesSos = !isEmergencySos || worker.isAvailable;
+
+      return matchesSearch && matchesCategory && matchesSos;
     });
-  }, [searchQuery, selectedCategory]);
+  }, [searchQuery, selectedCategory, isEmergencySos]);
 
   const handleBookSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedWorkerForBooking) return;
     
     setBookingSuccessMessage(
-      `Booking request successfully dispatched to ${selectedWorkerForBooking.name}! The cooperative dispatcher will confirm via SMS within 15 minutes.`
+      `Booking request successfully dispatched to ${selectedWorkerForBooking.name}! Cooperative Dispatcher & NCD society notified. Escrow created under 90/5/5 cooperative protocol.`
     );
     setTimeout(() => {
       setSelectedWorkerForBooking(null);
@@ -94,34 +97,72 @@ export default function ServiceDiscovery() {
       
       {/* Hero & Search Section */}
       <section className="relative pt-4 pb-6 sm:py-8 text-center space-y-6">
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full glass-panel text-xs font-medium text-cyan-300 border-cyan-500/30">
-          <span className="flex h-2 w-2 rounded-full bg-cyan-400 animate-ping" />
-          <span>Haversine 10km Geo-Matching Enabled</span>
+        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full glass-panel text-xs font-medium text-amber-300 border-amber-500/30">
+          <span className="flex h-2 w-2 rounded-full bg-amber-400 animate-ping" />
+          <span className="font-semibold text-white">Ministry of Cooperation / NCCT PS ID: 26089</span>
           <span className="text-slate-500">•</span>
-          <span className="text-slate-300">Verified Labour Cooperatives</span>
+          <span className="text-amber-200">National Cooperative Database (NCD) Verified</span>
         </div>
 
         <div className="max-w-3xl mx-auto space-y-3">
           <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight">
-            Fair Gig Services. <br className="hidden sm:inline" />
-            <span className="bg-gradient-to-r from-cyan-400 via-teal-300 to-indigo-400 bg-clip-text text-transparent">
-              Direct From Worker Cooperatives.
+            Institutional Gig Marketplace. <br className="hidden sm:inline" />
+            <span className="bg-gradient-to-r from-cyan-400 via-teal-300 to-amber-300 bg-clip-text text-transparent">
+              Worker-Owned Primary Cooperatives.
             </span>
           </h1>
-          <p className="text-slate-400 text-sm sm:text-base max-w-2xl mx-auto">
-            Book verified trade professionals within 10 km. 80% goes directly to the worker, 
-            15% sustains the cooperative, and 5% funds emergency mutual aid.
+          <p className="text-slate-300 text-sm sm:text-base max-w-2xl mx-auto leading-relaxed">
+            Democratic, non-exploitative alternative to venture gig apps. 
+            <strong className="text-emerald-400 font-semibold"> 90% directly to worker</strong>, 
+            <strong className="text-cyan-400 font-semibold"> 5% to primary society</strong>, and 
+            <strong className="text-amber-400 font-semibold"> 5% to social security/mutual aid</strong>. 
+            Backed by 1% Cooperative Guarantee Fund.
           </p>
         </div>
 
-        {/* Prominent Search Bar */}
-        <div className="max-w-2xl mx-auto">
+        {/* Emergency SOS Mode Toggle & Search Bar Container */}
+        <div className="max-w-2xl mx-auto space-y-3">
+          {/* Emergency SOS Banner Switch */}
+          <div className="glass-panel p-3 rounded-2xl flex items-center justify-between border-amber-500/30 bg-gradient-to-r from-amber-950/40 via-slate-900/60 to-rose-950/40">
+            <div className="flex items-center gap-3 text-left">
+              <div className={`p-2 rounded-xl ${isEmergencySos ? 'bg-rose-500 text-white animate-pulse' : 'bg-amber-500/20 text-amber-400'}`}>
+                <Zap className="w-5 h-5" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-bold uppercase tracking-wider text-amber-300">
+                    Emergency SOS Mode
+                  </span>
+                  <span className="text-[10px] bg-rose-500/30 text-rose-200 px-2 py-0.2 rounded-full border border-rose-500/40 font-semibold">
+                    100% Surge to Worker
+                  </span>
+                </div>
+                <p className="text-[11px] text-slate-400">
+                  Priority 20-min dispatch for electrical faults, water pipe bursts, and urgent care
+                </p>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setIsEmergencySos(!isEmergencySos)}
+              className={`px-3.5 py-1.5 rounded-xl font-bold text-xs transition-all ${
+                isEmergencySos
+                  ? 'bg-rose-500 text-white shadow-lg shadow-rose-500/40 ring-2 ring-rose-300'
+                  : 'bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700'
+              }`}
+            >
+              {isEmergencySos ? 'SOS ACTIVE' : 'Enable SOS'}
+            </button>
+          </div>
+
+          {/* Prominent Search Bar */}
           <div className="glass-panel p-2 rounded-2xl flex flex-col sm:flex-row items-center gap-2 shadow-2xl border-white/15 focus-within:border-cyan-400/60 transition-all">
             <div className="flex items-center gap-3 w-full px-3 py-2">
               <Search className="w-5 h-5 text-cyan-400 shrink-0" />
               <input
                 type="text"
-                placeholder="Search trades (e.g. Electrician, Inverter repair, Plumber)..."
+                placeholder="Search trades, NCCT skills, e-Shram workers, cooperatives..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full bg-transparent text-white placeholder-slate-400 text-sm sm:text-base focus:outline-none"
@@ -345,6 +386,34 @@ export default function ServiceDiscovery() {
                   {worker.bio}
                 </p>
 
+                {/* NCCT Certification and National Database Badges */}
+                <div className="space-y-1.5 pt-1">
+                  {worker.ncctCertified && (
+                    <div className="flex items-center gap-1.5 text-[11px] font-semibold text-amber-300 bg-amber-950/60 border border-amber-500/30 px-2 py-1 rounded-lg">
+                      <Sparkles className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                      <span className="truncate">NCCT Certified: {worker.ncctBadgeTitle}</span>
+                    </div>
+                  )}
+
+                  <div className="flex items-center gap-1.5 text-[10px] text-slate-400 flex-wrap">
+                    {worker.eShramUan && (
+                      <span className="bg-slate-800/80 text-cyan-300 px-2 py-0.5 rounded-md border border-cyan-500/20 font-mono">
+                        e-Shram: {worker.eShramUan}
+                      </span>
+                    )}
+                    {worker.ncdSocietyCode && (
+                      <span className="bg-slate-800/80 text-emerald-300 px-2 py-0.5 rounded-md border border-emerald-500/20 font-mono">
+                        {worker.ncdSocietyCode}
+                      </span>
+                    )}
+                    {worker.policeVerified && (
+                      <span className="bg-purple-950/50 text-purple-300 px-2 py-0.5 rounded-md border border-purple-500/30 font-medium">
+                        Police Cleared ✓
+                      </span>
+                    )}
+                  </div>
+                </div>
+
                 <div className="flex flex-wrap gap-1.5 pt-1">
                   {worker.skills.slice(0, 3).map((skill) => (
                     <span
@@ -367,10 +436,14 @@ export default function ServiceDiscovery() {
                 <button
                   type="button"
                   onClick={() => setSelectedWorkerForBooking(worker)}
-                  className="flex-1 py-2.5 px-4 rounded-xl bg-gradient-to-r from-cyan-500 via-teal-500 to-emerald-500 text-slate-950 font-semibold text-xs sm:text-sm hover:brightness-110 shadow-lg shadow-cyan-500/20 active:scale-98 transition-all flex items-center justify-center gap-2"
+                  className={`flex-1 py-2.5 px-4 rounded-xl text-slate-950 font-semibold text-xs sm:text-sm hover:brightness-110 shadow-lg active:scale-98 transition-all flex items-center justify-center gap-2 ${
+                    isEmergencySos 
+                      ? 'bg-gradient-to-r from-amber-400 via-rose-400 to-amber-500 shadow-rose-500/20'
+                      : 'bg-gradient-to-r from-cyan-500 via-teal-500 to-emerald-500 shadow-cyan-500/20'
+                  }`}
                 >
                   <Clock className="w-4 h-4" />
-                  <span>Book Worker</span>
+                  <span>{isEmergencySos ? 'Instant SOS Dispatch' : 'Book Worker'}</span>
                 </button>
               </div>
             </div>
@@ -379,141 +452,178 @@ export default function ServiceDiscovery() {
       </section>
 
       {/* Booking Confirmation / Transparent Escrow Modal */}
-      {selectedWorkerForBooking && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-in fade-in duration-200">
-          <div className="glass-panel rounded-3xl max-w-lg w-full p-6 sm:p-7 border border-white/15 shadow-2xl space-y-6 relative max-h-[90vh] overflow-y-auto">
-            
-            <button
-              type="button"
-              onClick={() => setSelectedWorkerForBooking(null)}
-              className="absolute top-5 right-5 p-2 rounded-xl bg-slate-900/80 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
-              aria-label="Close modal"
-            >
-              <X className="w-5 h-5" />
-            </button>
+      {selectedWorkerForBooking && (() => {
+        const baseEstimate = selectedWorkerForBooking.hourlyRate * 2;
+        const emergencySurge = isEmergencySos ? 250 : 0;
+        const workerDirectPayout = (baseEstimate * 0.90) + emergencySurge;
+        const societyContribution = baseEstimate * 0.05;
+        const mutualAidFund = baseEstimate * 0.05;
+        const guaranteeFund = baseEstimate * 0.01;
+        const totalPayable = baseEstimate + emergencySurge + guaranteeFund;
 
-            {/* Modal Title */}
-            <div>
-              <span className="text-xs font-semibold uppercase tracking-wider text-cyan-400">
-                Service Booking Request
-              </span>
-              <h3 className="text-xl sm:text-2xl font-bold text-white mt-1">
-                Book {selectedWorkerForBooking.name}
-              </h3>
-              <p className="text-xs text-slate-400">
-                {selectedWorkerForBooking.trade} • {selectedWorkerForBooking.cooperativeName}
-              </p>
-            </div>
+        return (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-in fade-in duration-200">
+            <div className="glass-panel rounded-3xl max-w-lg w-full p-6 sm:p-7 border border-white/15 shadow-2xl space-y-6 relative max-h-[90vh] overflow-y-auto">
+              
+              <button
+                type="button"
+                onClick={() => setSelectedWorkerForBooking(null)}
+                className="absolute top-5 right-5 p-2 rounded-xl bg-slate-900/80 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+                aria-label="Close modal"
+              >
+                <X className="w-5 h-5" />
+              </button>
 
-            {bookingSuccessMessage ? (
-              <div className="p-4 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-200 text-sm flex items-start gap-3">
-                <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
-                <div>
-                  <p className="font-semibold text-white">Booking Request Dispatched!</p>
-                  <p className="mt-1 text-xs text-emerald-300/90">{bookingSuccessMessage}</p>
-                </div>
-              </div>
-            ) : (
-              <form onSubmit={handleBookSubmit} className="space-y-4">
-                
-                {/* Transparent 80/15/5 Cooperative Split Indicator */}
-                <div className="p-4 rounded-2xl bg-slate-950/80 border border-white/10 space-y-3">
-                  <div className="flex items-center justify-between text-xs font-medium">
-                    <span className="text-slate-400">Estimated 2-Hour Service:</span>
-                    <span className="text-white font-bold text-sm">
-                      ₹{selectedWorkerForBooking.hourlyRate * 2}
+              {/* Modal Title */}
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-semibold uppercase tracking-wider text-cyan-400">
+                    Service Escrow Request
+                  </span>
+                  {isEmergencySos && (
+                    <span className="text-[10px] font-bold bg-rose-500 text-white px-2 py-0.5 rounded-full">
+                      EMERGENCY SOS
                     </span>
-                  </div>
+                  )}
+                </div>
+                <h3 className="text-xl sm:text-2xl font-bold text-white mt-1">
+                  Book {selectedWorkerForBooking.name}
+                </h3>
+                <p className="text-xs text-slate-400">
+                  {selectedWorkerForBooking.trade} • {selectedWorkerForBooking.cooperativeName}
+                </p>
+              </div>
 
-                  <div className="space-y-1.5 text-xs border-t border-white/5 pt-2">
-                    <div className="flex justify-between text-emerald-300">
-                      <span>• 80% Direct Worker Payout:</span>
-                      <span className="font-semibold">₹{(selectedWorkerForBooking.hourlyRate * 2 * 0.8).toFixed(0)}</span>
-                    </div>
-                    <div className="flex justify-between text-cyan-300">
-                      <span>• 15% Cooperative Capital Fund:</span>
-                      <span className="font-semibold">₹{(selectedWorkerForBooking.hourlyRate * 2 * 0.15).toFixed(0)}</span>
-                    </div>
-                    <div className="flex justify-between text-indigo-300">
-                      <span>• 5% Worker Mutual Aid & Insurance:</span>
-                      <span className="font-semibold">₹{(selectedWorkerForBooking.hourlyRate * 2 * 0.05).toFixed(0)}</span>
-                    </div>
+              {bookingSuccessMessage ? (
+                <div className="p-4 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-200 text-sm flex items-start gap-3">
+                  <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-semibold text-white">Booking Request Dispatched!</p>
+                    <p className="mt-1 text-xs text-emerald-300/90">{bookingSuccessMessage}</p>
                   </div>
                 </div>
+              ) : (
+                <form onSubmit={handleBookSubmit} className="space-y-4">
+                  
+                  {/* Transparent 90/5/5 Cooperative Split Indicator */}
+                  <div className="p-4 rounded-2xl bg-slate-950/80 border border-white/10 space-y-3">
+                    <div className="flex items-center justify-between text-xs font-medium">
+                      <span className="text-slate-400">Estimated 2-Hour Base Service:</span>
+                      <span className="text-white font-bold text-sm">
+                        ₹{baseEstimate}
+                      </span>
+                    </div>
 
-                {/* Date & Time */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-xs font-medium text-slate-300 mb-1">
-                      Preferred Date
-                    </label>
-                    <input
-                      type="date"
-                      value={bookingDate}
-                      onChange={(e) => setBookingDate(e.target.value)}
-                      className="w-full glass-input px-3 py-2 rounded-xl text-xs sm:text-sm"
-                      required
-                    />
+                    {isEmergencySos && (
+                      <div className="flex items-center justify-between text-xs font-medium text-rose-300 bg-rose-950/40 p-2 rounded-lg border border-rose-500/30">
+                        <span>⚡ Emergency Surge (100% directly to worker):</span>
+                        <span className="font-bold">+₹{emergencySurge}</span>
+                      </div>
+                    )}
+
+                    <div className="space-y-1.5 text-xs border-t border-white/5 pt-2">
+                      <div className="flex justify-between text-emerald-300">
+                        <span>• 90% Direct Worker Take-Home (+ 100% Surge):</span>
+                        <span className="font-bold">₹{workerDirectPayout.toFixed(0)}</span>
+                      </div>
+                      <div className="flex justify-between text-cyan-300">
+                        <span>• 5% Primary Society Operational Capital:</span>
+                        <span className="font-semibold">₹{societyContribution.toFixed(0)}</span>
+                      </div>
+                      <div className="flex justify-between text-amber-300">
+                        <span>• 5% Worker Social Security & Mutual Aid Pool:</span>
+                        <span className="font-semibold">₹{mutualAidFund.toFixed(0)}</span>
+                      </div>
+                      <div className="flex justify-between text-indigo-300 border-t border-white/5 pt-1.5">
+                        <span>• 1% Cooperative Guarantee Fund (Customer Protection):</span>
+                        <span className="font-semibold">₹{guaranteeFund.toFixed(0)}</span>
+                      </div>
+                    </div>
+
+                    <div className="border-t border-white/10 pt-2 flex items-center justify-between font-bold text-sm text-white">
+                      <span>Total Payable into Escrow:</span>
+                      <span className="text-cyan-300 text-base">₹{totalPayable.toFixed(0)}</span>
+                    </div>
                   </div>
+
+                  {/* Date & Time */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs font-medium text-slate-300 mb-1">
+                        Preferred Date
+                      </label>
+                      <input
+                        type="date"
+                        value={bookingDate}
+                        onChange={(e) => setBookingDate(e.target.value)}
+                        className="w-full glass-input px-3 py-2 rounded-xl text-xs sm:text-sm"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-slate-300 mb-1">
+                        Preferred Time
+                      </label>
+                      <input
+                        type="text"
+                        value={bookingTime}
+                        onChange={(e) => setBookingTime(e.target.value)}
+                        className="w-full glass-input px-3 py-2 rounded-xl text-xs sm:text-sm"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  {/* Location */}
                   <div>
                     <label className="block text-xs font-medium text-slate-300 mb-1">
-                      Preferred Time
+                      Service Location (Address)
                     </label>
                     <input
                       type="text"
-                      value={bookingTime}
-                      onChange={(e) => setBookingTime(e.target.value)}
+                      value={bookingAddress}
+                      onChange={(e) => setBookingAddress(e.target.value)}
                       className="w-full glass-input px-3 py-2 rounded-xl text-xs sm:text-sm"
                       required
                     />
                   </div>
-                </div>
 
-                {/* Location */}
-                <div>
-                  <label className="block text-xs font-medium text-slate-300 mb-1">
-                    Service Location (Address)
-                  </label>
-                  <input
-                    type="text"
-                    value={bookingAddress}
-                    onChange={(e) => setBookingAddress(e.target.value)}
-                    className="w-full glass-input px-3 py-2 rounded-xl text-xs sm:text-sm"
-                    required
-                  />
-                </div>
+                  {/* Notes */}
+                  <div>
+                    <label className="block text-xs font-medium text-slate-300 mb-1">
+                      Job Description / Problem Notes
+                    </label>
+                    <textarea
+                      rows={2}
+                      placeholder="Describe what needs fixing (e.g. Master bedroom switchboard spark)..."
+                      className="w-full glass-input px-3 py-2 rounded-xl text-xs sm:text-sm resize-none"
+                      defaultValue="Inspection for circuit breaker tripping and kitchen main switch repair."
+                    />
+                  </div>
 
-                {/* Notes */}
-                <div>
-                  <label className="block text-xs font-medium text-slate-300 mb-1">
-                    Job Description / Notes
-                  </label>
-                  <textarea
-                    rows={2}
-                    placeholder="Describe what needs fixing (e.g. Master bedroom switchboard spark)..."
-                    className="w-full glass-input px-3 py-2 rounded-xl text-xs sm:text-sm resize-none"
-                    defaultValue="Need inspection for circuit breaker tripping and kitchen main switch repair."
-                  />
-                </div>
-
-                {/* Submit button */}
-                <div className="pt-2">
-                  <button
-                    type="submit"
-                    className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-cyan-500 via-teal-500 to-emerald-500 text-slate-950 font-bold text-sm hover:brightness-110 shadow-lg shadow-cyan-500/20 active:scale-98 transition-all flex items-center justify-center gap-2"
-                  >
-                    <Send className="w-4 h-4 text-slate-950" />
-                    <span>Confirm & Dispatch to {selectedWorkerForBooking.name}</span>
-                  </button>
-                  <p className="text-[11px] text-center text-slate-500 mt-2">
-                    Payment held securely in cooperative escrow until service is marked completed by you.
-                  </p>
-                </div>
-              </form>
-            )}
+                  {/* Submit button */}
+                  <div className="pt-2">
+                    <button
+                      type="submit"
+                      className={`w-full py-3 px-4 rounded-xl text-slate-950 font-bold text-sm hover:brightness-110 shadow-lg active:scale-98 transition-all flex items-center justify-center gap-2 ${
+                        isEmergencySos
+                          ? 'bg-gradient-to-r from-amber-400 via-rose-400 to-amber-500 shadow-rose-500/30'
+                          : 'bg-gradient-to-r from-cyan-500 via-teal-500 to-emerald-500 shadow-cyan-500/20'
+                      }`}
+                    >
+                      <Send className="w-4 h-4 text-slate-950" />
+                      <span>Confirm & Escrow Dispatch (₹{totalPayable.toFixed(0)})</span>
+                    </button>
+                    <p className="text-[11px] text-center text-slate-400 mt-2">
+                      Locked safely in cooperative smart escrow. Protected by 1% Cooperative Guarantee Fund against accidental damage.
+                    </p>
+                  </div>
+                </form>
+              )}
+            </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
     </div>
   );

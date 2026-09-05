@@ -27,20 +27,27 @@ import {
   BarChart3,
   MapPin,
   Flame,
-  Send
+  Send,
+  Scale,
+  Gavel,
+  ShieldAlert
 } from 'lucide-react';
 import { 
   MOCK_ADMIN_METRICS, 
   MOCK_VERIFICATION_QUEUE, 
   MOCK_DEMAND_FORECASTS,
+  MOCK_PEER_ARBITRATION_CASES,
+  MOCK_WELFARE_FUND_SNAPSHOT,
   WorkerVerificationItem,
-  DemandForecastItem
+  DemandForecastItem,
+  PeerArbitrationCase
 } from '@/data/mockData';
 
 export default function AdminDashboard() {
-  const [activeTab, setActiveTab] = useState<'VERIFICATION' | 'AI_FORECAST'>('VERIFICATION');
+  const [activeTab, setActiveTab] = useState<'VERIFICATION' | 'PEER_ARBITRATION' | 'AI_FORECAST' | 'WELFARE_FUND'>('VERIFICATION');
   const [verifications, setVerifications] = useState<WorkerVerificationItem[]>(MOCK_VERIFICATION_QUEUE);
   const [forecasts, setForecasts] = useState<DemandForecastItem[]>(MOCK_DEMAND_FORECASTS);
+  const [arbitrationCases, setArbitrationCases] = useState<PeerArbitrationCase[]>(MOCK_PEER_ARBITRATION_CASES);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState<string>('ALL');
   const [selectedDocWorker, setSelectedDocWorker] = useState<WorkerVerificationItem | null>(null);
@@ -50,6 +57,16 @@ export default function AdminDashboard() {
   const showToast = (text: string, type: 'success' | 'error' | 'info') => {
     setToastMessage({ text, type });
     setTimeout(() => setToastMessage(null), 3500);
+  };
+
+  const handleRestoreRating = (caseId: string, workerName: string) => {
+    setArbitrationCases(prev => prev.map(c => c.id === caseId ? { ...c, hearingStatus: 'RESTORED' } : c));
+    showToast(`Peer Council restored standing for ${workerName}. Zero algorithmic deactivation applied.`, 'success');
+  };
+
+  const handleGuaranteeRemedy = (caseId: string, amount: number, customerName: string) => {
+    setArbitrationCases(prev => prev.map(c => c.id === caseId ? { ...c, hearingStatus: 'MEDIATED_REFUND' } : c));
+    showToast(`Disbursed ₹${amount} from 1% Cooperative Guarantee Fund to remediate ${customerName}.`, 'info');
   };
 
   const handleApprove = (id: string, workerName: string) => {
@@ -118,15 +135,16 @@ export default function AdminDashboard() {
       {/* Header Banner */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/10 pb-6">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full glass-panel text-xs font-semibold text-cyan-300 border-cyan-500/30 mb-2">
-            <Building2 className="w-3.5 h-3.5 text-cyan-400" />
-            <span>Labour Cooperative Federation • Central Governance</span>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full glass-panel text-xs font-semibold text-amber-300 border-amber-500/30 mb-2">
+            <Building2 className="w-3.5 h-3.5 text-amber-400" />
+            <span>Ministry of Cooperation / NCCT • PS ID: 26089 • NCD Governance</span>
           </div>
           <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-white">
-            Cooperative Federation Admin Dashboard
+            Cooperative Federation Central Command
           </h1>
-          <p className="text-xs sm:text-sm text-slate-400 mt-1 max-w-2xl">
-            Audit skill verifications, monitor AI time-series demand surges, and steward worker mutual aid reserves.
+          <p className="text-xs sm:text-sm text-slate-300 mt-1 max-w-2xl leading-relaxed">
+            NCD credential audits, Peer Restorative Justice (anti-algorithmic deactivation), 
+            AI time-series predictive demand, and ₹4.82 Cr worker welfare & mutual aid reserves.
           </p>
         </div>
 
@@ -138,7 +156,7 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      {/* Summary Metric Cards (Prompt 9 Grid Layout) */}
+      {/* Summary Metric Cards */}
       <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         
         {/* Metric 1: Total Workers */}
@@ -182,7 +200,7 @@ export default function AdminDashboard() {
             </div>
             <div className="flex items-center gap-1.5 text-xs text-amber-200/80 font-medium mt-1">
               <AlertTriangle className="w-3.5 h-3.5 text-amber-400" />
-              <span>Requires credential audit</span>
+              <span>Requires NCD credential audit</span>
             </div>
           </div>
         </div>
@@ -191,7 +209,7 @@ export default function AdminDashboard() {
         <div className="glass-panel p-5 rounded-2xl border border-white/10 relative overflow-hidden group hover:border-emerald-400/40 transition-all">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
-              Welfare & Mutual Aid
+              Welfare & Mutual Aid (5%)
             </span>
             <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
               <HeartHandshake className="w-5 h-5" />
@@ -209,11 +227,11 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* Metric 4: Total Patronage Distributed */}
+        {/* Metric 4: Total Worker Payout */}
         <div className="glass-panel p-5 rounded-2xl border border-white/10 relative overflow-hidden group hover:border-indigo-400/40 transition-all">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
-              Worker Payout (80%)
+              Worker Direct Payout (90%)
             </span>
             <div className="p-2 rounded-xl bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
               <TrendingUp className="w-5 h-5" />
@@ -234,11 +252,11 @@ export default function AdminDashboard() {
       </section>
 
       {/* Main Section Tab Selector */}
-      <div className="flex items-center gap-3 border-b border-white/10 pb-2">
+      <div className="flex items-center gap-2 sm:gap-3 border-b border-white/10 pb-2 overflow-x-auto">
         <button
           type="button"
           onClick={() => setActiveTab('VERIFICATION')}
-          className={`px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm flex items-center gap-2 transition-all ${
+          className={`px-3.5 py-2 rounded-xl font-bold text-xs sm:text-sm flex items-center gap-2 whitespace-nowrap transition-all ${
             activeTab === 'VERIFICATION'
               ? 'bg-cyan-500 text-slate-950 shadow-lg shadow-cyan-500/25'
               : 'glass-panel text-slate-300 hover:text-white hover:border-white/20'
@@ -249,14 +267,32 @@ export default function AdminDashboard() {
           <span className={`text-[10px] px-2 py-0.5 rounded-full ${
             activeTab === 'VERIFICATION' ? 'bg-slate-950 text-cyan-300' : 'bg-amber-500/20 text-amber-300'
           }`}>
-            {pendingCount} Pending
+            {pendingCount}
+          </span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab('PEER_ARBITRATION')}
+          className={`px-3.5 py-2 rounded-xl font-bold text-xs sm:text-sm flex items-center gap-2 whitespace-nowrap transition-all ${
+            activeTab === 'PEER_ARBITRATION'
+              ? 'bg-amber-500 text-slate-950 shadow-lg shadow-amber-500/25'
+              : 'glass-panel text-slate-300 hover:text-white hover:border-white/20'
+          }`}
+        >
+          <Scale className="w-4 h-4" />
+          <span>Peer Arbitration & Justice</span>
+          <span className={`text-[10px] px-2 py-0.5 rounded-full ${
+            activeTab === 'PEER_ARBITRATION' ? 'bg-slate-950 text-amber-300' : 'bg-amber-500/20 text-amber-300'
+          }`}>
+            {arbitrationCases.filter(c => c.hearingStatus === 'PENDING_HEARING').length} Hearings
           </span>
         </button>
 
         <button
           type="button"
           onClick={() => setActiveTab('AI_FORECAST')}
-          className={`px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm flex items-center gap-2 transition-all ${
+          className={`px-3.5 py-2 rounded-xl font-bold text-xs sm:text-sm flex items-center gap-2 whitespace-nowrap transition-all ${
             activeTab === 'AI_FORECAST'
               ? 'bg-gradient-to-r from-cyan-500 via-teal-400 to-indigo-500 text-slate-950 shadow-lg shadow-cyan-500/25'
               : 'glass-panel text-slate-300 hover:text-white hover:border-white/20'
@@ -265,7 +301,23 @@ export default function AdminDashboard() {
           <Sparkles className="w-4 h-4 text-amber-300" />
           <span>AI Demand Forecasting</span>
           <span className="text-[10px] px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/30 animate-pulse">
-            {criticalSurgeCount} Surges Detected
+            {criticalSurgeCount} Surges
+          </span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab('WELFARE_FUND')}
+          className={`px-3.5 py-2 rounded-xl font-bold text-xs sm:text-sm flex items-center gap-2 whitespace-nowrap transition-all ${
+            activeTab === 'WELFARE_FUND'
+              ? 'bg-emerald-500 text-slate-950 shadow-lg shadow-emerald-500/25'
+              : 'glass-panel text-slate-300 hover:text-white hover:border-white/20'
+          }`}
+        >
+          <HeartHandshake className="w-4 h-4" />
+          <span>Welfare & Mutual Aid</span>
+          <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300">
+            ₹4.82 Cr
           </span>
         </button>
       </div>
@@ -711,6 +763,246 @@ export default function AdminDashboard() {
             })}
           </div>
 
+        </section>
+      )}
+
+      {/* TAB 2: Peer Arbitration & Restorative Justice Section */}
+      {activeTab === 'PEER_ARBITRATION' && (
+        <section className="space-y-6 animate-in fade-in duration-200">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/10 pb-4">
+            <div>
+              <h2 className="text-xl font-bold tracking-tight text-white flex items-center gap-2">
+                <Scale className="w-5 h-5 text-amber-400" />
+                <span>Peer Arbitration & Restorative Justice Council</span>
+              </h2>
+              <p className="text-xs text-slate-400 mt-0.5">
+                Democratically mediated dispute hearings — replaces venture platform algorithmic deactivations with fair peer review and 1% Guarantee Fund remediation.
+              </p>
+            </div>
+            <span className="text-xs font-semibold px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">
+              Zero Arbitrary Account Bans Active
+            </span>
+          </div>
+
+          {/* Restorative Justice Policy Explainer */}
+          <div className="glass-panel p-4 rounded-2xl border border-amber-500/30 bg-gradient-to-r from-amber-950/30 via-slate-900/60 to-cyan-950/30 text-xs space-y-2">
+            <div className="flex items-center gap-2 text-amber-300 font-bold uppercase tracking-wider text-[11px]">
+              <ShieldAlert className="w-4 h-4 text-amber-400" />
+              <span>Cooperative Dignity Protocol (Ministry of Cooperation PS ID: 26089)</span>
+            </div>
+            <p className="text-slate-300 leading-relaxed">
+              When a customer files a rating under 4.0 or logs a damage claim, commercial platforms automatically blacklist or shadow-ban the gig worker. 
+              Under our Cooperative framework, the case is routed to a <strong>3-Member Peer Council</strong> (2 fellow trade artisans + 1 legal ombudsman). 
+              Damages are resolved through the <strong>1% Cooperative Guarantee Fund</strong>, preserving the worker’s livelihood and dignity.
+            </p>
+          </div>
+
+          {/* Arbitration Cases Grid */}
+          <div className="grid grid-cols-1 gap-5">
+            {arbitrationCases.map((c) => {
+              const isPending = c.hearingStatus === 'PENDING_HEARING';
+              const isRestored = c.hearingStatus === 'RESTORED';
+              const isMediated = c.hearingStatus === 'MEDIATED_REFUND';
+
+              return (
+                <div 
+                  key={c.id} 
+                  className={`glass-panel p-5 rounded-2xl border transition-all ${
+                    isPending 
+                      ? 'border-amber-500/40 shadow-lg shadow-amber-500/5' 
+                      : 'border-white/10 opacity-90'
+                  }`}
+                >
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/10 pb-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-300 flex items-center justify-center font-bold">
+                        <Gavel className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <h3 className="text-base font-bold text-white">{c.workerName}</h3>
+                          <span className="text-xs text-cyan-300 bg-cyan-950/60 px-2 py-0.5 rounded-md border border-cyan-500/30">
+                            {c.trade}
+                          </span>
+                          <span className="text-[10px] text-slate-400 font-mono">
+                            [{c.ncdCode}]
+                          </span>
+                        </div>
+                        <p className="text-xs text-slate-400">
+                          {c.cooperativeName} • Booking: <span className="text-white font-mono">{c.bookingId}</span> • Reported: {c.reportedAt}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div>
+                      {isPending && (
+                        <span className="px-3 py-1 rounded-full text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 animate-pulse">
+                          HEARING PENDING
+                        </span>
+                      )}
+                      {isRestored && (
+                        <span className="px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
+                          RESTORED BY COUNCIL ✓
+                        </span>
+                      )}
+                      {isMediated && (
+                        <span className="px-3 py-1 rounded-full text-xs font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-500/40">
+                          GUARANTEE REMEDY DISBURSED
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-4 text-xs">
+                    {/* Customer Claim */}
+                    <div className="p-3.5 rounded-xl bg-slate-950/70 border border-rose-500/20 space-y-1.5">
+                      <div className="flex items-center justify-between text-rose-300 font-semibold">
+                        <span>Customer Claim ({c.customerName})</span>
+                        <span className="bg-rose-500/20 px-2 py-0.5 rounded text-[11px] font-bold">★ {c.customerRating}.0 Rating</span>
+                      </div>
+                      <p className="text-slate-300 italic">"{c.customerStatement}"</p>
+                      <p className="text-[11px] text-slate-400 pt-1">
+                        <strong>Dispute Note:</strong> {c.disputeReason}
+                      </p>
+                    </div>
+
+                    {/* Worker Defense Statement */}
+                    <div className="p-3.5 rounded-xl bg-slate-950/70 border border-cyan-500/20 space-y-1.5">
+                      <div className="flex items-center justify-between text-cyan-300 font-semibold">
+                        <span>Worker Member Statement ({c.workerName})</span>
+                        <span className="text-emerald-400 text-[11px]">e-Shram Verified ✓</span>
+                      </div>
+                      <p className="text-slate-300 italic">"{c.workerDefenseStatement}"</p>
+                      <div className="text-[11px] text-slate-400 pt-1 flex items-center gap-1.5">
+                        <Users className="w-3 h-3 text-cyan-400" />
+                        <span><strong>Arbitration Council:</strong> {c.arbitrationCouncil.join(', ')}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Restorative Outcome Banner */}
+                  <div className="p-3 rounded-xl bg-slate-900/80 border border-white/5 text-xs text-slate-300 flex items-start gap-2">
+                    <Scale className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+                    <div>
+                      <span className="font-semibold text-white">Council Recommendation / Remedy:</span>
+                      <p className="mt-0.5 text-slate-400 text-[11px] leading-relaxed">{c.restorativeRemedy}</p>
+                    </div>
+                  </div>
+
+                  {/* Actions for Pending Case */}
+                  {isPending && (
+                    <div className="flex flex-wrap items-center justify-end gap-2.5 mt-4 pt-3 border-t border-white/10">
+                      {c.guaranteePayoutAmount && c.guaranteePayoutAmount > 0 && (
+                        <button
+                          type="button"
+                          onClick={() => handleGuaranteeRemedy(c.id, c.guaranteePayoutAmount!, c.customerName)}
+                          className="px-4 py-2 rounded-xl bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 hover:bg-cyan-500/30 font-semibold text-xs transition-all"
+                        >
+                          Disburse 1% Guarantee Fund (₹{c.guaranteePayoutAmount})
+                        </button>
+                      )}
+                      <button
+                        type="button"
+                        onClick={() => handleRestoreRating(c.id, c.workerName)}
+                        className="px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-bold text-xs hover:brightness-110 shadow-md shadow-emerald-500/20 transition-all"
+                      >
+                        Dismiss Penalty & Restore 4.85 Rating
+                      </button>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      )}
+
+      {/* TAB 4: Worker Welfare & Mutual Aid Section */}
+      {activeTab === 'WELFARE_FUND' && (
+        <section className="space-y-6 animate-in fade-in duration-200">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/10 pb-4">
+            <div>
+              <h2 className="text-xl font-bold tracking-tight text-white flex items-center gap-2">
+                <HeartHandshake className="w-5 h-5 text-emerald-400" />
+                <span>Worker Social Security & Mutual Aid Pool (5% Allocation)</span>
+              </h2>
+              <p className="text-xs text-slate-400 mt-0.5">
+                Every booking deposits 5% into the collective cooperative mutual fund, providing non-venture social security.
+              </p>
+            </div>
+            <span className="text-xs font-semibold px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+              Total Corpus: {MOCK_WELFARE_FUND_SNAPSHOT.totalCorpus}
+            </span>
+          </div>
+
+          {/* Welfare Metrics Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="glass-panel p-4 rounded-2xl border border-white/10 space-y-1">
+              <span className="text-[11px] text-slate-400 uppercase tracking-wider font-semibold">Medical Claims Settled</span>
+              <p className="text-2xl font-extrabold text-white">{MOCK_WELFARE_FUND_SNAPSHOT.medicalClaimsSettled}</p>
+              <span className="text-xs text-emerald-400 font-medium">{MOCK_WELFARE_FUND_SNAPSHOT.totalMedicalPaid} disbursed</span>
+            </div>
+
+            <div className="glass-panel p-4 rounded-2xl border border-white/10 space-y-1">
+              <span className="text-[11px] text-slate-400 uppercase tracking-wider font-semibold">Micro-Pension Accounts</span>
+              <p className="text-2xl font-extrabold text-cyan-300">{MOCK_WELFARE_FUND_SNAPSHOT.microPensionAccounts.toLocaleString()}</p>
+              <span className="text-xs text-slate-400">Cooperative matching corpus</span>
+            </div>
+
+            <div className="glass-panel p-4 rounded-2xl border border-white/10 space-y-1">
+              <span className="text-[11px] text-slate-400 uppercase tracking-wider font-semibold">Accident & Disability Cover</span>
+              <p className="text-2xl font-extrabold text-teal-300">{MOCK_WELFARE_FUND_SNAPSHOT.accidentInsuranceActive.toLocaleString()}</p>
+              <span className="text-xs text-teal-400">₹10 Lakhs life cover</span>
+            </div>
+
+            <div className="glass-panel p-4 rounded-2xl border border-white/10 space-y-1">
+              <span className="text-[11px] text-slate-400 uppercase tracking-wider font-semibold">1% Guarantee Fund Reserve</span>
+              <p className="text-2xl font-extrabold text-amber-300">{MOCK_WELFARE_FUND_SNAPSHOT.guaranteeFundReserve}</p>
+              <span className="text-xs text-amber-300/90">Instant customer recourse pool</span>
+            </div>
+          </div>
+
+          {/* Social Security Benefits Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            <div className="glass-panel p-5 rounded-2xl border border-emerald-500/20 bg-gradient-to-b from-slate-900/80 to-slate-950 space-y-3">
+              <div className="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">
+                <HeartHandshake className="w-5 h-5" />
+              </div>
+              <h3 className="text-base font-bold text-white">₹5 Lakhs Family Health Shield</h3>
+              <p className="text-xs text-slate-300 leading-relaxed">
+                Cashless hospitalization across 800+ empaneled government and cooperative hospitals for the worker, spouse, and up to 2 children.
+              </p>
+              <div className="text-[11px] text-emerald-400 font-medium pt-1">
+                ✓ 98.4% Democratic claim approval rate
+              </div>
+            </div>
+
+            <div className="glass-panel p-5 rounded-2xl border border-cyan-500/20 bg-gradient-to-b from-slate-900/80 to-slate-950 space-y-3">
+              <div className="w-10 h-10 rounded-xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center font-bold">
+                <TrendingUp className="w-5 h-5" />
+              </div>
+              <h3 className="text-base font-bold text-white">Retirement Micro-Pension</h3>
+              <p className="text-xs text-slate-300 leading-relaxed">
+                Cooperative match: for every ₹100 contributed from gig booking dividends, the federation matches ₹50 toward retirement annuities.
+              </p>
+              <div className="text-[11px] text-cyan-400 font-medium pt-1">
+                ✓ Administered by registered Cooperative Trust
+              </div>
+            </div>
+
+            <div className="glass-panel p-5 rounded-2xl border border-amber-500/20 bg-gradient-to-b from-slate-900/80 to-slate-950 space-y-3">
+              <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold">
+                <ShieldCheck className="w-5 h-5" />
+              </div>
+              <h3 className="text-base font-bold text-white">1% Customer Guarantee Fund</h3>
+              <p className="text-xs text-slate-300 leading-relaxed">
+                Separated from worker pay. When rare accidental damages occur on jobs, claims up to ₹25,000 are settled within 2 hours without docking worker pay.
+              </p>
+              <div className="text-[11px] text-amber-300 font-medium pt-1">
+                ✓ Solves the classic gig contractor conflict
+              </div>
+            </div>
+          </div>
         </section>
       )}
 

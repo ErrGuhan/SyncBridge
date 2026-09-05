@@ -39,6 +39,8 @@ export default function WorkerRegistrationForm() {
     latitude: 12.9716,
     longitude: 77.5946,
     gpsDetected: true,
+    eShramUan: '1009-4821-9982',
+    policeCleared: true,
 
     // Step 2: Skills & Cooperative Affiliation
     cooperativeId: MOCK_COOPERATIVES[0].id,
@@ -48,11 +50,14 @@ export default function WorkerRegistrationForm() {
     selectedSkills: ['Three-Phase Wiring', 'Circuit Diagnostics', 'Smart Home Setup'] as string[],
 
     // Step 3: Documents
-    aadhaarNumber: '',
+    aadhaarNumber: '4821 9012 3456',
     aadhaarFileUploaded: true,
     certificateTitle: 'State ITI Wireman License (Class A)',
+    ncctBadgeTitle: 'NCCT Master Technician (Class A)',
+    ncctCertified: true,
     certificateFileUploaded: true,
-    unionMembershipNumber: 'FED-2026-8910'
+    unionMembershipNumber: 'FED-2026-8910',
+    dignityCharterAgreed: true
   });
 
   const availableSkillsForTrade: Record<string, string[]> = {
@@ -131,17 +136,18 @@ export default function WorkerRegistrationForm() {
       
       {/* Header Banner */}
       <div className="text-center space-y-3">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full glass-panel text-xs font-semibold text-emerald-300 border-emerald-500/30">
-          <ShieldCheck className="w-4 h-4 text-emerald-400" />
-          <span>Labour Cooperative Member Onboarding</span>
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full glass-panel text-xs font-semibold text-amber-300 border-amber-500/30">
+          <ShieldCheck className="w-4 h-4 text-amber-400" />
+          <span>Ministry of Cooperation / NCCT • PS ID: 26089</span>
         </div>
 
         <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight">
-          Join the Democratic Gig Federation
+          Join the Democratic Labour Cooperative Network
         </h1>
-        <p className="text-xs sm:text-sm text-slate-400 max-w-xl mx-auto">
-          Take home <strong className="text-emerald-400">80%</strong> of client payments directly into your wallet. 
-          Gain voting rights, accident insurance, and retirement mutual aid through your cooperative.
+        <p className="text-xs sm:text-sm text-slate-300 max-w-xl mx-auto leading-relaxed">
+          Take home <strong className="text-emerald-400 font-bold">90% directly into your bank account</strong>. 
+          5% strengthens your primary cooperative society, and 5% funds your ₹5L health & pension mutual aid pool. 
+          100% of emergency surge premiums go to you.
         </p>
       </div>
 
@@ -161,9 +167,9 @@ export default function WorkerRegistrationForm() {
               {currentStep > 1 ? <CheckCircle className="w-5 h-5" /> : '1'}
             </div>
             <span className={`text-xs font-medium ${currentStep >= 1 ? 'text-white' : 'text-slate-500'}`}>
-              Basic Info
+              Identity & e-Shram
             </span>
-            <span className="text-[10px] text-slate-400 hidden sm:inline">Identity & GPS</span>
+            <span className="text-[10px] text-slate-400 hidden sm:inline">UAN & GPS</span>
           </div>
 
           {/* Step 2 */}
@@ -178,9 +184,9 @@ export default function WorkerRegistrationForm() {
               {currentStep > 2 ? <CheckCircle className="w-5 h-5" /> : '2'}
             </div>
             <span className={`text-xs font-medium ${currentStep >= 2 ? 'text-white' : 'text-slate-500'}`}>
-              Skills & Coop
+              NCD Cooperative
             </span>
-            <span className="text-[10px] text-slate-400 hidden sm:inline">Affiliation & Trade</span>
+            <span className="text-[10px] text-slate-400 hidden sm:inline">Society & Trade</span>
           </div>
 
           {/* Step 3 */}
@@ -195,9 +201,9 @@ export default function WorkerRegistrationForm() {
               {isSubmitted ? <CheckCircle className="w-5 h-5" /> : '3'}
             </div>
             <span className={`text-xs font-medium ${currentStep === 3 ? 'text-white' : 'text-slate-500'}`}>
-              Verification
+              NCCT Verification
             </span>
-            <span className="text-[10px] text-slate-400 hidden sm:inline">Aadhaar & Licenses</span>
+            <span className="text-[10px] text-slate-400 hidden sm:inline">Badges & Police Check</span>
           </div>
         </div>
       </div>
@@ -214,14 +220,14 @@ export default function WorkerRegistrationForm() {
 
             <div className="space-y-2">
               <h2 className="text-2xl sm:text-3xl font-extrabold text-white">
-                Application Submitted Successfully!
+                Cooperative Membership Application Submitted!
               </h2>
               <p className="text-sm text-slate-300 max-w-md mx-auto">
-                Welcome, <strong>{formData.firstName || 'Worker Member'}</strong>! Your membership application has been routed to the{' '}
+                Welcome, <strong>{formData.firstName || 'Worker Member'}</strong>! Your credentials have been registered in the National Cooperative Database (NCD) and routed to{' '}
                 <strong className="text-cyan-300">
                   {MOCK_COOPERATIVES.find(c => c.id === formData.cooperativeId)?.name}
                 </strong>{' '}
-                for verification.
+                for peer verification.
               </p>
             </div>
 
@@ -230,37 +236,45 @@ export default function WorkerRegistrationForm() {
               <div className="flex items-center justify-between border-b border-white/10 pb-3">
                 <div>
                   <span className="text-[10px] uppercase font-bold text-cyan-400 tracking-wider">
-                    Member Provisional ID
+                    Ministry Provisional Worker ID
                   </span>
                   <p className="text-base font-bold text-white">
                     {formData.firstName} {formData.lastName}
                   </p>
                 </div>
-                <span className="text-xs px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 font-medium">
-                  PENDING VERIFICATION
+                <span className="text-xs px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-medium">
+                  e-Shram Linked ✓
                 </span>
               </div>
 
               <div className="grid grid-cols-2 gap-3 text-xs">
                 <div>
-                  <span className="text-slate-400 text-[10px]">Trade / Skill</span>
-                  <p className="text-white font-medium">{formData.trade}</p>
+                  <span className="text-slate-400 text-[10px]">Trade & Experience</span>
+                  <p className="text-white font-medium">{formData.trade} ({formData.experienceYears}y)</p>
                 </div>
                 <div>
-                  <span className="text-slate-400 text-[10px]">Base Rate</span>
-                  <p className="text-emerald-300 font-medium">₹{formData.hourlyRate}/hr</p>
+                  <span className="text-slate-400 text-[10px]">90% Take-Home Rate</span>
+                  <p className="text-emerald-300 font-bold">₹{(formData.hourlyRate * 0.9).toFixed(0)}/hr</p>
+                </div>
+                <div>
+                  <span className="text-slate-400 text-[10px]">e-Shram UAN</span>
+                  <p className="text-cyan-300 font-mono text-xs">{formData.eShramUan}</p>
+                </div>
+                <div>
+                  <span className="text-slate-400 text-[10px]">NCCT Certification</span>
+                  <p className="text-amber-300 font-medium truncate">{formData.ncctBadgeTitle}</p>
                 </div>
                 <div className="col-span-2">
-                  <span className="text-slate-400 text-[10px]">Cooperative Society</span>
+                  <span className="text-slate-400 text-[10px]">Affiliated NCD Society</span>
                   <p className="text-white font-medium truncate">
-                    {MOCK_COOPERATIVES.find(c => c.id === formData.cooperativeId)?.name}
+                    {MOCK_COOPERATIVES.find(c => c.id === formData.cooperativeId)?.name} ({MOCK_COOPERATIVES.find(c => c.id === formData.cooperativeId)?.ncdCode})
                   </p>
                 </div>
               </div>
 
               <div className="pt-2 border-t border-white/10 flex items-center justify-between text-[11px] text-slate-400">
-                <span>GPS Radius: 10km Haversine</span>
-                <span className="text-cyan-400 font-mono">ID: SB-{Math.floor(100000 + Math.random() * 900000)}</span>
+                <span>10km Geo-Match Ready</span>
+                <span className="text-cyan-400 font-mono">NCD-WRK-{Math.floor(100000 + Math.random() * 900000)}</span>
               </div>
             </div>
 
@@ -269,7 +283,7 @@ export default function WorkerRegistrationForm() {
                 href="/services"
                 className="w-full sm:w-auto px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-sm transition-all"
               >
-                Browse Services Platform
+                Browse Services Marketplace
               </Link>
               <Link
                 href="/dashboard"
@@ -344,18 +358,22 @@ export default function WorkerRegistrationForm() {
 
                   <div>
                     <label className="block text-xs font-semibold text-slate-300 mb-1">
-                      Email Address
+                      e-Shram UAN (12-Digit Universal Account Number) *
                     </label>
                     <div className="relative">
-                      <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+                      <ShieldCheck className="w-4 h-4 text-cyan-400 absolute left-3.5 top-3" />
                       <input
-                        type="email"
-                        placeholder="worker@gmail.com"
-                        value={formData.email}
-                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        className="w-full glass-input pl-10 pr-3.5 py-2.5 rounded-xl text-sm"
+                        type="text"
+                        placeholder="1009-XXXX-XXXX"
+                        value={formData.eShramUan}
+                        onChange={(e) => setFormData({ ...formData, eShramUan: e.target.value })}
+                        className="w-full glass-input pl-10 pr-3.5 py-2.5 rounded-xl text-sm font-mono text-cyan-200"
+                        required
                       />
                     </div>
+                    <span className="text-[10px] text-emerald-400 font-medium mt-1 block">
+                      ✓ Linked to Ministry of Labour & Employment Unorganized Worker Registry
+                    </span>
                   </div>
                 </div>
 
@@ -395,6 +413,20 @@ export default function WorkerRegistrationForm() {
                   </div>
                 </div>
 
+                {/* Police Clearance Declaration */}
+                <div className="flex items-start gap-2.5 p-3 rounded-xl bg-slate-900/80 border border-white/10">
+                  <input
+                    type="checkbox"
+                    id="policeClearance"
+                    checked={formData.policeCleared}
+                    onChange={(e) => setFormData({ ...formData, policeCleared: e.target.checked })}
+                    className="w-4 h-4 mt-0.5 accent-cyan-400 rounded cursor-pointer"
+                  />
+                  <label htmlFor="policeClearance" className="text-xs text-slate-300 cursor-pointer leading-relaxed">
+                    <strong className="text-white">Dignity & Police Verification Declaration:</strong> I declare that I have no criminal record and consent to periodic verification by local police and primary cooperative society arbiters.
+                  </label>
+                </div>
+
                 <div className="flex justify-end pt-3">
                   <button
                     type="button"
@@ -414,10 +446,10 @@ export default function WorkerRegistrationForm() {
                 <div className="border-b border-white/10 pb-3">
                   <h2 className="text-xl font-bold text-white flex items-center gap-2">
                     <Briefcase className="w-5 h-5 text-cyan-400" />
-                    <span>Step 2: Skills & Cooperative Affiliation</span>
+                    <span>Step 2: NCD Cooperative Affiliation & Trade</span>
                   </h2>
                   <p className="text-xs text-slate-400 mt-0.5">
-                    Select your registered Labour Cooperative Society and specialized service trades.
+                    Select your primary cooperative registered under the National Cooperative Database (NCD).
                   </p>
                 </div>
 
@@ -425,7 +457,7 @@ export default function WorkerRegistrationForm() {
                 <div>
                   <label className="block text-xs font-semibold text-slate-300 mb-1.5 flex items-center gap-1.5">
                     <Building2 className="w-4 h-4 text-cyan-400" />
-                    <span>Affiliated Cooperative Society *</span>
+                    <span>Affiliated NCD Cooperative Society *</span>
                   </label>
                   <select
                     value={formData.cooperativeId}
@@ -434,7 +466,7 @@ export default function WorkerRegistrationForm() {
                   >
                     {MOCK_COOPERATIVES.map((coop) => (
                       <option key={coop.id} value={coop.id} className="bg-slate-900 text-white">
-                        {coop.name} ({coop.district} • {coop.members} members)
+                        {coop.name} • [{coop.ncdCode}] ({coop.district} • {coop.members} members)
                       </option>
                     ))}
                   </select>
@@ -500,9 +532,20 @@ export default function WorkerRegistrationForm() {
                       ₹{formData.hourlyRate}/hr
                     </span>
                   </div>
-                  <p className="text-[11px] text-slate-400 mt-1">
-                    Your estimated take-home: <strong className="text-emerald-400">₹{(formData.hourlyRate * 0.8).toFixed(0)}/hr</strong> (80% direct payout).
-                  </p>
+                  <div className="p-3 rounded-xl bg-slate-950/80 border border-white/10 text-xs mt-2 space-y-1">
+                    <div className="flex justify-between text-emerald-300 font-semibold">
+                      <span>• 90% Direct Worker Payout:</span>
+                      <span>₹{(formData.hourlyRate * 0.90).toFixed(0)}/hr</span>
+                    </div>
+                    <div className="flex justify-between text-cyan-300">
+                      <span>• 5% Primary Society Operational Capital:</span>
+                      <span>₹{(formData.hourlyRate * 0.05).toFixed(0)}/hr</span>
+                    </div>
+                    <div className="flex justify-between text-amber-300">
+                      <span>• 5% Worker Social Security & Mutual Aid Pool:</span>
+                      <span>₹{(formData.hourlyRate * 0.05).toFixed(0)}/hr</span>
+                    </div>
+                  </div>
                 </div>
 
                 {/* Skill Chips */}
@@ -547,7 +590,7 @@ export default function WorkerRegistrationForm() {
                     onClick={nextStep}
                     className="px-6 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs sm:text-sm flex items-center gap-2 shadow-lg shadow-cyan-500/20 transition-all"
                   >
-                    <span>Proceed to Verification</span>
+                    <span>Proceed to NCCT Verification</span>
                     <ArrowRight className="w-4 h-4 text-slate-950" />
                   </button>
                 </div>
@@ -560,11 +603,40 @@ export default function WorkerRegistrationForm() {
                 <div className="border-b border-white/10 pb-3">
                   <h2 className="text-xl font-bold text-white flex items-center gap-2">
                     <FileText className="w-5 h-5 text-cyan-400" />
-                    <span>Step 3: Document Upload & Verification</span>
+                    <span>Step 3: NCCT Accreditation & Document Verification</span>
                   </h2>
                   <p className="text-xs text-slate-400 mt-0.5">
-                    Upload official identity documents and trade certifications for Cooperative verification.
+                    Upload official identity documents and NCCT/Skill India certifications for cooperative peer review.
                   </p>
+                </div>
+
+                {/* NCCT Certification Badge Selection */}
+                <div className="space-y-2">
+                  <label className="block text-xs font-semibold text-amber-300 flex items-center gap-1.5">
+                    <Sparkles className="w-4 h-4 text-amber-400" />
+                    <span>NCCT (National Council for Cooperative Training) Badge *</span>
+                  </label>
+                  <select
+                    value={formData.ncctBadgeTitle}
+                    onChange={(e) => setFormData({ ...formData, ncctBadgeTitle: e.target.value })}
+                    className="w-full glass-input px-3.5 py-2.5 rounded-xl text-sm border-amber-500/40 text-amber-200"
+                  >
+                    <option value="NCCT Master Technician (Class A)" className="bg-slate-900 text-white">
+                      NCCT Master Technician (Class A) - High Voltage & Circuitry
+                    </option>
+                    <option value="NCCT Industrial Hydronics & Pumping Specialist" className="bg-slate-900 text-white">
+                      NCCT Industrial Hydronics & Pumping Specialist
+                    </option>
+                    <option value="NCCT Certified Geriatric & Palliative Caregiver" className="bg-slate-900 text-white">
+                      NCCT Certified Geriatric & Palliative Caregiver
+                    </option>
+                    <option value="Skill India Level 4 Certified Trade Professional" className="bg-slate-900 text-white">
+                      Skill India Level 4 Certified Trade Professional
+                    </option>
+                    <option value="State Cooperative Federation Certified Artisan" className="bg-slate-900 text-white">
+                      State Cooperative Federation Certified Artisan
+                    </option>
+                  </select>
                 </div>
 
                 {/* Aadhaar Verification */}
@@ -640,13 +712,13 @@ export default function WorkerRegistrationForm() {
                 </div>
 
                 {/* Cooperative Charter Agreement */}
-                <div className="p-3.5 rounded-xl bg-slate-950/70 border border-white/10 text-xs text-slate-400 space-y-1">
+                <div className="p-3.5 rounded-xl bg-slate-950/70 border border-white/10 text-xs text-slate-300 space-y-1">
                   <div className="flex items-center gap-1.5 text-cyan-300 font-semibold">
                     <ShieldCheck className="w-4 h-4 text-cyan-400 shrink-0" />
-                    <span>Cooperative Federation Member Charter</span>
+                    <span>Democratic Cooperative Member Charter</span>
                   </div>
-                  <p className="text-[11px] leading-relaxed">
-                    By submitting, you agree to democratic member representation, peer skill reviews, and contribution to the 5% Worker Welfare Mutual Aid Fund.
+                  <p className="text-[11px] text-slate-400 leading-relaxed">
+                    By submitting, you agree to one-member-one-vote governance, peer restorative justice arbitration (no arbitrary algorithmic deactivation), and contributing 5% towards the ₹5L health & pension mutual aid pool.
                   </p>
                 </div>
 

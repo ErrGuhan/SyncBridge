@@ -1,34 +1,46 @@
 const prisma = require('../lib/prisma');
 
 /**
- * Calculate the Cooperative Welfare Tri-Split
+ * Calculate the Cooperative Welfare Tri-Split per Ministry of Cooperation / NCCT (PS ID: 26089)
+ *  - 90% directly to the Worker's Bank Account
+ *  - 5% to the Primary Cooperative Society for administrative overhead
+ *  - 5% into the Worker Social Security / Mutual Aid Insurance Pool
+ *  - 100% of Emergency Surge Premiums routed directly to the Worker
  * @param {number} total Gross amount in INR
+ * @param {boolean} [isEmergency=false] Whether booking was an emergency on-demand dispatch
+ * @param {number} [emergencySurgeAmount=0] Surcharge for rapid emergency response
  */
-function calculateCooperativeSplit(total) {
+function calculateCooperativeSplit(total, isEmergency = false, emergencySurgeAmount = 0) {
   const gross = Number(total);
+  const surge = isEmergency ? Math.max(0, Number(emergencySurgeAmount)) : 0;
+  const baseServiceAmount = Math.max(0, gross - surge);
   
-  // 80% to Worker-Member
-  const workerAmount = Number((gross * 0.80).toFixed(2));
+  // 90% of base amount + 100% of emergency surge premium to Worker
+  const baseWorker = Number((baseServiceAmount * 0.90).toFixed(2));
+  const workerAmount = Number((baseWorker + surge).toFixed(2));
   
-  // 15% to Cooperative Administration & Operations
-  const coopAmount = Number((gross * 0.15).toFixed(2));
+  // 5% of base amount to Primary Cooperative Society
+  const coopAmount = Number((baseServiceAmount * 0.05).toFixed(2));
   
-  // 5% to Worker Welfare & Mutual Aid Insurance Fund (prevents rounding loss)
+  // 5% of base amount to Worker Welfare & Social Security Fund (absorbs minor penny rounding)
   const welfareAmount = Number((gross - workerAmount - coopAmount).toFixed(2));
 
   return {
     gross,
+    baseServiceAmount,
+    emergencySurgeAmount: surge,
     workerAmount,
     coopAmount,
     welfareAmount,
-    workerRatio: 0.8000,
-    coopRatio: 0.1500,
-    welfareRatio: 0.0500
+    workerRatio: 0.9000,
+    coopRatio: 0.0500,
+    welfareRatio: 0.0500,
+    policyStandard: 'Ministry of Cooperation / NCCT (PS ID: 26089) — 90/5/5 Protocol'
   };
 }
 
 /**
- * Process a completed booking payment with 80/15/5 cooperative split.
+ * Process a completed booking payment with 90/5/5 cooperative split.
  * POST /api/payments/process
  */
 async function processBookingPayment(req, res) {
@@ -333,5 +345,6 @@ async function getPaymentReceipt(req, res) {
 
 module.exports = {
   processBookingPayment,
-  getPaymentReceipt
+  getPaymentReceipt,
+  calculateCooperativeSplit
 };
