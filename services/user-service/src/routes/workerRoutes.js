@@ -6,6 +6,7 @@ const {
   addCertification,
   getWorkerProfile
 } = require('../controllers/workerController');
+const { verifyWorkerCredentials } = require('../controllers/verificationController');
 const { extractUser, requireRole } = require('../middleware/auth');
 
 const router = express.Router();
@@ -25,9 +26,20 @@ const workerRegistrationValidation = [
 // Public registration endpoint
 router.post('/register/worker', workerRegistrationValidation, registerWorker);
 
+// Fallback & Offline Verification Route with 3s AbortController timeout
+router.post(
+  '/verify/e-shram',
+  [
+    body('workerId').notEmpty().withMessage('workerId is required'),
+    body('uan').notEmpty().withMessage('e-Shram UAN is required')
+  ],
+  verifyWorkerCredentials
+);
+
 // Authenticated worker actions
 router.get('/workers/me', extractUser, requireRole('WORKER'), getWorkerProfile);
 router.patch('/workers/me/status', extractUser, requireRole('WORKER'), updateWorkerStatus);
 router.post('/workers/me/certifications', extractUser, requireRole('WORKER'), addCertification);
 
 module.exports = router;
+

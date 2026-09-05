@@ -1,16 +1,19 @@
 const prisma = require('../lib/prisma');
+const { broadcastEmergencyDispatch } = require('../socket/emergencySocket');
 
 /**
  * Generate human-readable booking reference (e.g. BKG-20260905-4819)
  */
-function generateBookingNumber() {
+function generateBookingNumber(isEmergency = false) {
+  const prefix = isEmergency ? 'EMG' : 'BKG';
   const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');
   const randomSuffix = Math.floor(1000 + Math.random() * 9000);
-  return `BKG-${dateStr}-${randomSuffix}`;
+  return `${prefix}-${dateStr}-${randomSuffix}`;
 }
 
 /**
  * Create a new service booking request from a Customer.
+ * Supports standard bookings as well as Real-Time Emergency Dispatches.
  * POST /api/bookings
  */
 async function createBooking(req, res) {
@@ -29,8 +32,10 @@ async function createBooking(req, res) {
       serviceLongitude,
       locationInstructions,
       totalAmount,
-      currency = 'INR'
+      currency = 'INR',
+      isEmergency = false
     } = req.body;
+
 
     if (!serviceCategoryId || !scheduledDate || !serviceAddressLine1 || !serviceLatitude || !serviceLongitude || !totalAmount) {
       return res.status(400).json({
@@ -92,7 +97,7 @@ async function createBooking(req, res) {
 
     const booking = await prisma.booking.create({
       data: {
-        bookingNumber: generateBookingNumber(),
+        bookingNumber: generateBookingNumber(isEmergency),
         customerId,
         workerId: assignedWorkerId,
         serviceCategoryId,
@@ -124,16 +129,38 @@ async function createBooking(req, res) {
       }
     });
 
+    // If marked as Emergency, broadcast instantly to geofenced workers over Socket.io
+    let dispatchTelemetry = null;
+    if (isEmergency) {
+      dispatchTelemetry = broadcastEmergencyDispatch({
+        id: booking.id,
+        bookingNumber: booking.bookingNumber,
+        serviceCategoryId: booking.serviceCategoryId,
+        serviceCategoryName: booking.serviceCategory?.name,
+        serviceAddressLine1: booking.serviceAddressLine1,
+        serviceCity: booking.serviceCity,
+        serviceLatitude: booking.serviceLatitude,
+        serviceLongitude: booking.serviceLongitude,
+        totalAmount: booking.totalAmount,
+        notes: locationInstructions
+      });
+    }
+
     return res.status(201).json({
       success: true,
-      message: 'Booking request created successfully',
-      data: booking
+      message: isEmergency
+        ? 'Emergency booking created and dispatched via real-time WebSocket mesh'
+        : 'Booking request created successfully',
+      data: booking,
+      isEmergency,
+      dispatchTelemetry
     });
   } catch (error) {
     console.error('[createBooking Error]:', error);
     return res.status(500).json({ error: 'Internal Server Error', message: error.message });
   }
 }
+
 
 /**
  * Fetch available workers matching a ServiceCategory within a 10km radius.
