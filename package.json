@@ -12,8 +12,10 @@
     "dev:payment": "node services/payment-service/src/server.js",
     "dev:frontend": "npm run dev --prefix frontend",
     "prisma:generate": "prisma generate --schema=prisma/schema.prisma",
-    "seed": "node prisma/seed.js"
+    "seed": "node prisma/seed.js",
+    "test": "node scripts/testSuite.js"
   },
+
   "prisma": {
     "seed": "node prisma/seed.js"
   },
