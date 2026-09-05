@@ -1,290 +1,392 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useRef, useMemo } from 'react';
+import { useLanguage } from '../context/LanguageContext';
 import { 
+  Mic, 
+  MicOff, 
   Search, 
   MapPin, 
+  Phone, 
   Star, 
-  ShieldCheck, 
-  Zap, 
-  Droplets, 
-  HeartHandshake, 
-  Hammer, 
-  Wrench, 
-  Sparkles, 
-  Paintbrush, 
-  CheckCircle2, 
-  Clock, 
-  DollarSign, 
-  X,
-  SlidersHorizontal,
+  CheckCircle, 
+  AlertTriangle, 
+  ArrowRight, 
+  ChevronLeft, 
   ChevronRight,
-  Send
+  ShieldCheck
 } from 'lucide-react';
-import { 
-  MOCK_CATEGORIES, 
-  MOCK_WORKERS, 
-  ServiceCategory, 
-  WorkerProfile 
-} from '@/data/mockData';
+import { MOCK_CATEGORIES, MOCK_WORKERS, WorkerProfile } from '@/data/mockData';
 
-// Map icon name string to Lucide component
-const getCategoryIcon = (iconName: string) => {
-  switch (iconName) {
-    case 'Zap': return Zap;
-    case 'Droplets': return Droplets;
-    case 'HeartHandshake': return HeartHandshake;
-    case 'Hammer': return Hammer;
-    case 'Wrench': return Wrench;
-    case 'Sparkles': return Sparkles;
-    case 'Paintbrush': return Paintbrush;
-    default: return Wrench;
+// ----------------------------------------------------------------------------
+// CULTURALLY RECOGNIZABLE VECTOR ILLUSTRATIONS FOR LOW-LITERACY RECOGNITION
+// ----------------------------------------------------------------------------
+
+function DrippingTapIllustration() {
+  return (
+    <svg viewBox="0 0 100 100" className="w-20 h-20 mx-auto fill-none stroke-black stroke-[3.5] stroke-linecap-round stroke-linejoin-round" aria-hidden="true">
+      {/* Tap Body & Handle */}
+      <path d="M40 20 H60 V28 H40 Z" fill="#FBBF24" />
+      <path d="M50 28 V40" />
+      <path d="M25 40 H68 C74 40 78 45 78 52 V60 H62 V52 C62 50 60 48 58 48 H25 V40 Z" fill="#E2E8F0" />
+      <path d="M62 60 H78 V66 H62 Z" fill="#CBD5E1" />
+      {/* Water Droplet */}
+      <path d="M70 76 C70 76 64 84 64 88 A6 6 0 0 0 76 88 C76 84 70 76 70 76 Z" fill="#0284C7" stroke="#000" />
+    </svg>
+  );
+}
+
+function GlowingBulbIllustration() {
+  return (
+    <svg viewBox="0 0 100 100" className="w-20 h-20 mx-auto fill-none stroke-black stroke-[3.5] stroke-linecap-round stroke-linejoin-round" aria-hidden="true">
+      {/* Filament & Bulb Glow */}
+      <circle cx="50" cy="45" r="26" fill="#FEF08A" />
+      <path d="M40 38 L46 48 L54 48 L60 38" stroke="#D97706" strokeWidth="2.5" />
+      {/* Screw Base */}
+      <path d="M38 68 H62 V74 H38 Z" fill="#94A3B8" />
+      <path d="M41 74 H59 V79 H41 Z" fill="#64748B" />
+      <path d="M45 79 H55 V83 H45 Z" fill="#000" />
+      {/* Radiating Light Rays */}
+      <path d="M50 10 V16" stroke="#F59E0B" strokeWidth="4" />
+      <path d="M20 25 L25 29" stroke="#F59E0B" strokeWidth="4" />
+      <path d="M80 25 L75 29" stroke="#F59E0B" strokeWidth="4" />
+      <path d="M12 48 H18" stroke="#F59E0B" strokeWidth="4" />
+      <path d="M82 48 H88" stroke="#F59E0B" strokeWidth="4" />
+    </svg>
+  );
+}
+
+function SweepingBroomIllustration() {
+  return (
+    <svg viewBox="0 0 100 100" className="w-20 h-20 mx-auto fill-none stroke-black stroke-[3.5] stroke-linecap-round stroke-linejoin-round" aria-hidden="true">
+      {/* Wooden Stick */}
+      <line x1="72" y1="16" x2="42" y2="56" stroke="#B45309" strokeWidth="6" />
+      {/* Broom Head Straws */}
+      <path d="M38 52 L54 62 L38 88 C32 89 22 84 18 78 L38 52 Z" fill="#FDE047" />
+      <line x1="42" y1="64" x2="26" y2="84" stroke="#A16207" strokeWidth="2.5" />
+      <line x1="46" y1="67" x2="33" y2="86" stroke="#A16207" strokeWidth="2.5" />
+      {/* Clean Sparkles */}
+      <path d="M75 60 L78 68 L86 71 L78 74 L75 82 L72 74 L64 71 L72 68 Z" fill="#38BDF8" stroke="#000" strokeWidth="2" />
+      <circle cx="82" cy="46" r="3" fill="#38BDF8" />
+    </svg>
+  );
+}
+
+function ApplianceFanIllustration() {
+  return (
+    <svg viewBox="0 0 100 100" className="w-20 h-20 mx-auto fill-none stroke-black stroke-[3.5] stroke-linecap-round stroke-linejoin-round" aria-hidden="true">
+      {/* AC Unit Body */}
+      <rect x="16" y="24" width="68" height="34" rx="6" fill="#F1F5F9" />
+      <line x1="24" y1="46" x2="76" y2="46" stroke="#000" strokeWidth="3" />
+      <rect x="66" y="32" width="10" height="6" rx="2" fill="#22C55E" />
+      {/* Cold Breeze Waves */}
+      <path d="M26 66 C30 72 36 72 40 66 C44 60 50 60 54 66" stroke="#0284C7" strokeWidth="3" />
+      <path d="M46 76 C50 82 56 82 60 76 C64 70 70 70 74 76" stroke="#0284C7" strokeWidth="3" />
+      {/* Wrench */}
+      <path d="M72 64 L86 78 C89 81 87 86 83 86 L79 82 L75 84 L72 79 Z" fill="#F59E0B" stroke="#000" strokeWidth="2" />
+    </svg>
+  );
+}
+
+function WoodSawIllustration() {
+  return (
+    <svg viewBox="0 0 100 100" className="w-20 h-20 mx-auto fill-none stroke-black stroke-[3.5] stroke-linecap-round stroke-linejoin-round" aria-hidden="true">
+      {/* Timber Wood Plank */}
+      <rect x="14" y="60" width="72" height="22" rx="3" fill="#D97706" />
+      <line x1="20" y1="71" x2="80" y2="71" stroke="#92400E" strokeWidth="2" />
+      {/* Hand Saw Blade */}
+      <path d="M30 30 L74 54 L30 54 Z" fill="#CBD5E1" />
+      <path d="M30 54 L34 50 L38 54 L42 50 L46 54 L50 50 L54 54 L58 50 L62 54 L66 50 L70 54 L74 54" stroke="#000" strokeWidth="3" />
+      {/* Wooden Handle */}
+      <rect x="20" y="22" width="16" height="24" rx="4" fill="#B45309" />
+      <circle cx="28" cy="34" r="4" fill="#FFF" />
+    </svg>
+  );
+}
+
+// ----------------------------------------------------------------------------
+// VISUAL SERVICE CATEGORIES METADATA
+// ----------------------------------------------------------------------------
+const visualCategories = [
+  {
+    id: 'plumbing',
+    translationKey: 'plumbing',
+    descKey: 'plumbingDesc',
+    component: DrippingTapIllustration,
+    bgColor: 'bg-sky-100',
+    borderColor: 'border-sky-500',
+    badgeColor: 'bg-sky-600',
+    rate: '₹450/hr'
+  },
+  {
+    id: 'electrical',
+    translationKey: 'electrical',
+    descKey: 'electricalDesc',
+    component: GlowingBulbIllustration,
+    bgColor: 'bg-yellow-100',
+    borderColor: 'border-yellow-500',
+    badgeColor: 'bg-yellow-600',
+    rate: '₹500/hr'
+  },
+  {
+    id: 'cleaning',
+    translationKey: 'cleaning',
+    descKey: 'cleaningDesc',
+    component: SweepingBroomIllustration,
+    bgColor: 'bg-emerald-100',
+    borderColor: 'border-emerald-500',
+    badgeColor: 'bg-emerald-600',
+    rate: '₹420/hr'
+  },
+  {
+    id: 'appliance-repair',
+    translationKey: 'appliance',
+    descKey: 'applianceDesc',
+    component: ApplianceFanIllustration,
+    bgColor: 'bg-cyan-100',
+    borderColor: 'border-cyan-500',
+    badgeColor: 'bg-cyan-600',
+    rate: '₹550/hr'
+  },
+  {
+    id: 'carpentry',
+    translationKey: 'carpentry',
+    descKey: 'carpentryDesc',
+    component: WoodSawIllustration,
+    bgColor: 'bg-orange-100',
+    borderColor: 'border-orange-500',
+    badgeColor: 'bg-orange-600',
+    rate: '₹520/hr'
   }
-};
+];
 
 export default function ServiceDiscovery() {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [selectedWorkerForBooking, setSelectedWorkerForBooking] = useState<WorkerProfile | null>(null);
-  const [bookingSuccessMessage, setBookingSuccessMessage] = useState<string | null>(null);
-  const [bookingDate, setBookingDate] = useState('2026-09-07');
-  const [bookingTime, setBookingTime] = useState('10:30 AM');
-  const [bookingAddress, setBookingAddress] = useState('14, 2nd Cross, Indiranagar, Bengaluru');
-  const [isEmergencySos, setIsEmergencySos] = useState<boolean>(false);
+  const { t } = useLanguage();
+  const [selectedCategory, setSelectedCategory] = useState<string>('plumbing');
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [isListening, setIsListening] = useState<boolean>(false);
+  const [bookingWorker, setBookingWorker] = useState<WorkerProfile | null>(null);
+  const [bookingSuccess, setBookingSuccess] = useState<string | null>(null);
 
-  // Filter categories based on search
-  const filteredCategories = useMemo(() => {
-    return MOCK_CATEGORIES.filter(cat => 
-      cat.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      cat.description.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  }, [searchQuery]);
+  // Carousel swipe ref & drag coordinates
+  const carouselRef = useRef<HTMLDivElement>(null);
+  const touchStartX = useRef<number>(0);
+  const touchEndX = useRef<number>(0);
 
-  // Filter workers based on search, selected category, and emergency SOS
-  const filteredWorkers = useMemo(() => {
-    return MOCK_WORKERS.filter(worker => {
-      const matchesSearch = 
-        worker.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        worker.trade.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        worker.cooperativeName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        worker.skills.some(s => s.toLowerCase().includes(searchQuery.toLowerCase()));
+  // Handle Touch Swipe Gesture
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.targetTouches[0].clientX;
+  };
 
-      const matchesCategory = 
-        selectedCategory === 'all' || 
-        worker.trade.toLowerCase().includes(selectedCategory.toLowerCase());
+  const handleTouchMove = (e: React.TouchEvent) => {
+    touchEndX.current = e.targetTouches[0].clientX;
+  };
 
-      const matchesSos = !isEmergencySos || worker.isAvailable;
+  const handleTouchEnd = () => {
+    const distance = touchStartX.current - touchEndX.current;
+    if (Math.abs(distance) > 50) {
+      if (distance > 0) {
+        // Swiped Left -> scroll next
+        carouselRef.current?.scrollBy({ left: 240, behavior: 'smooth' });
+      } else {
+        // Swiped Right -> scroll prev
+        carouselRef.current?.scrollBy({ left: -240, behavior: 'smooth' });
+      }
+    }
+  };
 
-      return matchesSearch && matchesCategory && matchesSos;
-    });
-  }, [searchQuery, selectedCategory, isEmergencySos]);
+  const scrollCarousel = (direction: 'left' | 'right') => {
+    if (carouselRef.current) {
+      const scrollAmount = direction === 'left' ? -260 : 260;
+      carouselRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    }
+  };
 
-  const handleBookSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!selectedWorkerForBooking) return;
-    
-    setBookingSuccessMessage(
-      `Booking request successfully dispatched to ${selectedWorkerForBooking.name}! Cooperative Dispatcher & NCD society notified. Escrow created under 90/5/5 cooperative protocol.`
-    );
+  // Voice Search Mockup (Simulates speech-to-text on budget phone)
+  const toggleVoiceSearch = () => {
+    if (isListening) {
+      setIsListening(false);
+      return;
+    }
+    setIsListening(true);
+    // Simulate auto-dictation
     setTimeout(() => {
-      setSelectedWorkerForBooking(null);
-      setBookingSuccessMessage(null);
-    }, 4500);
+      setSearchQuery('Plumber Dadar');
+      setSelectedCategory('plumbing');
+      setIsListening(false);
+    }, 2200);
+  };
+
+  // Filter Workers based on active category
+  const filteredWorkers = useMemo(() => {
+    return MOCK_WORKERS.filter((worker) => {
+      const matchesCat =
+        selectedCategory === 'all' ||
+        worker.trade.toLowerCase().includes(selectedCategory.toLowerCase()) ||
+        (selectedCategory === 'plumbing' && worker.trade.includes('Plumber')) ||
+        (selectedCategory === 'electrical' && worker.trade.includes('Electrician')) ||
+        (selectedCategory === 'cleaning' && worker.trade.includes('Cleaner')) ||
+        (selectedCategory === 'appliance-repair' && worker.trade.includes('Appliance')) ||
+        (selectedCategory === 'carpentry' && worker.trade.includes('Carpenter'));
+
+      const matchesSearch =
+        !searchQuery ||
+        worker.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (worker.locationName || '').toLowerCase().includes(searchQuery.toLowerCase());
+
+      return matchesCat && matchesSearch;
+    });
+  }, [selectedCategory, searchQuery]);
+
+
+  const handleQuickBook = (worker: WorkerProfile) => {
+    setBookingWorker(worker);
+  };
+
+  const confirmBooking = () => {
+    if (!bookingWorker) return;
+    setBookingSuccess(`Job requested! ${bookingWorker.name} has been alerted.`);
+    setTimeout(() => {
+      setBookingWorker(null);
+      setBookingSuccess(null);
+    }, 4000);
   };
 
   return (
-    <div className="space-y-12 animate-in fade-in duration-300">
-      
-      {/* Hero & Search Section */}
-      <section className="relative pt-4 pb-6 sm:py-8 text-center space-y-6">
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full glass-panel text-xs font-medium text-amber-300 border-amber-500/30">
-          <span className="flex h-2 w-2 rounded-full bg-amber-400 animate-ping" />
-          <span className="font-semibold text-white">Ministry of Cooperation / NCCT PS ID: 26089</span>
-          <span className="text-slate-500">•</span>
-          <span className="text-amber-200">National Cooperative Database (NCD) Verified</span>
-        </div>
-
-        <div className="max-w-3xl mx-auto space-y-3">
-          <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight">
-            Institutional Gig Marketplace. <br className="hidden sm:inline" />
-            <span className="bg-gradient-to-r from-cyan-400 via-teal-300 to-amber-300 bg-clip-text text-transparent">
-              Worker-Owned Primary Cooperatives.
-            </span>
+    <div className="space-y-6">
+      {/* -------------------------------------------------------------------- */}
+      {/* 1. HEADER & HIGH-CONTRAST VOICE SEARCH BAR */}
+      {/* -------------------------------------------------------------------- */}
+      <section className="space-y-3">
+        <div className="text-left">
+          <h1 className="text-2xl sm:text-3xl font-black text-black tracking-tight leading-snug">
+            {t('findServiceTitle')}
           </h1>
-          <p className="text-slate-300 text-sm sm:text-base max-w-2xl mx-auto leading-relaxed">
-            Democratic, non-exploitative alternative to venture gig apps. 
-            <strong className="text-emerald-400 font-semibold"> 90% directly to worker</strong>, 
-            <strong className="text-cyan-400 font-semibold"> 5% to primary society</strong>, and 
-            <strong className="text-amber-400 font-semibold"> 5% to social security/mutual aid</strong>. 
-            Backed by 1% Cooperative Guarantee Fund.
+          <p className="text-sm sm:text-base font-bold text-slate-700 mt-1">
+            {t('findServiceSubtitle')}
           </p>
         </div>
 
-        {/* Emergency SOS Mode Toggle & Search Bar Container */}
-        <div className="max-w-2xl mx-auto space-y-3">
-          {/* Emergency SOS Banner Switch */}
-          <div className="glass-panel p-3 rounded-2xl flex items-center justify-between border-amber-500/30 bg-gradient-to-r from-amber-950/40 via-slate-900/60 to-rose-950/40">
-            <div className="flex items-center gap-3 text-left">
-              <div className={`p-2 rounded-xl ${isEmergencySos ? 'bg-rose-500 text-white animate-pulse' : 'bg-amber-500/20 text-amber-400'}`}>
-                <Zap className="w-5 h-5" />
-              </div>
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="text-xs font-bold uppercase tracking-wider text-amber-300">
-                    Emergency SOS Mode
-                  </span>
-                  <span className="text-[10px] bg-rose-500/30 text-rose-200 px-2 py-0.2 rounded-full border border-rose-500/40 font-semibold">
-                    100% Surge to Worker
-                  </span>
-                </div>
-                <p className="text-[11px] text-slate-400">
-                  Priority 20-min dispatch for electrical faults, water pipe bursts, and urgent care
-                </p>
-              </div>
-            </div>
-
+        {/* Large Voice Search Input Bar */}
+        <div className="flex items-center gap-2 bg-white border-2 border-black rounded-2xl p-1.5 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
+          <Search className="w-6 h-6 ml-2 text-black stroke-[2.5]" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Type or tap mic (e.g. Plumber, Electrician)..."
+            className="flex-1 py-3 px-2 text-base sm:text-lg font-bold text-black placeholder:text-slate-500 outline-none bg-transparent"
+          />
+          {searchQuery && (
             <button
-              type="button"
-              onClick={() => setIsEmergencySos(!isEmergencySos)}
-              className={`px-3.5 py-1.5 rounded-xl font-bold text-xs transition-all ${
-                isEmergencySos
-                  ? 'bg-rose-500 text-white shadow-lg shadow-rose-500/40 ring-2 ring-rose-300'
-                  : 'bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700'
-              }`}
+              onClick={() => setSearchQuery('')}
+              className="p-2 text-black font-black text-lg hover:bg-slate-100 rounded-lg min-h-[44px] min-w-[44px]"
             >
-              {isEmergencySos ? 'SOS ACTIVE' : 'Enable SOS'}
+              ✕
             </button>
-          </div>
-
-          {/* Prominent Search Bar */}
-          <div className="glass-panel p-2 rounded-2xl flex flex-col sm:flex-row items-center gap-2 shadow-2xl border-white/15 focus-within:border-cyan-400/60 transition-all">
-            <div className="flex items-center gap-3 w-full px-3 py-2">
-              <Search className="w-5 h-5 text-cyan-400 shrink-0" />
-              <input
-                type="text"
-                placeholder="Search trades, NCCT skills, e-Shram workers, cooperatives..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-transparent text-white placeholder-slate-400 text-sm sm:text-base focus:outline-none"
-              />
-              {searchQuery && (
-                <button
-                  type="button"
-                  onClick={() => setSearchQuery('')}
-                  className="p-1 rounded-full text-slate-400 hover:text-white"
-                  aria-label="Clear search"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              )}
-            </div>
-
-            <div className="w-full sm:w-auto flex items-center justify-between sm:justify-end gap-2 border-t sm:border-t-0 sm:border-l border-white/10 pt-2 sm:pt-0 sm:pl-3 px-2">
-              <div className="flex items-center gap-1.5 text-xs text-slate-300 bg-slate-900/60 px-3 py-2 rounded-xl border border-white/5">
-                <MapPin className="w-3.5 h-3.5 text-rose-400" />
-                <span className="font-medium">Indiranagar (10 km)</span>
-              </div>
-
-              <button
-                type="button"
-                className="px-4 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-semibold text-sm transition-colors shrink-0 shadow-lg shadow-cyan-500/20"
-              >
-                Search
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Trade Filter Pills */}
-        <div className="flex items-center justify-center gap-2 flex-wrap max-w-4xl mx-auto pt-2">
+          )}
+          {/* Tap to Speak Microphone Button */}
           <button
-            type="button"
-            onClick={() => setSelectedCategory('all')}
-            className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all ${
-              selectedCategory === 'all'
-                ? 'bg-cyan-500 text-slate-950 font-semibold shadow-md shadow-cyan-500/30'
-                : 'glass-panel text-slate-300 hover:text-white hover:border-cyan-400/30'
+            onClick={toggleVoiceSearch}
+            className={`min-h-[48px] min-w-[48px] px-3.5 py-2 rounded-xl border-2 border-black flex items-center justify-center font-black transition-all ${
+              isListening
+                ? 'bg-red-600 text-white animate-voice-pulse shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]'
+                : 'bg-emerald-500 text-black hover:bg-emerald-600 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]'
             }`}
+            aria-label={t('tapToSpeak')}
           >
-            All Services
+            {isListening ? (
+              <MicOff className="w-6 h-6 animate-pulse" />
+            ) : (
+              <Mic className="w-6 h-6 stroke-[2.5]" />
+            )}
           </button>
-          {MOCK_CATEGORIES.map((cat) => (
-            <button
-              key={cat.id}
-              type="button"
-              onClick={() => setSelectedCategory(selectedCategory === cat.name ? 'all' : cat.name)}
-              className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all ${
-                selectedCategory.toLowerCase() === cat.name.toLowerCase()
-                  ? 'bg-cyan-500 text-slate-950 font-semibold shadow-md shadow-cyan-500/30'
-                  : 'glass-panel text-slate-300 hover:text-white hover:border-cyan-400/30'
-              }`}
-            >
-              {cat.name}
-            </button>
-          ))}
         </div>
+
+        {isListening && (
+          <div className="bg-red-50 border-2 border-red-500 rounded-xl p-2.5 text-center text-red-700 font-extrabold text-sm flex items-center justify-center gap-2 animate-pulse">
+            <span className="w-3 h-3 rounded-full bg-red-600 animate-ping" />
+            {t('listening')} Speak now (बोलें...)
+          </div>
+        )}
       </section>
 
-      {/* Service Categories Grid */}
-      <section className="space-y-4">
+      {/* -------------------------------------------------------------------- */}
+      {/* 2. GESTURE-BASED TOUCH SWIPE CAROUSEL (LARGE VISUAL CARDS) */}
+      {/* -------------------------------------------------------------------- */}
+      <section className="space-y-2">
         <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-xl sm:text-2xl font-bold tracking-tight bg-gradient-to-r from-white via-slate-100 to-slate-400 bg-clip-text text-transparent">
-              Popular Cooperative Services
-            </h2>
-            <p className="text-xs sm:text-sm text-slate-400 mt-0.5">
-              Select a trade category to discover certified, cooperative-verified tradespeople
-            </p>
+          <div className="flex items-center gap-1.5 font-black text-sm text-black">
+            <span>{t('swipePrompt')}</span>
           </div>
-          <span className="text-xs font-medium text-cyan-400 hidden sm:inline">
-            {filteredCategories.length} Categories Available
-          </span>
+
+          {/* Touch-Friendly Swipe Navigation Arrows */}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => scrollCarousel('left')}
+              className="min-h-[44px] min-w-[44px] rounded-xl border-2 border-black bg-white hover:bg-slate-100 flex items-center justify-center font-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-y-[1px]"
+              aria-label="Previous services"
+            >
+              <ChevronLeft className="w-6 h-6 stroke-[3]" />
+            </button>
+            <button
+              onClick={() => scrollCarousel('right')}
+              className="min-h-[44px] min-w-[44px] rounded-xl border-2 border-black bg-white hover:bg-slate-100 flex items-center justify-center font-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-y-[1px]"
+              aria-label="Next services"
+            >
+              <ChevronRight className="w-6 h-6 stroke-[3]" />
+            </button>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {filteredCategories.map((category) => {
-            const IconComponent = getCategoryIcon(category.iconName);
-            const isSelected = selectedCategory.toLowerCase() === category.name.toLowerCase();
+        {/* Horizontal Swipe Carousel Container */}
+        <div
+          ref={carouselRef}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+          className="swipe-carousel flex gap-3.5 py-2 px-1 overflow-x-auto select-none"
+        >
+          {visualCategories.map((cat) => {
+            const IconIllustration = cat.component;
+            const isSelected = selectedCategory === cat.id;
 
             return (
               <div
-                key={category.id}
-                onClick={() => setSelectedCategory(isSelected ? 'all' : category.name)}
-                className={`glass-panel-interactive p-5 rounded-2xl cursor-pointer group relative overflow-hidden flex flex-col justify-between ${
-                  isSelected ? 'border-cyan-400/70 ring-2 ring-cyan-400/30 bg-slate-900/80' : ''
+                key={cat.id}
+                onClick={() => setSelectedCategory(cat.id)}
+                className={`swipe-slide flex-shrink-0 cursor-pointer p-4 rounded-2xl border-[3px] border-black transition-all text-center flex flex-col justify-between ${
+                  isSelected
+                    ? `${cat.bgColor} shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] scale-[1.02]`
+                    : 'bg-white hover:bg-slate-50 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]'
                 }`}
               >
-                {/* Subtle corner gradient highlight */}
-                <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-cyan-500/10 via-transparent to-transparent pointer-events-none rounded-tr-2xl" />
-
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <div className="w-12 h-12 rounded-xl bg-slate-800/80 border border-white/10 flex items-center justify-center group-hover:scale-110 group-hover:bg-cyan-500/20 group-hover:border-cyan-400/30 transition-all">
-                      <IconComponent className="w-6 h-6 text-cyan-400" />
-                    </div>
-                    <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-white/5">
-                      ₹{category.startingPrice}/hr
-                    </span>
-                  </div>
-
-                  <div>
-                    <h3 className="text-base font-semibold text-white group-hover:text-cyan-300 transition-colors flex items-center justify-between">
-                      <span>{category.name}</span>
-                      <ChevronRight className="w-4 h-4 text-slate-500 group-hover:text-cyan-400 group-hover:translate-x-1 transition-all" />
-                    </h3>
-                    <p className="text-xs text-slate-400 mt-1 line-clamp-2 leading-relaxed">
-                      {category.description}
-                    </p>
-                  </div>
+                {/* Large Culturally Recognized Vector Illustration */}
+                <div className="py-2">
+                  <IconIllustration />
                 </div>
 
-                <div className="pt-4 mt-3 border-t border-white/5 flex items-center justify-between text-xs text-slate-400">
-                  <div className="flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full bg-emerald-400" />
-                    <span className="text-slate-300 font-medium">{category.activeWorkers} verified</span>
-                  </div>
-                  <span className="text-[11px] text-cyan-400 group-hover:underline">
-                    Browse trade →
+                {/* Bold Large Service Name */}
+                <div className="space-y-1 my-2">
+                  <h3 className="text-xl sm:text-2xl font-black text-black tracking-tight leading-tight">
+                    {t(cat.translationKey)}
+                  </h3>
+                  <p className="text-xs font-bold text-slate-700 leading-snug line-clamp-2">
+                    {t(cat.descKey)}
+                  </p>
+                </div>
+
+                {/* Pricing & Selection Footer */}
+                <div className="pt-2 border-t-2 border-black/10 flex items-center justify-between mt-auto">
+                  <span className="text-sm font-black text-black bg-white px-2 py-0.5 rounded-md border border-black">
+                    {cat.rate}
+                  </span>
+                  <span
+                    className={`text-xs font-black px-2.5 py-1 rounded-lg border border-black ${
+                      isSelected ? 'bg-black text-white' : 'bg-amber-300 text-black'
+                    }`}
+                  >
+                    {isSelected ? '✓ Selected' : 'Tap to Choose'}
                   </span>
                 </div>
               </div>
@@ -293,338 +395,157 @@ export default function ServiceDiscovery() {
         </div>
       </section>
 
-      {/* Recommended Workers Nearby Section */}
-      <section className="space-y-6 pt-6">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2 border-b border-white/10 pb-4">
-          <div>
-            <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-cyan-400">
-              <MapPin className="w-3.5 h-3.5" />
-              <span>10km Geo-Proximity Match</span>
-            </div>
-            <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight mt-1 bg-gradient-to-r from-cyan-400 via-teal-300 to-blue-500 bg-clip-text text-transparent">
-              Recommended Workers Nearby
-            </h2>
-            <p className="text-xs sm:text-sm text-slate-400 mt-0.5">
-              Available cooperative members ordered by distance, verified credentials, and customer ratings.
-            </p>
-          </div>
-
-          <div className="flex items-center gap-2 text-xs text-slate-400 bg-slate-900/60 px-3 py-1.5 rounded-lg border border-white/5 self-start sm:self-auto">
-            <ShieldCheck className="w-4 h-4 text-emerald-400" />
-            <span>100% Cooperative Verified</span>
-          </div>
+      {/* -------------------------------------------------------------------- */}
+      {/* 3. VERIFIED WORKER LIST FOR SELECTED CATEGORY */}
+      {/* -------------------------------------------------------------------- */}
+      <section className="space-y-3 pt-2">
+        <div className="flex items-center justify-between border-b-2 border-black pb-2">
+          <h2 className="text-xl font-black text-black flex items-center gap-2">
+            <span>👷 Available Member-Workers</span>
+            <span className="text-xs font-extrabold bg-black text-white px-2 py-0.5 rounded-full">
+              {filteredWorkers.length}
+            </span>
+          </h2>
+          <span className="text-xs font-bold text-emerald-800 bg-emerald-100 px-2 py-1 rounded-md border border-emerald-500">
+            {t('payoutBadge')}
+          </span>
         </div>
 
-        {/* Worker Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredWorkers.map((worker) => (
-            <div
-              key={worker.id}
-              className="glass-panel rounded-2xl p-5 border border-white/10 flex flex-col justify-between hover:border-cyan-400/40 hover:shadow-[0_12px_36px_rgba(0,0,0,0.5)] transition-all duration-300 group"
-            >
-              {/* Header: Avatar, Name, Cooperative, Badge */}
-              <div className="space-y-4">
-                <div className="flex items-start gap-3.5">
-                  <div className="relative">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={worker.avatarUrl}
-                      alt={worker.name}
-                      className="w-14 h-14 rounded-2xl object-cover border border-white/10 shadow-md group-hover:scale-105 transition-transform"
-                    />
-                    {worker.isAvailable && (
-                      <span 
-                        title="Available Now" 
-                        className="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 border-2 border-slate-950 rounded-full" 
-                      />
+        {filteredWorkers.length === 0 ? (
+          <div className="p-8 text-center bg-slate-50 border-2 border-dashed border-black rounded-2xl">
+            <p className="font-extrabold text-black text-base">No workers found in this category.</p>
+            <p className="text-xs font-bold text-slate-600 mt-1">Try tapping another service card above.</p>
+          </div>
+        ) : (
+          <div className="space-y-3.5">
+            {filteredWorkers.map((worker) => (
+              <div
+                key={worker.id}
+                className="accessible-card p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-white"
+              >
+                {/* Worker Avatar & Identity */}
+                <div className="flex items-center gap-3.5">
+                  <div className="w-14 h-14 rounded-2xl bg-amber-200 border-2 border-black flex items-center justify-center text-2xl font-black shadow-sm overflow-hidden flex-shrink-0">
+                    {worker.avatarUrl ? (
+                      <img src={worker.avatarUrl} alt={worker.name} className="w-full h-full object-cover" />
+                    ) : (
+                      worker.name.charAt(0)
                     )}
                   </div>
-
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between">
-                      <h3 className="font-bold text-white text-base truncate group-hover:text-cyan-300 transition-colors">
-                        {worker.name}
-                      </h3>
-                      <span className="text-sm font-bold text-cyan-300 bg-cyan-950/60 px-2 py-0.5 rounded-md border border-cyan-500/30 shrink-0">
-                        ₹{worker.hourlyRate}/hr
+                  <div className="space-y-0.5">
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <span className="font-black text-lg text-black">{worker.name}</span>
+                      <span className="text-[11px] font-black bg-emerald-500 text-black px-1.5 py-0.2 rounded border border-black">
+                        ✓ Verified Co-op
                       </span>
                     </div>
-
-                    <p className="text-xs font-semibold text-teal-300 flex items-center gap-1 mt-0.5">
-                      <span>{worker.trade}</span>
+                    <div className="text-xs font-bold text-slate-700 flex items-center gap-2">
+                      <span className="flex items-center text-amber-600 font-extrabold">
+                        <Star className="w-3.5 h-3.5 fill-amber-500 text-amber-500 mr-0.5" />
+                        {worker.rating}
+                      </span>
                       <span>•</span>
-                      <span className="text-slate-400">{worker.experienceYears}y exp</span>
-                    </p>
-
-                    <p className="text-[11px] text-slate-400 truncate mt-1 flex items-center gap-1">
-                      <ShieldCheck className="w-3 h-3 text-emerald-400 shrink-0" />
-                      <span className="truncate">{worker.cooperativeName}</span>
-                    </p>
-                  </div>
-                </div>
-
-                {/* Rating and Distance Bar */}
-                <div className="flex items-center justify-between bg-slate-900/70 p-2.5 rounded-xl border border-white/5 text-xs">
-                  <div className="flex items-center gap-1 text-amber-400 font-semibold">
-                    <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
-                    <span>{worker.rating.toFixed(1)}</span>
-                    <span className="text-slate-500 font-normal">({worker.reviewsCount})</span>
-                  </div>
-
-                  <div className="flex items-center gap-1 text-slate-300 font-medium">
-                    <MapPin className="w-3.5 h-3.5 text-cyan-400" />
-                    <span>{worker.distanceKm} km away</span>
-                  </div>
-
-                  <div className="text-slate-400">
-                    <span className="text-emerald-400 font-medium">{worker.completedJobs}</span> jobs
-                  </div>
-                </div>
-
-                {/* Worker Bio & Skill Chips */}
-                <p className="text-xs text-slate-300 line-clamp-2 leading-relaxed">
-                  {worker.bio}
-                </p>
-
-                {/* NCCT Certification and National Database Badges */}
-                <div className="space-y-1.5 pt-1">
-                  {worker.ncctCertified && (
-                    <div className="flex items-center gap-1.5 text-[11px] font-semibold text-amber-300 bg-amber-950/60 border border-amber-500/30 px-2 py-1 rounded-lg">
-                      <Sparkles className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-                      <span className="truncate">NCCT Certified: {worker.ncctBadgeTitle}</span>
+                      <span>{worker.completedJobs} jobs</span>
+                      <span>•</span>
+                      <span className="flex items-center">
+                        <MapPin className="w-3 h-3 mr-0.5" /> {worker.locationName}
+                      </span>
                     </div>
-                  )}
-
-                  <div className="flex items-center gap-1.5 text-[10px] text-slate-400 flex-wrap">
-                    {worker.eShramUan && (
-                      <span className="bg-slate-800/80 text-cyan-300 px-2 py-0.5 rounded-md border border-cyan-500/20 font-mono">
-                        e-Shram: {worker.eShramUan}
-                      </span>
-                    )}
-                    {worker.ncdSocietyCode && (
-                      <span className="bg-slate-800/80 text-emerald-300 px-2 py-0.5 rounded-md border border-emerald-500/20 font-mono">
-                        {worker.ncdSocietyCode}
-                      </span>
-                    )}
-                    {worker.policeVerified && (
-                      <span className="bg-purple-950/50 text-purple-300 px-2 py-0.5 rounded-md border border-purple-500/30 font-medium">
-                        Police Cleared ✓
-                      </span>
-                    )}
+                    <div className="text-xs font-extrabold text-blue-700">{worker.cooperativeName}</div>
                   </div>
                 </div>
 
-                <div className="flex flex-wrap gap-1.5 pt-1">
-                  {worker.skills.slice(0, 3).map((skill) => (
-                    <span
-                      key={skill}
-                      className="text-[10px] px-2 py-0.5 rounded-md bg-white/5 text-slate-300 border border-white/5"
-                    >
-                      {skill}
-                    </span>
-                  ))}
-                  {worker.skills.length > 3 && (
-                    <span className="text-[10px] px-1.5 py-0.5 rounded-md text-slate-400">
-                      +{worker.skills.length - 3} more
-                    </span>
-                  )}
+
+                {/* 1-Tap Booking & Direct Calling Buttons */}
+                <div className="flex items-center gap-2 w-full sm:w-auto mt-2 sm:mt-0">
+                  <a
+                    href={`tel:${worker.phone}`}
+                    className="flex-1 sm:flex-initial min-h-[48px] min-w-[48px] px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 border-2 border-black text-black font-black text-sm flex items-center justify-center gap-1 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-y-[1px]"
+                    aria-label={`Call ${worker.name}`}
+                  >
+                    <Phone className="w-4 h-4" />
+                    <span>Call</span>
+                  </a>
+
+                  <button
+                    onClick={() => handleQuickBook(worker)}
+                    className="flex-1 sm:flex-initial min-h-[48px] px-4 py-2 rounded-xl bg-black text-white hover:bg-slate-800 font-black text-sm border-2 border-black flex items-center justify-center gap-1 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.4)] active:translate-y-[1px]"
+                  >
+                    <span>{t('bookNow')} (₹{worker.hourlyRate})</span>
+                    <ArrowRight className="w-4 h-4 ml-1" />
+                  </button>
                 </div>
               </div>
-
-              {/* Action Buttons */}
-              <div className="mt-5 pt-4 border-t border-white/10 flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => setSelectedWorkerForBooking(worker)}
-                  className={`flex-1 py-2.5 px-4 rounded-xl text-slate-950 font-semibold text-xs sm:text-sm hover:brightness-110 shadow-lg active:scale-98 transition-all flex items-center justify-center gap-2 ${
-                    isEmergencySos 
-                      ? 'bg-gradient-to-r from-amber-400 via-rose-400 to-amber-500 shadow-rose-500/20'
-                      : 'bg-gradient-to-r from-cyan-500 via-teal-500 to-emerald-500 shadow-cyan-500/20'
-                  }`}
-                >
-                  <Clock className="w-4 h-4" />
-                  <span>{isEmergencySos ? 'Instant SOS Dispatch' : 'Book Worker'}</span>
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </section>
 
-      {/* Booking Confirmation / Transparent Escrow Modal */}
-      {selectedWorkerForBooking && (() => {
-        const baseEstimate = selectedWorkerForBooking.hourlyRate * 2;
-        const emergencySurge = isEmergencySos ? 250 : 0;
-        const workerDirectPayout = (baseEstimate * 0.90) + emergencySurge;
-        const societyContribution = baseEstimate * 0.05;
-        const mutualAidFund = baseEstimate * 0.05;
-        const guaranteeFund = baseEstimate * 0.01;
-        const totalPayable = baseEstimate + emergencySurge + guaranteeFund;
-
-        return (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-in fade-in duration-200">
-            <div className="glass-panel rounded-3xl max-w-lg w-full p-6 sm:p-7 border border-white/15 shadow-2xl space-y-6 relative max-h-[90vh] overflow-y-auto">
-              
+      {/* -------------------------------------------------------------------- */}
+      {/* 4. MODAL: ONE-TAP 1-STEP CONFIRMATION DRAWER */}
+      {/* -------------------------------------------------------------------- */}
+      {bookingWorker && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-3">
+          <div className="bg-white border-[3px] border-black rounded-3xl p-5 w-full max-w-md shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] space-y-4 animate-in slide-in-from-bottom duration-200">
+            <div className="flex items-center justify-between border-b-2 border-black pb-2">
+              <h3 className="text-xl font-black text-black">Confirm Booking</h3>
               <button
-                type="button"
-                onClick={() => setSelectedWorkerForBooking(null)}
-                className="absolute top-5 right-5 p-2 rounded-xl bg-slate-900/80 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
-                aria-label="Close modal"
+                onClick={() => setBookingWorker(null)}
+                className="min-h-[44px] min-w-[44px] font-black text-xl hover:bg-slate-100 rounded-lg"
               >
-                <X className="w-5 h-5" />
+                ✕
               </button>
-
-              {/* Modal Title */}
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="text-xs font-semibold uppercase tracking-wider text-cyan-400">
-                    Service Escrow Request
-                  </span>
-                  {isEmergencySos && (
-                    <span className="text-[10px] font-bold bg-rose-500 text-white px-2 py-0.5 rounded-full">
-                      EMERGENCY SOS
-                    </span>
-                  )}
-                </div>
-                <h3 className="text-xl sm:text-2xl font-bold text-white mt-1">
-                  Book {selectedWorkerForBooking.name}
-                </h3>
-                <p className="text-xs text-slate-400">
-                  {selectedWorkerForBooking.trade} • {selectedWorkerForBooking.cooperativeName}
-                </p>
-              </div>
-
-              {bookingSuccessMessage ? (
-                <div className="p-4 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-200 text-sm flex items-start gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
-                  <div>
-                    <p className="font-semibold text-white">Booking Request Dispatched!</p>
-                    <p className="mt-1 text-xs text-emerald-300/90">{bookingSuccessMessage}</p>
-                  </div>
-                </div>
-              ) : (
-                <form onSubmit={handleBookSubmit} className="space-y-4">
-                  
-                  {/* Transparent 90/5/5 Cooperative Split Indicator */}
-                  <div className="p-4 rounded-2xl bg-slate-950/80 border border-white/10 space-y-3">
-                    <div className="flex items-center justify-between text-xs font-medium">
-                      <span className="text-slate-400">Estimated 2-Hour Base Service:</span>
-                      <span className="text-white font-bold text-sm">
-                        ₹{baseEstimate}
-                      </span>
-                    </div>
-
-                    {isEmergencySos && (
-                      <div className="flex items-center justify-between text-xs font-medium text-rose-300 bg-rose-950/40 p-2 rounded-lg border border-rose-500/30">
-                        <span>⚡ Emergency Surge (100% directly to worker):</span>
-                        <span className="font-bold">+₹{emergencySurge}</span>
-                      </div>
-                    )}
-
-                    <div className="space-y-1.5 text-xs border-t border-white/5 pt-2">
-                      <div className="flex justify-between text-emerald-300">
-                        <span>• 90% Direct Worker Take-Home (+ 100% Surge):</span>
-                        <span className="font-bold">₹{workerDirectPayout.toFixed(0)}</span>
-                      </div>
-                      <div className="flex justify-between text-cyan-300">
-                        <span>• 5% Primary Society Operational Capital:</span>
-                        <span className="font-semibold">₹{societyContribution.toFixed(0)}</span>
-                      </div>
-                      <div className="flex justify-between text-amber-300">
-                        <span>• 5% Worker Social Security & Mutual Aid Pool:</span>
-                        <span className="font-semibold">₹{mutualAidFund.toFixed(0)}</span>
-                      </div>
-                      <div className="flex justify-between text-indigo-300 border-t border-white/5 pt-1.5">
-                        <span>• 1% Cooperative Guarantee Fund (Customer Protection):</span>
-                        <span className="font-semibold">₹{guaranteeFund.toFixed(0)}</span>
-                      </div>
-                    </div>
-
-                    <div className="border-t border-white/10 pt-2 flex items-center justify-between font-bold text-sm text-white">
-                      <span>Total Payable into Escrow:</span>
-                      <span className="text-cyan-300 text-base">₹{totalPayable.toFixed(0)}</span>
-                    </div>
-                  </div>
-
-                  {/* Date & Time */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-xs font-medium text-slate-300 mb-1">
-                        Preferred Date
-                      </label>
-                      <input
-                        type="date"
-                        value={bookingDate}
-                        onChange={(e) => setBookingDate(e.target.value)}
-                        className="w-full glass-input px-3 py-2 rounded-xl text-xs sm:text-sm"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-medium text-slate-300 mb-1">
-                        Preferred Time
-                      </label>
-                      <input
-                        type="text"
-                        value={bookingTime}
-                        onChange={(e) => setBookingTime(e.target.value)}
-                        className="w-full glass-input px-3 py-2 rounded-xl text-xs sm:text-sm"
-                        required
-                      />
-                    </div>
-                  </div>
-
-                  {/* Location */}
-                  <div>
-                    <label className="block text-xs font-medium text-slate-300 mb-1">
-                      Service Location (Address)
-                    </label>
-                    <input
-                      type="text"
-                      value={bookingAddress}
-                      onChange={(e) => setBookingAddress(e.target.value)}
-                      className="w-full glass-input px-3 py-2 rounded-xl text-xs sm:text-sm"
-                      required
-                    />
-                  </div>
-
-                  {/* Notes */}
-                  <div>
-                    <label className="block text-xs font-medium text-slate-300 mb-1">
-                      Job Description / Problem Notes
-                    </label>
-                    <textarea
-                      rows={2}
-                      placeholder="Describe what needs fixing (e.g. Master bedroom switchboard spark)..."
-                      className="w-full glass-input px-3 py-2 rounded-xl text-xs sm:text-sm resize-none"
-                      defaultValue="Inspection for circuit breaker tripping and kitchen main switch repair."
-                    />
-                  </div>
-
-                  {/* Submit button */}
-                  <div className="pt-2">
-                    <button
-                      type="submit"
-                      className={`w-full py-3 px-4 rounded-xl text-slate-950 font-bold text-sm hover:brightness-110 shadow-lg active:scale-98 transition-all flex items-center justify-center gap-2 ${
-                        isEmergencySos
-                          ? 'bg-gradient-to-r from-amber-400 via-rose-400 to-amber-500 shadow-rose-500/30'
-                          : 'bg-gradient-to-r from-cyan-500 via-teal-500 to-emerald-500 shadow-cyan-500/20'
-                      }`}
-                    >
-                      <Send className="w-4 h-4 text-slate-950" />
-                      <span>Confirm & Escrow Dispatch (₹{totalPayable.toFixed(0)})</span>
-                    </button>
-                    <p className="text-[11px] text-center text-slate-400 mt-2">
-                      Locked safely in cooperative smart escrow. Protected by 1% Cooperative Guarantee Fund against accidental damage.
-                    </p>
-                  </div>
-                </form>
-              )}
             </div>
-          </div>
-        );
-      })()}
 
+            <div className="flex items-center gap-3 p-3 bg-amber-50 border-2 border-black rounded-2xl">
+              <div className="w-12 h-12 rounded-xl bg-amber-200 border-2 border-black flex items-center justify-center text-xl font-black">
+                🤝
+              </div>
+              <div>
+                <p className="font-black text-base text-black">{bookingWorker.name}</p>
+                <p className="text-xs font-bold text-slate-700">{bookingWorker.trade} • {bookingWorker.cooperativeName}</p>
+                <p className="text-xs font-extrabold text-emerald-700">₹{bookingWorker.hourlyRate} / hour</p>
+              </div>
+            </div>
+
+            <div className="bg-slate-50 border-2 border-slate-200 rounded-xl p-3 text-xs font-bold text-slate-700 space-y-1">
+              <div className="flex justify-between">
+                <span>Worker Payout (90%):</span>
+                <span className="font-extrabold text-black">₹{Math.round(bookingWorker.hourlyRate * 0.9)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Cooperative Reserve (5%):</span>
+                <span className="font-extrabold text-black">₹{Math.round(bookingWorker.hourlyRate * 0.05)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Worker Welfare & Insurance (5%):</span>
+                <span className="font-extrabold text-black">₹{Math.round(bookingWorker.hourlyRate * 0.05)}</span>
+              </div>
+            </div>
+
+            {bookingSuccess ? (
+              <div className="bg-emerald-500 text-white font-black text-center p-3 rounded-xl border-2 border-black">
+                {bookingSuccess}
+              </div>
+            ) : (
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setBookingWorker(null)}
+                  className="flex-1 min-h-[48px] rounded-xl border-2 border-black bg-slate-100 font-black text-black hover:bg-slate-200"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={confirmBooking}
+                  className="flex-1 min-h-[48px] rounded-xl border-2 border-black bg-emerald-500 hover:bg-emerald-600 font-black text-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-y-[1px]"
+                >
+                  Confirm (पुष्टि करें)
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

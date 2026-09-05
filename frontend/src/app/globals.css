@@ -1,11 +1,12 @@
 @import "tailwindcss";
 
 :root {
-  --background: #070a12;
-  --foreground: #f1f5f9;
-  --surface-glass: rgba(15, 23, 42, 0.65);
-  --border-glass: rgba(255, 255, 255, 0.08);
-  --border-glass-hover: rgba(6, 182, 212, 0.35);
+  --background: #ffffff;
+  --foreground: #000000;
+  --primary-blue: #1d4ed8;
+  --primary-green: #15803d;
+  --primary-amber: #b45309;
+  --primary-red: #b91c1c;
 }
 
 @theme inline {
@@ -16,106 +17,133 @@
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: #f8fafc;
+  color: #000000;
   font-family: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
   overflow-x: hidden;
   min-height: 100vh;
 }
 
-/* Ambient glow backgrounds */
-.bg-ambient {
-  background-color: #070a12;
-  background-image: 
-    radial-gradient(at 15% 15%, rgba(6, 182, 212, 0.12) 0px, transparent 50%),
-    radial-gradient(at 85% 25%, rgba(99, 102, 241, 0.12) 0px, transparent 50%),
-    radial-gradient(at 50% 85%, rgba(16, 185, 129, 0.08) 0px, transparent 55%);
-  background-attachment: fixed;
+/* Safe area padding for mobile navigation */
+.safe-area-pb {
+  padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
 }
 
-/* Glassmorphism primitives */
-.glass-panel {
-  background: rgba(15, 23, 42, 0.6);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+/* High Contrast Accessible Touch Cards */
+.accessible-card {
+  background: #ffffff;
+  border: 2.5px solid #000000;
+  border-radius: 1.25rem;
+  box-shadow: 4px 4px 0px 0px #000000;
+  transition: all 0.15s ease-in-out;
 }
 
-.glass-panel-interactive {
-  background: rgba(15, 23, 42, 0.55);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+.accessible-card:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 5px 5px 0px 0px #000000;
 }
 
-.glass-panel-interactive:hover {
-  background: rgba(15, 23, 42, 0.75);
-  border-color: rgba(6, 182, 212, 0.4);
-  transform: translateY(-2px);
-  box-shadow: 0 12px 36px 0 rgba(0, 0, 0, 0.45), 0 0 20px -5px rgba(6, 182, 212, 0.2);
+.accessible-card:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0px 0px #000000;
 }
 
-.glass-card {
-  background: rgba(15, 23, 42, 0.45);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.07);
+/* Accessible High Contrast Buttons (Minimum 48x48px) */
+.accessible-btn {
+  min-height: 48px;
+  min-width: 48px;
+  padding: 0.75rem 1.25rem;
+  font-size: 1.05rem;
+  font-weight: 800;
+  border: 2px solid #000000;
+  border-radius: 0.875rem;
+  box-shadow: 3px 3px 0px 0px #000000;
+  touch-action: manipulation;
+  transition: all 0.12s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
 }
 
-.glass-input {
-  background: rgba(15, 23, 42, 0.7);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  color: #f8fafc;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+.accessible-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 0px 0px 0px 0px #000000;
 }
 
-.glass-input:focus {
-  outline: none;
-  border-color: rgba(6, 182, 212, 0.7);
-  box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.18);
+/* Touch-Swipe Carousel */
+.swipe-carousel {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none; /* Firefox */
 }
 
-.gradient-text-cyan {
-  background: linear-gradient(135deg, #38bdf8 0%, #06b6d4 50%, #2dd4bf 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+.swipe-carousel::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
 }
 
-.gradient-text-coop {
-  background: linear-gradient(135deg, #60a5fa 0%, #38bdf8 50%, #34d399 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+.swipe-slide {
+  flex: 0 0 88%;
+  scroll-snap-align: center;
 }
 
-.gradient-text-amber {
-  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 50%, #ea580c 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+@media (min-width: 640px) {
+  .swipe-slide {
+    flex: 0 0 46%;
+  }
 }
 
-/* Custom scrollbars */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+@media (min-width: 1024px) {
+  .swipe-slide {
+    flex: 0 0 31%;
+  }
 }
 
-::-webkit-scrollbar-track {
-  background: rgba(7, 10, 18, 0.6);
+/* Moving Scooter Keyframe Animation */
+@keyframes scooterDrive {
+  0% {
+    transform: translateX(-10px) translateY(0px);
+  }
+  25% {
+    transform: translateX(15px) translateY(-2px);
+  }
+  50% {
+    transform: translateX(40px) translateY(0px);
+  }
+  75% {
+    transform: translateX(65px) translateY(-2px);
+  }
+  100% {
+    transform: translateX(90px) translateY(0px);
+  }
 }
 
-::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: 9999px;
+.animate-scooter {
+  animation: scooterDrive 3.5s ease-in-out infinite alternate;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(6, 182, 212, 0.4);
+/* Voice Microphone Pulsing Animation */
+@keyframes voicePulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 16px rgba(220, 38, 38, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(220, 38, 38, 0);
+  }
 }
 
-/* Touch optimization */
-button, a, input, select {
+.animate-voice-pulse {
+  animation: voicePulse 1.4s infinite;
+}
+
+/* Prevent accidental text selections on mobile tap */
+button, a, .no-select {
+  -webkit-user-select: none;
+  user-select: none;
   touch-action: manipulation;
 }
