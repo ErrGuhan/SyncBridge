@@ -19,22 +19,35 @@ import {
   Award,
   CheckCircle2,
   XCircle,
-  FileText
+  FileText,
+  Sparkles,
+  Zap,
+  Radio,
+  Bell,
+  BarChart3,
+  MapPin,
+  Flame,
+  Send
 } from 'lucide-react';
 import { 
   MOCK_ADMIN_METRICS, 
   MOCK_VERIFICATION_QUEUE, 
-  WorkerVerificationItem 
+  MOCK_DEMAND_FORECASTS,
+  WorkerVerificationItem,
+  DemandForecastItem
 } from '@/data/mockData';
 
 export default function AdminDashboard() {
+  const [activeTab, setActiveTab] = useState<'VERIFICATION' | 'AI_FORECAST'>('VERIFICATION');
   const [verifications, setVerifications] = useState<WorkerVerificationItem[]>(MOCK_VERIFICATION_QUEUE);
+  const [forecasts, setForecasts] = useState<DemandForecastItem[]>(MOCK_DEMAND_FORECASTS);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState<string>('ALL');
   const [selectedDocWorker, setSelectedDocWorker] = useState<WorkerVerificationItem | null>(null);
-  const [toastMessage, setToastMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
+  const [toastMessage, setToastMessage] = useState<{ text: string; type: 'success' | 'error' | 'info' } | null>(null);
+  const [alertDispatchedMap, setAlertDispatchedMap] = useState<Record<string, boolean>>({});
 
-  const showToast = (text: string, type: 'success' | 'error') => {
+  const showToast = (text: string, type: 'success' | 'error' | 'info') => {
     setToastMessage({ text, type });
     setTimeout(() => setToastMessage(null), 3500);
   };
@@ -59,7 +72,16 @@ export default function AdminDashboard() {
     showToast(`Rejected application for ${workerName}. Notification sent to cooperative admin.`, 'error');
   };
 
-  // Filter queue
+  const handleBroadcastAlert = (forecast: DemandForecastItem) => {
+    const key = `${forecast.serviceCategory}__${forecast.areaCode}`;
+    setAlertDispatchedMap(prev => ({ ...prev, [key]: true }));
+    showToast(
+      `Broadcast dispatched: Alerted ${forecast.currentActiveWorkers + forecast.workerDeficit} ${forecast.serviceCategory}s in ${forecast.areaName} (${forecast.areaCode}) for expected surge!`,
+      'info'
+    );
+  };
+
+  // Filter verification queue
   const filteredQueue = verifications.filter(item => {
     const matchesSearch = 
       item.workerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -72,7 +94,7 @@ export default function AdminDashboard() {
   });
 
   const pendingCount = verifications.filter(i => i.status === 'PENDING').length;
-  const verifiedCount = verifications.filter(i => i.status === 'VERIFIED').length;
+  const criticalSurgeCount = forecasts.filter(f => f.demandLevel === 'CRITICAL_SURGE').length;
 
   return (
     <div className="space-y-8 py-2 sm:py-6 animate-in fade-in duration-300">
@@ -81,14 +103,14 @@ export default function AdminDashboard() {
       {toastMessage && (
         <div className={`fixed top-20 right-4 z-50 p-4 rounded-2xl border shadow-2xl backdrop-blur-xl flex items-center gap-3 animate-in slide-in-from-top-4 duration-200 ${
           toastMessage.type === 'success' 
-            ? 'bg-emerald-950/80 border-emerald-500/40 text-emerald-200' 
-            : 'bg-rose-950/80 border-rose-500/40 text-rose-200'
+            ? 'bg-emerald-950/90 border-emerald-500/40 text-emerald-200' 
+            : toastMessage.type === 'error'
+              ? 'bg-rose-950/90 border-rose-500/40 text-rose-200'
+              : 'bg-cyan-950/90 border-cyan-500/40 text-cyan-200'
         }`}>
-          {toastMessage.type === 'success' ? (
-            <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
-          ) : (
-            <XCircle className="w-5 h-5 text-rose-400 shrink-0" />
-          )}
+          {toastMessage.type === 'success' && <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />}
+          {toastMessage.type === 'error' && <XCircle className="w-5 h-5 text-rose-400 shrink-0" />}
+          {toastMessage.type === 'info' && <Radio className="w-5 h-5 text-cyan-400 shrink-0 animate-pulse" />}
           <span className="text-xs sm:text-sm font-medium">{toastMessage.text}</span>
         </div>
       )}
@@ -104,7 +126,7 @@ export default function AdminDashboard() {
             Cooperative Federation Admin Dashboard
           </h1>
           <p className="text-xs sm:text-sm text-slate-400 mt-1 max-w-2xl">
-            Audit skill verifications, monitor 80/15/5 democratic split revenue, and steward worker mutual aid reserves.
+            Audit skill verifications, monitor AI time-series demand surges, and steward worker mutual aid reserves.
           </p>
         </div>
 
@@ -211,261 +233,486 @@ export default function AdminDashboard() {
 
       </section>
 
-      {/* Verification Queue Section (Prompt 9 Data Table) */}
-      <section className="space-y-4">
-        
-        {/* Table Filter & Search Controls */}
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-          <div>
-            <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-white flex items-center gap-2">
-              <FileCheck className="w-5 h-5 text-cyan-400" />
-              <span>Worker Verification & Skill Profiling Queue</span>
-            </h2>
-            <p className="text-xs text-slate-400 mt-0.5">
-              Review official government ID and trade certification before granting marketplace discovery status.
-            </p>
-          </div>
+      {/* Main Section Tab Selector */}
+      <div className="flex items-center gap-3 border-b border-white/10 pb-2">
+        <button
+          type="button"
+          onClick={() => setActiveTab('VERIFICATION')}
+          className={`px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm flex items-center gap-2 transition-all ${
+            activeTab === 'VERIFICATION'
+              ? 'bg-cyan-500 text-slate-950 shadow-lg shadow-cyan-500/25'
+              : 'glass-panel text-slate-300 hover:text-white hover:border-white/20'
+          }`}
+        >
+          <FileCheck className="w-4 h-4" />
+          <span>Worker Verification Queue</span>
+          <span className={`text-[10px] px-2 py-0.5 rounded-full ${
+            activeTab === 'VERIFICATION' ? 'bg-slate-950 text-cyan-300' : 'bg-amber-500/20 text-amber-300'
+          }`}>
+            {pendingCount} Pending
+          </span>
+        </button>
 
-          <div className="flex items-center gap-2">
-            {/* Search */}
-            <div className="relative flex-1 sm:w-64">
-              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
-              <input
-                type="text"
-                placeholder="Search worker or trade..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full glass-input pl-9 pr-3 py-2 rounded-xl text-xs"
-              />
+        <button
+          type="button"
+          onClick={() => setActiveTab('AI_FORECAST')}
+          className={`px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm flex items-center gap-2 transition-all ${
+            activeTab === 'AI_FORECAST'
+              ? 'bg-gradient-to-r from-cyan-500 via-teal-400 to-indigo-500 text-slate-950 shadow-lg shadow-cyan-500/25'
+              : 'glass-panel text-slate-300 hover:text-white hover:border-white/20'
+          }`}
+        >
+          <Sparkles className="w-4 h-4 text-amber-300" />
+          <span>AI Demand Forecasting</span>
+          <span className="text-[10px] px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/30 animate-pulse">
+            {criticalSurgeCount} Surges Detected
+          </span>
+        </button>
+      </div>
+
+      {/* TAB 1: Verification Queue Section (Prompt 9 Data Table) */}
+      {activeTab === 'VERIFICATION' && (
+        <section className="space-y-4 animate-in fade-in duration-200">
+          
+          {/* Table Filter & Search Controls */}
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+            <div>
+              <h2 className="text-xl font-bold tracking-tight text-white flex items-center gap-2">
+                <FileCheck className="w-5 h-5 text-cyan-400" />
+                <span>Worker Verification & Skill Profiling Queue</span>
+              </h2>
+              <p className="text-xs text-slate-400 mt-0.5">
+                Review official government ID and trade certification before granting marketplace discovery status.
+              </p>
             </div>
 
-            {/* Filter */}
-            <select
-              value={filterStatus}
-              onChange={(e) => setFilterStatus(e.target.value)}
-              className="glass-input px-3 py-2 rounded-xl text-xs"
-            >
-              <option value="ALL" className="bg-slate-900">All Status</option>
-              <option value="PENDING" className="bg-slate-900">Pending</option>
-              <option value="VERIFIED" className="bg-slate-900">Verified</option>
-              <option value="REJECTED" className="bg-slate-900">Rejected</option>
-            </select>
+            <div className="flex items-center gap-2">
+              {/* Search */}
+              <div className="relative flex-1 sm:w-64">
+                <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+                <input
+                  type="text"
+                  placeholder="Search worker or trade..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full glass-input pl-9 pr-3 py-2 rounded-xl text-xs"
+                />
+              </div>
+
+              {/* Filter */}
+              <select
+                value={filterStatus}
+                onChange={(e) => setFilterStatus(e.target.value)}
+                className="glass-input px-3 py-2 rounded-xl text-xs"
+              >
+                <option value="ALL" className="bg-slate-900">All Status</option>
+                <option value="PENDING" className="bg-slate-900">Pending</option>
+                <option value="VERIFIED" className="bg-slate-900">Verified</option>
+                <option value="REJECTED" className="bg-slate-900">Rejected</option>
+              </select>
+            </div>
           </div>
-        </div>
 
-        {/* Desktop Data Table (hidden on mobile, visible on md+) */}
-        <div className="hidden md:block glass-panel rounded-2xl border border-white/10 overflow-hidden shadow-2xl">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="border-b border-white/10 bg-slate-900/60 text-xs font-semibold text-slate-300">
-                  <th className="py-3.5 px-4">Worker Member</th>
-                  <th className="py-3.5 px-4">Trade & Experience</th>
-                  <th className="py-3.5 px-4">Cooperative Society</th>
-                  <th className="py-3.5 px-4">Submitted Credentials</th>
-                  <th className="py-3.5 px-4">Status</th>
-                  <th className="py-3.5 px-4 text-right">Verification Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-white/5 text-xs text-slate-300">
-                {filteredQueue.map((worker) => (
-                  <tr 
-                    key={worker.id}
-                    className="hover:bg-slate-900/40 transition-colors"
-                  >
-                    {/* Worker Info */}
-                    <td className="py-4 px-4">
-                      <div className="font-bold text-white text-sm">
-                        {worker.workerName}
-                      </div>
-                      <div className="text-slate-400 text-[11px]">
-                        {worker.phone} • {worker.email}
-                      </div>
-                    </td>
-
-                    {/* Trade & Exp */}
-                    <td className="py-4 px-4">
-                      <div className="font-semibold text-cyan-300">
-                        {worker.trade}
-                      </div>
-                      <div className="text-slate-400 text-[11px]">
-                        {worker.experienceYears} Years Field Exp • ₹{worker.hourlyRate}/hr
-                      </div>
-                    </td>
-
-                    {/* Cooperative */}
-                    <td className="py-4 px-4 max-w-xs">
-                      <span className="text-white truncate block">
-                        {worker.cooperative}
-                      </span>
-                      <span className="text-[10px] text-slate-400">
-                        Applied: {worker.submittedAt}
-                      </span>
-                    </td>
-
-                    {/* Credentials */}
-                    <td className="py-4 px-4">
-                      <div className="flex flex-col gap-1">
-                        <button
-                          type="button"
-                          onClick={() => setSelectedDocWorker(worker)}
-                          className="inline-flex items-center gap-1.5 text-[11px] text-cyan-400 hover:text-cyan-300 font-medium"
-                        >
-                          <Award className="w-3.5 h-3.5 text-cyan-400" />
-                          <span className="underline truncate max-w-[180px]">{worker.certificationTitle}</span>
-                        </button>
-                        <span className="text-[10px] text-slate-400 font-mono">
-                          Aadhaar: {worker.aadhaarNumber}
-                        </span>
-                      </div>
-                    </td>
-
-                    {/* Status */}
-                    <td className="py-4 px-4">
-                      {worker.status === 'PENDING' && (
-                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                          <Clock className="w-3 h-3" />
-                          <span>PENDING</span>
-                        </span>
-                      )}
-                      {worker.status === 'VERIFIED' && (
-                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                          <Check className="w-3 h-3" />
-                          <span>VERIFIED</span>
-                        </span>
-                      )}
-                      {worker.status === 'REJECTED' && (
-                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-semibold bg-rose-500/20 text-rose-300 border border-rose-500/30">
-                          <X className="w-3 h-3" />
-                          <span>REJECTED</span>
-                        </span>
-                      )}
-                    </td>
-
-                    {/* Actions */}
-                    <td className="py-4 px-4 text-right">
-                      {worker.status === 'PENDING' ? (
-                        <div className="flex items-center justify-end gap-2">
-                          <button
-                            type="button"
-                            onClick={() => handleApprove(worker.id, worker.workerName)}
-                            className="px-3 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs flex items-center gap-1 transition-all shadow-md shadow-emerald-500/20"
-                          >
-                            <Check className="w-3.5 h-3.5" />
-                            <span>Approve</span>
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => handleReject(worker.id, worker.workerName)}
-                            className="px-3 py-1.5 rounded-xl bg-rose-500/20 hover:bg-rose-500/30 border border-rose-500/30 text-rose-300 font-semibold text-xs flex items-center gap-1 transition-all"
-                          >
-                            <X className="w-3.5 h-3.5" />
-                            <span>Reject</span>
-                          </button>
-                        </div>
-                      ) : (
-                        <span className="text-[11px] text-slate-400 italic">
-                          Action Completed
-                        </span>
-                      )}
-                    </td>
+          {/* Desktop Data Table (hidden on mobile, visible on md+) */}
+          <div className="hidden md:block glass-panel rounded-2xl border border-white/10 overflow-hidden shadow-2xl">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="border-b border-white/10 bg-slate-900/60 text-xs font-semibold text-slate-300">
+                    <th className="py-3.5 px-4">Worker Member</th>
+                    <th className="py-3.5 px-4">Trade & Experience</th>
+                    <th className="py-3.5 px-4">Cooperative Society</th>
+                    <th className="py-3.5 px-4">Submitted Credentials</th>
+                    <th className="py-3.5 px-4">Status</th>
+                    <th className="py-3.5 px-4 text-right">Verification Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
+                </thead>
+                <tbody className="divide-y divide-white/5 text-xs text-slate-300">
+                  {filteredQueue.map((worker) => (
+                    <tr 
+                      key={worker.id}
+                      className="hover:bg-slate-900/40 transition-colors"
+                    >
+                      {/* Worker Info */}
+                      <td className="py-4 px-4">
+                        <div className="font-bold text-white text-sm">
+                          {worker.workerName}
+                        </div>
+                        <div className="text-slate-400 text-[11px]">
+                          {worker.phone} • {worker.email}
+                        </div>
+                      </td>
 
-        {/* Mobile Responsive Card Stack (Shown on < md screens) */}
-        <div className="md:hidden space-y-4">
-          {filteredQueue.map((worker) => (
-            <div
-              key={worker.id}
-              className="glass-panel p-4 rounded-2xl border border-white/10 space-y-3 shadow-lg"
-            >
-              <div className="flex items-start justify-between">
-                <div>
-                  <h3 className="font-bold text-white text-base">
-                    {worker.workerName}
-                  </h3>
-                  <p className="text-xs font-semibold text-cyan-300 mt-0.5">
-                    {worker.trade} • {worker.experienceYears}y exp
-                  </p>
-                </div>
+                      {/* Trade & Exp */}
+                      <td className="py-4 px-4">
+                        <div className="font-semibold text-cyan-300">
+                          {worker.trade}
+                        </div>
+                        <div className="text-slate-400 text-[11px]">
+                          {worker.experienceYears} Years Field Exp • ₹{worker.hourlyRate}/hr
+                        </div>
+                      </td>
 
-                <div>
-                  {worker.status === 'PENDING' && (
-                    <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                      PENDING
-                    </span>
-                  )}
-                  {worker.status === 'VERIFIED' && (
-                    <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                      VERIFIED
-                    </span>
-                  )}
-                  {worker.status === 'REJECTED' && (
-                    <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-rose-500/20 text-rose-300 border border-rose-500/30">
-                      REJECTED
-                    </span>
-                  )}
-                </div>
-              </div>
+                      {/* Cooperative */}
+                      <td className="py-4 px-4 max-w-xs">
+                        <span className="text-white truncate block">
+                          {worker.cooperative}
+                        </span>
+                        <span className="text-[10px] text-slate-400">
+                          Applied: {worker.submittedAt}
+                        </span>
+                      </td>
 
-              <div className="bg-slate-900/60 p-3 rounded-xl border border-white/5 space-y-1.5 text-xs">
-                <div className="flex justify-between">
-                  <span className="text-slate-400">Cooperative:</span>
-                  <span className="text-white font-medium text-right truncate max-w-[200px]">{worker.cooperative}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-400">Hourly Rate:</span>
-                  <span className="text-emerald-300 font-semibold">₹{worker.hourlyRate}/hr</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-400">Aadhaar:</span>
-                  <span className="font-mono text-slate-300">{worker.aadhaarNumber}</span>
-                </div>
-                <div className="pt-1 flex justify-between items-center">
-                  <span className="text-slate-400">Cert:</span>
-                  <button
-                    type="button"
-                    onClick={() => setSelectedDocWorker(worker)}
-                    className="text-cyan-400 underline font-medium truncate max-w-[200px]"
-                  >
-                    {worker.certificationTitle}
-                  </button>
-                </div>
-              </div>
+                      {/* Credentials */}
+                      <td className="py-4 px-4">
+                        <div className="flex flex-col gap-1">
+                          <button
+                            type="button"
+                            onClick={() => setSelectedDocWorker(worker)}
+                            className="inline-flex items-center gap-1.5 text-[11px] text-cyan-400 hover:text-cyan-300 font-medium"
+                          >
+                            <Award className="w-3.5 h-3.5 text-cyan-400" />
+                            <span className="underline truncate max-w-[180px]">{worker.certificationTitle}</span>
+                          </button>
+                          <span className="text-[10px] text-slate-400 font-mono">
+                            Aadhaar: {worker.aadhaarNumber}
+                          </span>
+                        </div>
+                      </td>
 
-              {worker.status === 'PENDING' ? (
-                <div className="grid grid-cols-2 gap-2 pt-1">
-                  <button
-                    type="button"
-                    onClick={() => handleApprove(worker.id, worker.workerName)}
-                    className="py-2.5 rounded-xl bg-emerald-500 text-slate-950 font-bold text-xs flex items-center justify-center gap-1.5 shadow-md shadow-emerald-500/20"
-                  >
-                    <Check className="w-4 h-4" />
-                    <span>Approve</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleReject(worker.id, worker.workerName)}
-                    className="py-2.5 rounded-xl bg-rose-500/20 border border-rose-500/30 text-rose-300 font-semibold text-xs flex items-center justify-center gap-1.5"
-                  >
-                    <X className="w-4 h-4" />
-                    <span>Reject</span>
-                  </button>
-                </div>
-              ) : (
-                <div className="text-center py-1 text-xs text-slate-500 italic">
-                  Status recorded as {worker.status}
-                </div>
-              )}
+                      {/* Status */}
+                      <td className="py-4 px-4">
+                        {worker.status === 'PENDING' && (
+                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                            <Clock className="w-3 h-3" />
+                            <span>PENDING</span>
+                          </span>
+                        )}
+                        {worker.status === 'VERIFIED' && (
+                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                            <Check className="w-3 h-3" />
+                            <span>VERIFIED</span>
+                          </span>
+                        )}
+                        {worker.status === 'REJECTED' && (
+                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-semibold bg-rose-500/20 text-rose-300 border border-rose-500/30">
+                            <X className="w-3 h-3" />
+                            <span>REJECTED</span>
+                          </span>
+                        )}
+                      </td>
+
+                      {/* Actions */}
+                      <td className="py-4 px-4 text-right">
+                        {worker.status === 'PENDING' ? (
+                          <div className="flex items-center justify-end gap-2">
+                            <button
+                              type="button"
+                              onClick={() => handleApprove(worker.id, worker.workerName)}
+                              className="px-3 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs flex items-center gap-1 transition-all shadow-md shadow-emerald-500/20"
+                            >
+                              <Check className="w-3.5 h-3.5" />
+                              <span>Approve</span>
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleReject(worker.id, worker.workerName)}
+                              className="px-3 py-1.5 rounded-xl bg-rose-500/20 hover:bg-rose-500/30 border border-rose-500/30 text-rose-300 font-semibold text-xs flex items-center gap-1 transition-all"
+                            >
+                              <X className="w-3.5 h-3.5" />
+                              <span>Reject</span>
+                            </button>
+                          </div>
+                        ) : (
+                          <span className="text-[11px] text-slate-400 italic">
+                            Action Completed
+                          </span>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
-          ))}
-        </div>
+          </div>
 
-      </section>
+          {/* Mobile Responsive Card Stack (Shown on < md screens) */}
+          <div className="md:hidden space-y-4">
+            {filteredQueue.map((worker) => (
+              <div
+                key={worker.id}
+                className="glass-panel p-4 rounded-2xl border border-white/10 space-y-3 shadow-lg"
+              >
+                <div className="flex items-start justify-between">
+                  <div>
+                    <h3 className="font-bold text-white text-base">
+                      {worker.workerName}
+                    </h3>
+                    <p className="text-xs font-semibold text-cyan-300 mt-0.5">
+                      {worker.trade} • {worker.experienceYears}y exp
+                    </p>
+                  </div>
+
+                  <div>
+                    {worker.status === 'PENDING' && (
+                      <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                        PENDING
+                      </span>
+                    )}
+                    {worker.status === 'VERIFIED' && (
+                      <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                        VERIFIED
+                      </span>
+                    )}
+                    {worker.status === 'REJECTED' && (
+                      <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-rose-500/20 text-rose-300 border border-rose-500/30">
+                        REJECTED
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                <div className="bg-slate-900/60 p-3 rounded-xl border border-white/5 space-y-1.5 text-xs">
+                  <div className="flex justify-between">
+                    <span className="text-slate-400">Cooperative:</span>
+                    <span className="text-white font-medium text-right truncate max-w-[200px]">{worker.cooperative}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-400">Hourly Rate:</span>
+                    <span className="text-emerald-300 font-semibold">₹{worker.hourlyRate}/hr</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-400">Aadhaar:</span>
+                    <span className="font-mono text-slate-300">{worker.aadhaarNumber}</span>
+                  </div>
+                  <div className="pt-1 flex justify-between items-center">
+                    <span className="text-slate-400">Cert:</span>
+                    <button
+                      type="button"
+                      onClick={() => setSelectedDocWorker(worker)}
+                      className="text-cyan-400 underline font-medium truncate max-w-[200px]"
+                    >
+                      {worker.certificationTitle}
+                    </button>
+                  </div>
+                </div>
+
+                {worker.status === 'PENDING' ? (
+                  <div className="grid grid-cols-2 gap-2 pt-1">
+                    <button
+                      type="button"
+                      onClick={() => handleApprove(worker.id, worker.workerName)}
+                      className="py-2.5 rounded-xl bg-emerald-500 text-slate-950 font-bold text-xs flex items-center justify-center gap-1.5 shadow-md shadow-emerald-500/20"
+                    >
+                      <Check className="w-4 h-4" />
+                      <span>Approve</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleReject(worker.id, worker.workerName)}
+                      className="py-2.5 rounded-xl bg-rose-500/20 border border-rose-500/30 text-rose-300 font-semibold text-xs flex items-center justify-center gap-1.5"
+                    >
+                      <X className="w-4 h-4" />
+                      <span>Reject</span>
+                    </button>
+                  </div>
+                ) : (
+                  <div className="text-center py-1 text-xs text-slate-500 italic">
+                    Status recorded as {worker.status}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+
+        </section>
+      )}
+
+      {/* TAB 2: AI Demand Forecasting & Surge Alerts Section (Prompt 10) */}
+      {activeTab === 'AI_FORECAST' && (
+        <section className="space-y-6 animate-in fade-in duration-200">
+          
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gradient-to-r from-slate-900 via-indigo-950/40 to-slate-900 p-5 rounded-2xl border border-cyan-500/30">
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 uppercase tracking-wider">
+                  Model: WEMA + Momentum Time-Series
+                </span>
+                <span className="text-xs text-slate-400">• Forecast Window: Next 7 Days</span>
+              </div>
+              <h2 className="text-xl sm:text-2xl font-extrabold text-white mt-1 flex items-center gap-2">
+                <Flame className="w-6 h-6 text-amber-400" />
+                <span>AI Trade Demand Hotspots & Surge Prediction</span>
+              </h2>
+              <p className="text-xs text-slate-300 mt-1 max-w-2xl">
+                Proactively identify regional service shortages across postal codes. Alert cooperative workers to high-earning dispatch zones ahead of weekend surges.
+              </p>
+            </div>
+
+            <div className="flex items-center gap-2 shrink-0">
+              <div className="bg-slate-950/80 px-4 py-2.5 rounded-xl border border-white/10 text-center">
+                <span className="text-[10px] text-slate-400 block uppercase font-semibold">Total Projected Jobs</span>
+                <span className="text-lg font-black text-cyan-300">
+                  {forecasts.reduce((acc, f) => acc + f.predictedDemandNextWeek, 0)}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Hotspot Cards Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {forecasts.map((forecast) => {
+              const alertKey = `${forecast.serviceCategory}__${forecast.areaCode}`;
+              const isDispatched = alertDispatchedMap[alertKey];
+
+              return (
+                <div
+                  key={alertKey}
+                  className={`glass-panel rounded-3xl p-6 border transition-all relative overflow-hidden flex flex-col justify-between ${
+                    forecast.demandLevel === 'CRITICAL_SURGE'
+                      ? 'border-rose-500/40 shadow-[0_12px_36px_rgba(244,63,94,0.15)]'
+                      : forecast.demandLevel === 'HIGH_DEMAND'
+                        ? 'border-amber-500/40 shadow-[0_12px_36px_rgba(245,158,11,0.15)]'
+                        : 'border-white/10'
+                  }`}
+                >
+                  {/* Top Bar: Locality, Trade, Demand Badge */}
+                  <div className="space-y-4">
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <div className="flex items-center gap-2 text-xs font-semibold text-slate-400">
+                          <MapPin className="w-3.5 h-3.5 text-cyan-400" />
+                          <span>{forecast.areaName} ({forecast.areaCode})</span>
+                          <span>•</span>
+                          <span className="text-slate-500">{forecast.zone}</span>
+                        </div>
+                        <h3 className="text-xl font-bold text-white mt-1">
+                          {forecast.serviceCategory}
+                        </h3>
+                      </div>
+
+                      <div>
+                        {forecast.demandLevel === 'CRITICAL_SURGE' && (
+                          <span className="px-3 py-1 rounded-full text-xs font-black bg-rose-500/20 text-rose-300 border border-rose-500/40 flex items-center gap-1.5 animate-pulse shadow-sm">
+                            <Flame className="w-3.5 h-3.5 fill-rose-400 text-rose-400" />
+                            <span>CRITICAL SURGE</span>
+                          </span>
+                        )}
+                        {forecast.demandLevel === 'HIGH_DEMAND' && (
+                          <span className="px-3 py-1 rounded-full text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 flex items-center gap-1.5">
+                            <Zap className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+                            <span>HIGH DEMAND</span>
+                          </span>
+                        )}
+                        {forecast.demandLevel === 'MODERATE' && (
+                          <span className="px-3 py-1 rounded-full text-xs font-semibold bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
+                            MODERATE
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Statistical Metrics Strip */}
+                    <div className="grid grid-cols-3 gap-2 bg-slate-900/70 p-3 rounded-2xl border border-white/5 text-center text-xs">
+                      <div>
+                        <span className="text-[10px] text-slate-400 block">Next Week Jobs</span>
+                        <span className="text-base font-extrabold text-white">
+                          {forecast.predictedDemandNextWeek}
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-[10px] text-slate-400 block">Growth Rate</span>
+                        <span className={`text-base font-extrabold ${forecast.growthRatePct >= 20 ? 'text-emerald-400' : 'text-slate-300'}`}>
+                          +{forecast.growthRatePct}%
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-[10px] text-slate-400 block">Model Confidence</span>
+                        <span className="text-base font-extrabold text-cyan-300">
+                          {(forecast.confidenceScore * 100).toFixed(0)}%
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Supply vs Deficit Analysis */}
+                    <div className="p-3.5 rounded-2xl bg-slate-950/80 border border-white/10 space-y-2 text-xs">
+                      <div className="flex items-center justify-between">
+                        <span className="text-slate-400">Worker Supply Gap:</span>
+                        {forecast.workerDeficit > 0 ? (
+                          <span className="px-2 py-0.5 rounded-md font-bold bg-rose-500/20 text-rose-300 border border-rose-500/30">
+                            Deficit: {forecast.workerDeficit} Workers Needed
+                          </span>
+                        ) : (
+                          <span className="px-2 py-0.5 rounded-md font-semibold bg-emerald-500/20 text-emerald-300">
+                            Supply Balanced
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Progress Bar of Capacity */}
+                      <div className="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                        <div 
+                          className={`h-full transition-all ${
+                            forecast.workerDeficit > 0 ? 'bg-gradient-to-r from-amber-500 to-rose-500' : 'bg-emerald-400'
+                          }`}
+                          style={{ 
+                            width: `${Math.min((forecast.currentActiveWorkers / forecast.recommendedWorkerSupply) * 100, 100)}%` 
+                          }}
+                        />
+                      </div>
+
+                      <div className="flex justify-between text-[11px] text-slate-400">
+                        <span>Current Active: {forecast.currentActiveWorkers}</span>
+                        <span>Recommended: {forecast.recommendedWorkerSupply}</span>
+                      </div>
+                    </div>
+
+                    {/* Peak Days & Narrative Alert */}
+                    <div className="space-y-1.5 text-xs text-slate-300">
+                      <div className="flex items-center gap-1.5 text-[11px] text-slate-400">
+                        <Clock className="w-3.5 h-3.5 text-cyan-400" />
+                        <span>Peak Anticipated Window: <strong className="text-white">{forecast.peakDays.join(' & ')}</strong></span>
+                      </div>
+                      <p className="text-[11px] text-slate-300 leading-relaxed bg-slate-900/40 p-2.5 rounded-xl border border-white/5">
+                        {forecast.recommendedWorkerAlert}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Dispatch Broadcast Button */}
+                  <div className="mt-5 pt-4 border-t border-white/10">
+                    <button
+                      type="button"
+                      disabled={isDispatched}
+                      onClick={() => handleBroadcastAlert(forecast)}
+                      className={`w-full py-3 px-4 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all ${
+                        isDispatched
+                          ? 'bg-emerald-500/20 border border-emerald-500/30 text-emerald-300'
+                          : forecast.demandLevel === 'CRITICAL_SURGE'
+                            ? 'bg-gradient-to-r from-rose-500 to-amber-500 text-slate-950 hover:brightness-110 shadow-lg shadow-rose-500/20 active:scale-98'
+                            : 'bg-cyan-500 hover:bg-cyan-400 text-slate-950 shadow-md shadow-cyan-500/20 active:scale-98'
+                      }`}
+                    >
+                      {isDispatched ? (
+                        <>
+                          <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                          <span>Surge Alert Dispatched to Cooperative Workers</span>
+                        </>
+                      ) : (
+                        <>
+                          <Send className="w-4 h-4" />
+                          <span>Broadcast Surge Alert to {forecast.serviceCategory}s in {forecast.areaName}</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+        </section>
+      )}
 
       {/* Document Inspector Modal */}
       {selectedDocWorker && (

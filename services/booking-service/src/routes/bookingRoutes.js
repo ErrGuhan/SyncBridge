@@ -5,7 +5,8 @@ const {
   getNearbyWorkers,
   respondToBooking,
   updateBookingStatus,
-  getBookingById
+  getBookingById,
+  getDemandForecast
 } = require('../controllers/bookingController');
 const { extractUser, requireRole } = require('../middleware/auth');
 
@@ -21,6 +22,9 @@ router.get(
   ],
   getNearbyWorkers
 );
+
+// 1b. AI Demand Forecasting Route for Cooperative Admin & Worker Surge Alerts
+router.get('/demand-forecast', getDemandForecast);
 
 // All following routes require authenticated user context from Gateway
 router.use(extractUser);

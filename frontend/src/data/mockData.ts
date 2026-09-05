@@ -424,3 +424,139 @@ export const MOCK_BOOKINGS: BookingItem[] = [
     location: 'Villa 14, Rainbow Drive, HSR Layout, Bengaluru'
   }
 ];
+
+export interface DemandForecastItem {
+  areaCode: string;
+  areaName: string;
+  zone: string;
+  serviceCategory: string;
+  predictedDemandNextWeek: number;
+  historicalWeeklyAvg: number;
+  growthRatePct: number;
+  demandLevel: 'CRITICAL_SURGE' | 'HIGH_DEMAND' | 'MODERATE' | 'LOW';
+  confidenceScore: number;
+  peakDays: string[];
+  recommendedWorkerSupply: number;
+  currentActiveWorkers: number;
+  workerDeficit: number;
+  recommendedWorkerAlert: string;
+  timeSeriesBreakdown: {
+    weeksAnalyzed: number;
+    mostRecentWeekCount: number;
+    weightedMovingAvg: number;
+    trendMultiplier: number;
+  };
+}
+
+export const MOCK_DEMAND_FORECASTS: DemandForecastItem[] = [
+  {
+    areaCode: '560038',
+    areaName: 'Indiranagar',
+    zone: 'East Bengaluru',
+    serviceCategory: 'Electrician',
+    predictedDemandNextWeek: 58,
+    historicalWeeklyAvg: 38.5,
+    growthRatePct: 50.6,
+    demandLevel: 'CRITICAL_SURGE',
+    confidenceScore: 0.94,
+    peakDays: ['Saturday', 'Sunday'],
+    recommendedWorkerSupply: 12,
+    currentActiveWorkers: 7,
+    workerDeficit: 5,
+    recommendedWorkerAlert: '🚨 CRITICAL SURGE ALERT: Electrician demand in Indiranagar (560038) projected at 58 jobs (+50.6%). Deficit of 5 workers. Immediate cooperative dispatch alert recommended.',
+    timeSeriesBreakdown: {
+      weeksAnalyzed: 5,
+      mostRecentWeekCount: 52,
+      weightedMovingAvg: 46.2,
+      trendMultiplier: 1.25
+    }
+  },
+  {
+    areaCode: '560034',
+    areaName: 'Koramangala',
+    zone: 'South Bengaluru',
+    serviceCategory: 'Appliance Repair',
+    predictedDemandNextWeek: 43,
+    historicalWeeklyAvg: 32.1,
+    growthRatePct: 33.9,
+    demandLevel: 'HIGH_DEMAND',
+    confidenceScore: 0.91,
+    peakDays: ['Friday', 'Saturday'],
+    recommendedWorkerSupply: 9,
+    currentActiveWorkers: 6,
+    workerDeficit: 3,
+    recommendedWorkerAlert: '⚡ HIGH DEMAND ALERT: Elevated Appliance Repair requests in Koramangala (560034). 9 workers needed for expected weekend peak.',
+    timeSeriesBreakdown: {
+      weeksAnalyzed: 5,
+      mostRecentWeekCount: 41,
+      weightedMovingAvg: 37.8,
+      trendMultiplier: 1.14
+    }
+  },
+  {
+    areaCode: '560102',
+    areaName: 'HSR Layout',
+    zone: 'South-East Bengaluru',
+    serviceCategory: 'Plumber',
+    predictedDemandNextWeek: 35,
+    historicalWeeklyAvg: 28.4,
+    growthRatePct: 23.2,
+    demandLevel: 'HIGH_DEMAND',
+    confidenceScore: 0.89,
+    peakDays: ['Sunday'],
+    recommendedWorkerSupply: 7,
+    currentActiveWorkers: 5,
+    workerDeficit: 2,
+    recommendedWorkerAlert: '⚡ HIGH DEMAND ALERT: Elevated Plumber requests in HSR Layout (560102). 7 workers needed for expected Sunday surge.',
+    timeSeriesBreakdown: {
+      weeksAnalyzed: 5,
+      mostRecentWeekCount: 34,
+      weightedMovingAvg: 31.5,
+      trendMultiplier: 1.11
+    }
+  },
+  {
+    areaCode: '560076',
+    areaName: 'BTM Layout',
+    zone: 'South Bengaluru',
+    serviceCategory: 'Deep Cleaning',
+    predictedDemandNextWeek: 26,
+    historicalWeeklyAvg: 23.0,
+    growthRatePct: 13.0,
+    demandLevel: 'MODERATE',
+    confidenceScore: 0.87,
+    peakDays: ['Saturday', 'Sunday'],
+    recommendedWorkerSupply: 6,
+    currentActiveWorkers: 6,
+    workerDeficit: 0,
+    recommendedWorkerAlert: 'Stable demand for Deep Cleaning in BTM Layout. Baseline capacity (6 workers) is sufficient.',
+    timeSeriesBreakdown: {
+      weeksAnalyzed: 5,
+      mostRecentWeekCount: 25,
+      weightedMovingAvg: 24.1,
+      trendMultiplier: 1.08
+    }
+  },
+  {
+    areaCode: '560011',
+    areaName: 'Jayanagar',
+    zone: 'South Bengaluru',
+    serviceCategory: 'Caregiver & Nursing',
+    predictedDemandNextWeek: 22,
+    historicalWeeklyAvg: 20.5,
+    growthRatePct: 7.3,
+    demandLevel: 'MODERATE',
+    confidenceScore: 0.90,
+    peakDays: ['Monday', 'Tuesday'],
+    recommendedWorkerSupply: 5,
+    currentActiveWorkers: 5,
+    workerDeficit: 0,
+    recommendedWorkerAlert: 'Stable demand for Caregiver & Nursing in Jayanagar. Baseline capacity (5 workers) is sufficient.',
+    timeSeriesBreakdown: {
+      weeksAnalyzed: 5,
+      mostRecentWeekCount: 21,
+      weightedMovingAvg: 21.0,
+      trendMultiplier: 1.05
+    }
+  }
+];
