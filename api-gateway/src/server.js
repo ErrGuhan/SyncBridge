@@ -128,7 +128,24 @@ app.use(
 // ----------------------------------------------------------------------------
 // ROUTE 2: BOOKING SERVICE (Port 3002)
 // ----------------------------------------------------------------------------
-// All booking creation, assignment, and status updates require authentication
+// Public worker discovery & AI demand forecasting (bypasses auth for seamless guest exploration)
+app.use(
+  '/api/bookings/workers/nearby',
+  proxy(BOOKING_SERVICE_URL, {
+    ...createProxyOptions('Booking Service'),
+    proxyReqPathResolver: (req) => `/workers/nearby${req.url}`
+  })
+);
+
+app.use(
+  '/api/bookings/demand-forecast',
+  proxy(BOOKING_SERVICE_URL, {
+    ...createProxyOptions('Booking Service'),
+    proxyReqPathResolver: () => `/demand-forecast`
+  })
+);
+
+// Protected booking operations (creation, assignment, and status updates)
 app.use(
   '/api/bookings',
   authenticateSupabase,

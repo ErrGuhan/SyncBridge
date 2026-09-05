@@ -102,7 +102,7 @@ export default function TopAccessibleHeader() {
         </div>
 
         {/* Right: Portals Switcher, Language & Auth Badge */}
-        <div className="flex items-center gap-2 sm:gap-2.5">
+        <div className="flex items-center gap-1.5 sm:gap-2.5">
           
           {/* Dedicated Portals Dropdown Switcher */}
           <div className="relative">
@@ -111,7 +111,7 @@ export default function TopAccessibleHeader() {
                 setShowPortalMenu(!showPortalMenu);
                 setShowLangMenu(false);
               }}
-              className="h-10 px-3 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold flex items-center gap-1.5 shadow-2xs transition-colors"
+              className="h-10 px-2 sm:px-3 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold flex items-center gap-1.5 shadow-2xs transition-colors"
               aria-label="Switch User Portal"
             >
               <LayoutGrid className="w-4 h-4 text-blue-600" />
@@ -120,45 +120,51 @@ export default function TopAccessibleHeader() {
             </button>
 
             {showPortalMenu && (
-              <div className="absolute right-0 top-12 bg-white border border-slate-200 rounded-2xl p-2 shadow-xl w-64 z-50 animate-in fade-in zoom-in-95 duration-150 space-y-1">
-                <div className="px-2.5 py-1 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                  Dedicated Commercial Portals
-                </div>
-                {portalOptions.map((p) => {
-                  const Icon = p.icon;
-                  const isActive = pathname.startsWith(p.href);
-                  return (
-                    <Link
-                      key={p.href}
-                      href={p.href}
-                      onClick={() => setShowPortalMenu(false)}
-                      className={`w-full p-2 rounded-xl text-left flex items-start gap-2.5 transition-colors ${
-                        isActive ? 'bg-blue-50 text-blue-800' : 'hover:bg-slate-50 text-slate-700'
-                      }`}
-                    >
-                      <div className={`p-1.5 rounded-lg shrink-0 mt-0.5 ${
-                        isActive ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-600'
-                      }`}>
-                        <Icon className="w-3.5 h-3.5" />
-                      </div>
-                      <div>
-                        <div className="text-xs font-bold text-slate-900">{p.name}</div>
-                        <div className="text-[10px] text-slate-400">{p.desc}</div>
-                      </div>
-                    </Link>
-                  );
-                })}
+              <>
+                <div 
+                  className="fixed inset-0 z-40 bg-slate-900/10 backdrop-blur-2xs sm:hidden" 
+                  onClick={() => setShowPortalMenu(false)} 
+                />
+                <div className="fixed sm:absolute left-4 right-4 sm:left-auto sm:right-0 top-16 sm:top-12 bg-white border border-slate-200 rounded-2xl p-2 shadow-xl sm:w-64 z-50 animate-in fade-in zoom-in-95 duration-150 space-y-1">
+                  <div className="px-2.5 py-1 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                    Commercial Portals
+                  </div>
+                  {portalOptions.map((p) => {
+                    const Icon = p.icon;
+                    const isActive = pathname.startsWith(p.href);
+                    return (
+                      <Link
+                        key={p.href}
+                        href={p.href}
+                        onClick={() => setShowPortalMenu(false)}
+                        className={`w-full p-2 rounded-xl text-left flex items-start gap-2.5 transition-colors ${
+                          isActive ? 'bg-blue-50 text-blue-800' : 'hover:bg-slate-50 text-slate-700'
+                        }`}
+                      >
+                        <div className={`p-1.5 rounded-lg shrink-0 mt-0.5 ${
+                          isActive ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-600'
+                        }`}>
+                          <Icon className="w-3.5 h-3.5" />
+                        </div>
+                        <div>
+                          <div className="text-xs font-bold text-slate-900">{p.name}</div>
+                          <div className="text-[10px] text-slate-400">{p.desc}</div>
+                        </div>
+                      </Link>
+                    );
+                  })}
 
-                <div className="pt-2 border-t border-slate-100 flex items-center justify-between px-2 text-xs">
-                  <Link
-                    href="/auth/login"
-                    onClick={() => setShowPortalMenu(false)}
-                    className="text-blue-600 font-semibold hover:underline"
-                  >
-                    Switch Account / Sign In →
-                  </Link>
+                  <div className="pt-2 border-t border-slate-100 flex items-center justify-between px-2 text-xs">
+                    <Link
+                      href="/auth/login"
+                      onClick={() => setShowPortalMenu(false)}
+                      className="text-blue-600 font-semibold hover:underline text-xs"
+                    >
+                      Switch Account / Sign In →
+                    </Link>
+                  </div>
                 </div>
-              </div>
+              </>
             )}
           </div>
 
@@ -169,7 +175,7 @@ export default function TopAccessibleHeader() {
                 setShowLangMenu(!showLangMenu);
                 setShowPortalMenu(false);
               }}
-              className="h-10 px-2.5 sm:px-3 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold flex items-center gap-1.5 shadow-2xs transition-colors"
+              className="h-10 px-2 sm:px-3 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold flex items-center gap-1.5 shadow-2xs transition-colors"
               aria-label="Change Language"
             >
               <Globe className="w-4 h-4 text-slate-500" />
@@ -180,31 +186,37 @@ export default function TopAccessibleHeader() {
             </button>
 
             {showLangMenu && (
-              <div className="absolute right-0 top-12 bg-white border border-slate-200 rounded-xl p-1.5 shadow-lg w-44 z-50 animate-in fade-in zoom-in-95 duration-150">
-                <div className="px-2.5 py-1 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                  Select Language
+              <>
+                <div 
+                  className="fixed inset-0 z-40 bg-slate-900/10 backdrop-blur-2xs sm:hidden" 
+                  onClick={() => setShowLangMenu(false)} 
+                />
+                <div className="fixed sm:absolute left-4 right-4 sm:left-auto sm:right-0 top-16 sm:top-12 bg-white border border-slate-200 rounded-xl p-1.5 shadow-lg sm:w-44 z-50 animate-in fade-in zoom-in-95 duration-150">
+                  <div className="px-2.5 py-1 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                    Select Language
+                  </div>
+                  {langOptions.map((opt) => (
+                    <button
+                      key={opt.code}
+                      onClick={() => {
+                        setLanguage(opt.code);
+                        setShowLangMenu(false);
+                      }}
+                      className={`w-full px-2.5 py-2 rounded-lg text-xs font-medium text-left flex items-center justify-between transition-colors ${
+                        language === opt.code
+                          ? 'bg-blue-50 text-blue-700 font-semibold'
+                          : 'text-slate-700 hover:bg-slate-50'
+                      }`}
+                    >
+                      <div>
+                        <span>{opt.native}</span>
+                        <span className="text-[11px] text-slate-400 ml-1.5">({opt.label})</span>
+                      </div>
+                      {language === opt.code && <Check className="w-3.5 h-3.5 text-blue-700" />}
+                    </button>
+                  ))}
                 </div>
-                {langOptions.map((opt) => (
-                  <button
-                    key={opt.code}
-                    onClick={() => {
-                      setLanguage(opt.code);
-                      setShowLangMenu(false);
-                    }}
-                    className={`w-full px-2.5 py-2 rounded-lg text-xs font-medium text-left flex items-center justify-between transition-colors ${
-                      language === opt.code
-                        ? 'bg-blue-50 text-blue-700 font-semibold'
-                        : 'text-slate-700 hover:bg-slate-50'
-                    }`}
-                  >
-                    <div>
-                      <span>{opt.native}</span>
-                      <span className="text-[11px] text-slate-400 ml-1.5">({opt.label})</span>
-                    </div>
-                    {language === opt.code && <Check className="w-3.5 h-3.5 text-blue-700" />}
-                  </button>
-                ))}
-              </div>
+              </>
             )}
           </div>
 
@@ -222,7 +234,7 @@ export default function TopAccessibleHeader() {
                   ? '/portal/developer'
                   : '/portal/customer'
               }
-              className="h-10 px-3 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-semibold flex items-center gap-1.5 transition-colors border border-slate-200"
+              className="h-10 px-2 sm:px-3 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-semibold flex items-center gap-1.5 transition-colors border border-slate-200"
               title={`Logged in as ${user.name} (${user.role})`}
             >
               <div className="w-2 h-2 rounded-full bg-emerald-500" />
@@ -234,7 +246,7 @@ export default function TopAccessibleHeader() {
           ) : (
             <Link
               href="/auth/login"
-              className="h-10 px-3.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold flex items-center gap-1.5 shadow-2xs transition-colors"
+              className="h-10 px-2.5 sm:px-3.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold flex items-center gap-1.5 shadow-2xs transition-colors"
             >
               <span>Sign In</span>
             </Link>
@@ -243,7 +255,7 @@ export default function TopAccessibleHeader() {
           {/* Sleek Emergency SOS Button */}
           <Link
             href="/services?emergency=true"
-            className="h-10 px-3 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-2xs group"
+            className="h-10 px-2.5 sm:px-3 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-2xs group"
             aria-label="Emergency SOS Dispatch"
           >
             <span className="w-2 h-2 rounded-full bg-rose-600 animate-ping" />
