@@ -38,12 +38,22 @@ import {
   DemandForecastItem,
   PeerArbitrationCase
 } from '@/data/mockData';
+import { useCoopData } from '@/context/CoopDataContext';
 
 export default function AdminDashboard() {
+  const { 
+    verificationQueue, 
+    approveWorker, 
+    rejectWorker, 
+    arbitrationCases, 
+    voteArbitration, 
+    orders, 
+    welfareFund, 
+    societyTreasury 
+  } = useCoopData();
+
   const [activeTab, setActiveTab] = useState<'VERIFICATION' | 'PEER_ARBITRATION' | 'AI_FORECAST' | 'WELFARE_FUND'>('VERIFICATION');
-  const [verifications, setVerifications] = useState<WorkerVerificationItem[]>(MOCK_VERIFICATION_QUEUE);
   const [forecasts] = useState<DemandForecastItem[]>(MOCK_DEMAND_FORECASTS);
-  const [arbitrationCases, setArbitrationCases] = useState<PeerArbitrationCase[]>(MOCK_PEER_ARBITRATION_CASES);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState<string>('ALL');
   const [selectedDocWorker, setSelectedDocWorker] = useState<WorkerVerificationItem | null>(null);
@@ -56,32 +66,22 @@ export default function AdminDashboard() {
   };
 
   const handleRestoreRating = (caseId: string, workerName: string) => {
-    setArbitrationCases(prev => prev.map(c => c.id === caseId ? { ...c, hearingStatus: 'RESTORED' } : c));
+    voteArbitration(caseId, 'RESTORED', 'Council Chair');
     showToast(`Peer Council restored standing for ${workerName}. Zero algorithmic deactivation applied.`, 'success');
   };
 
   const handleGuaranteeRemedy = (caseId: string, amount: number, customerName: string) => {
-    setArbitrationCases(prev => prev.map(c => c.id === caseId ? { ...c, hearingStatus: 'MEDIATED_REFUND' } : c));
+    voteArbitration(caseId, 'MEDIATED_REFUND', 'Guarantee Trustee');
     showToast(`Disbursed ₹${amount} from 1% Cooperative Guarantee Fund to remediate ${customerName}.`, 'info');
   };
 
   const handleApprove = (id: string, workerName: string) => {
-    setVerifications(prev => prev.map(item => {
-      if (item.id === id) {
-        return { ...item, status: 'VERIFIED' };
-      }
-      return item;
-    }));
+    approveWorker(id);
     showToast(`Approved ${workerName} as verified cooperative trade member!`, 'success');
   };
 
   const handleReject = (id: string, workerName: string) => {
-    setVerifications(prev => prev.map(item => {
-      if (item.id === id) {
-        return { ...item, status: 'REJECTED' };
-      }
-      return item;
-    }));
+    rejectWorker(id);
     showToast(`Rejected application for ${workerName}. Notification sent to cooperative admin.`, 'error');
   };
 
@@ -95,7 +95,7 @@ export default function AdminDashboard() {
   };
 
   // Filter verification queue
-  const filteredQueue = verifications.filter(item => {
+  const filteredQueue = verificationQueue.filter(item => {
     const matchesSearch = 
       item.workerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.trade.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -106,7 +106,7 @@ export default function AdminDashboard() {
     return matchesSearch && matchesStatus;
   });
 
-  const pendingCount = verifications.filter(i => i.status === 'PENDING').length;
+  const pendingCount = verificationQueue.filter(i => i.status === 'PENDING').length;
   const criticalSurgeCount = forecasts.filter(f => f.demandLevel === 'CRITICAL_SURGE').length;
 
   return (

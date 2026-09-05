@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useLanguage } from '../context/LanguageContext';
+import { useCoopData } from '@/context/CoopDataContext';
 import { 
   Phone, 
   User, 
@@ -21,6 +22,7 @@ import {
 
 export default function WorkerRegistrationForm() {
   const { t } = useLanguage();
+  const { submitWorkerApplication } = useCoopData();
   const [step, setStep] = useState<number>(1);
   const totalSteps = 5;
 
@@ -89,6 +91,16 @@ export default function WorkerRegistrationForm() {
     if (step < totalSteps) {
       setStep(step + 1);
     } else {
+      submitWorkerApplication({
+        fullName: formData.fullName || 'Member Worker',
+        phone: formData.phone ? `+91 ${formData.phone}` : '+91 98201 99001',
+        trade: formData.trade,
+        city: formData.city,
+        uanNumber: formData.uanNumber || '1009-8821-4419',
+        hourlyRate: formData.hourlyRate,
+        experienceYears: formData.experienceYears,
+        certificationTitle: formData.documentUploaded ? 'Verified Trade Certificate (Govt e-Shram)' : 'Self-Assessed Skill Evaluation'
+      });
       setIsSubmitted(true);
     }
   };

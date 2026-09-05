@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
+import { useCoopData } from '@/context/CoopDataContext';
 import { 
   Building2, 
   Users, 
@@ -18,59 +19,23 @@ import {
   Search,
   Award
 } from 'lucide-react';
-import { MOCK_VERIFICATION_QUEUE, WorkerVerificationItem } from '@/data/mockData';
-
-interface SocietyTool {
-  id: string;
-  name: string;
-  category: string;
-  serialNumber: string;
-  status: 'AVAILABLE' | 'CHECKED_OUT' | 'IN_MAINTENANCE';
-  currentHolder?: string;
-  dueBack?: string;
-}
+import { WorkerVerificationItem } from '@/data/mockData';
 
 export default function SocietyAdminPortalPage() {
   const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState<'VERIFICATIONS' | 'TOOLS' | 'TREASURY'>('VERIFICATIONS');
-  const [queue, setQueue] = useState<WorkerVerificationItem[]>(MOCK_VERIFICATION_QUEUE);
-  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const { 
+    verificationQueue, 
+    approveWorker, 
+    rejectWorker, 
+    toolInventory, 
+    checkOutTool, 
+    returnTool, 
+    societyTreasury, 
+    orders 
+  } = useCoopData();
 
-  // Tool Library State
-  const [tools, setTools] = useState<SocietyTool[]>([
-    {
-      id: 'tool-01',
-      name: 'Bosch SDS-Max Heavy Rotary Hammer Drill',
-      category: 'Masonry & Electrical Channelling',
-      serialNumber: 'BSH-HD-9921',
-      status: 'CHECKED_OUT',
-      currentHolder: 'Ramesh Chavan (Electrician)',
-      dueBack: 'Today, 6:00 PM'
-    },
-    {
-      id: 'tool-02',
-      name: 'Rothenberger Hydraulic Copper Pipe Bender',
-      category: 'Plumbing & Gas Lines',
-      serialNumber: 'RTH-PB-4102',
-      status: 'AVAILABLE'
-    },
-    {
-      id: 'tool-03',
-      name: 'Flir E4 WiFi Thermal Imaging Camera',
-      category: 'HVAC & Electrical Hotspot Audit',
-      serialNumber: 'FLR-TH-1190',
-      status: 'AVAILABLE'
-    },
-    {
-      id: 'tool-04',
-      name: 'Makita 18V Cordless Circular Saw (165mm)',
-      category: 'Carpentry & Joinery',
-      serialNumber: 'MKT-CS-7711',
-      status: 'CHECKED_OUT',
-      currentHolder: 'Kavita Suresh (Carpentry)',
-      dueBack: 'Tomorrow, 12:00 PM'
-    }
-  ]);
+  const [activeTab, setActiveTab] = useState<'VERIFICATIONS' | 'TOOLS' | 'TREASURY'>('VERIFICATIONS');
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const showNotification = (msg: string) => {
     setToastMessage(msg);
@@ -78,32 +43,30 @@ export default function SocietyAdminPortalPage() {
   };
 
   const handleApprove = (id: string, name: string) => {
-    setQueue(prev => prev.map(item => item.id === id ? { ...item, status: 'VERIFIED' } : item));
+    approveWorker(id);
     showNotification(`Approved ${name}! Member granted active cooperative discovery.`);
   };
 
   const handleReject = (id: string, name: string) => {
-    setQueue(prev => prev.map(item => item.id === id ? { ...item, status: 'REJECTED' } : item));
+    rejectWorker(id);
     showNotification(`Application rejected for ${name}. Feedback transmitted.`);
   };
 
   const handleToggleTool = (toolId: string) => {
-    setTools(prev => prev.map(t => {
-      if (t.id === toolId) {
-        const isAvail = t.status === 'AVAILABLE';
-        return {
-          ...t,
-          status: isAvail ? 'CHECKED_OUT' : 'AVAILABLE',
-          currentHolder: isAvail ? 'Ramesh Chavan (Member #101)' : undefined,
-          dueBack: isAvail ? 'Tomorrow, 5:00 PM' : undefined
-        };
-      }
-      return t;
-    }));
-    showNotification('Tool library status updated successfully.');
+    const targetTool = toolInventory.find(t => t.id === toolId);
+    if (!targetTool) return;
+
+    if (targetTool.status === 'AVAILABLE') {
+      checkOutTool(toolId, 'wrk-01', 'Ramesh Chavan (Electrician)');
+      showNotification(`Tool checked out to Ramesh Chavan.`);
+    } else {
+      returnTool(toolId);
+      showNotification(`Tool returned to Society Locker.`);
+    }
   };
 
-  const pendingMembers = queue.filter(q => q.status === 'PENDING').length;
+  const pendingMembers = verificationQueue.filter(q => q.status === 'PENDING').length;
+  const completedOrders = orders.filter(o => o.status === 'COMPLETED');
 
   return (
     <div className="space-y-8 animate-in fade-in duration-300">
@@ -149,15 +112,15 @@ export default function SocietyAdminPortalPage() {
 
         <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm space-y-1">
           <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Shared Equipment Fleet</span>
-          <p className="text-3xl font-bold text-slate-900">{tools.length} Tools</p>
+          <p className="text-3xl font-bold text-slate-900">{toolInventory.length} Tools</p>
           <span className="text-xs text-emerald-600 font-medium">
-            {tools.filter(t => t.status === 'AVAILABLE').length} Available for checkout
+            {toolInventory.filter(t => t.status === 'AVAILABLE').length} Available for checkout
           </span>
         </div>
 
         <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm space-y-1">
           <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">5% Society Treasury Pool</span>
-          <p className="text-3xl font-bold text-emerald-600">₹1,42,800</p>
+          <p className="text-3xl font-bold text-emerald-600">₹{societyTreasury.toLocaleString()}</p>
           <span className="text-xs text-slate-400">Maintains equipment library & office ops</span>
         </div>
       </section>
@@ -233,7 +196,7 @@ export default function SocietyAdminPortalPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 text-slate-700">
-                {queue.map((w) => (
+                {verificationQueue.map((w) => (
                   <tr key={w.id} className="hover:bg-slate-50/70">
                     <td className="py-3.5 px-3">
                       <div className="font-bold text-slate-900">{w.workerName}</div>
@@ -267,7 +230,7 @@ export default function SocietyAdminPortalPage() {
                             className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs flex items-center gap-1 shadow-sm"
                           >
                             <Check className="w-3.5 h-3.5" />
-                            <span>Approve</span>
+                            <span>Approve & Admit</span>
                           </button>
                           <button
                             type="button"
@@ -314,7 +277,7 @@ export default function SocietyAdminPortalPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {tools.map((tool) => (
+            {toolInventory.map((tool) => (
               <div
                 key={tool.id}
                 className="p-4 rounded-xl bg-slate-50 border border-slate-200/80 flex flex-col justify-between space-y-3"
@@ -336,10 +299,10 @@ export default function SocietyAdminPortalPage() {
                   <h4 className="text-sm font-bold text-slate-900 pt-1">{tool.name}</h4>
                   <p className="text-xs text-slate-500">{tool.category}</p>
 
-                  {tool.currentHolder && (
+                  {tool.assignedWorkerName && (
                     <div className="text-xs text-slate-700 pt-1">
-                      Current Borrower: <strong>{tool.currentHolder}</strong>
-                      <span className="text-slate-400 block text-[11px]">Due: {tool.dueBack}</span>
+                      Current Borrower: <strong>{tool.assignedWorkerName}</strong>
+                      <span className="text-slate-400 block text-[11px]">Due: Today, 6:00 PM</span>
                     </div>
                   )}
                 </div>
@@ -354,7 +317,7 @@ export default function SocietyAdminPortalPage() {
                   }`}
                 >
                   <Wrench className="w-3.5 h-3.5" />
-                  <span>{tool.status === 'AVAILABLE' ? 'Check Out to Worker' : 'Mark Returned to Locker'}</span>
+                  <span>{tool.status === 'AVAILABLE' ? 'Check Out to Worker' : 'Mark Returned to Society Locker'}</span>
                 </button>
               </div>
             ))}
@@ -364,7 +327,7 @@ export default function SocietyAdminPortalPage() {
 
       {/* TAB 3: 5% Society Treasury Ledger */}
       {activeTab === 'TREASURY' && (
-        <section className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm space-y-4">
+        <section className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm space-y-5">
           <div>
             <h3 className="text-base font-bold text-slate-900">
               5% Society Operational Treasury Breakdown
@@ -376,8 +339,8 @@ export default function SocietyAdminPortalPage() {
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
             <div className="p-4 rounded-xl bg-slate-50 border border-slate-200">
-              <span className="text-slate-500 block">Total 5% Fees Collected (FY 2026)</span>
-              <span className="text-xl font-bold text-slate-900">₹2,84,500</span>
+              <span className="text-slate-500 block">Total 5% Fees Pool</span>
+              <span className="text-xl font-bold text-slate-900">₹{societyTreasury.toLocaleString()}</span>
             </div>
             <div className="p-4 rounded-xl bg-slate-50 border border-slate-200">
               <span className="text-slate-500 block">Tool Library Capital Upgrades</span>
@@ -385,7 +348,37 @@ export default function SocietyAdminPortalPage() {
             </div>
             <div className="p-4 rounded-xl bg-slate-50 border border-slate-200">
               <span className="text-slate-500 block">Liquid Society Reserve</span>
-              <span className="text-xl font-bold text-emerald-600">₹1,72,500</span>
+              <span className="text-xl font-bold text-emerald-600">₹{(societyTreasury - 112000 > 0 ? societyTreasury - 112000 : 30800).toLocaleString()}</span>
+            </div>
+          </div>
+
+          <div className="space-y-3 pt-2">
+            <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+              Recent Completed Orders Contributing to 5% Pool
+            </h4>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs border-collapse">
+                <thead>
+                  <tr className="border-b border-slate-200 bg-slate-50 text-slate-500 font-semibold">
+                    <th className="py-2.5 px-3">Order ID</th>
+                    <th className="py-2.5 px-3">Artisan</th>
+                    <th className="py-2.5 px-3">Total Amount</th>
+                    <th className="py-2.5 px-3">90% Artisan Pay</th>
+                    <th className="py-2.5 px-3 text-right">5% Society Retained</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 text-slate-700">
+                  {completedOrders.map(order => (
+                    <tr key={order.id} className="hover:bg-slate-50/60">
+                      <td className="py-2.5 px-3 font-semibold text-slate-900">{order.id}</td>
+                      <td className="py-2.5 px-3">{order.workerName} ({order.workerTrade})</td>
+                      <td className="py-2.5 px-3">₹{order.totalAmount}</td>
+                      <td className="py-2.5 px-3 text-emerald-600 font-medium">₹{order.workerPayout}</td>
+                      <td className="py-2.5 px-3 text-right font-bold text-blue-600">+₹{order.coopFee}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </div>
         </section>

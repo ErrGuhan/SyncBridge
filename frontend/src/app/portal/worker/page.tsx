@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
+import { useCoopData } from '@/context/CoopDataContext';
 import { 
   Wallet, 
   CheckCircle2, 
@@ -22,7 +23,8 @@ import {
   Check,
   X,
   Building2,
-  Lock
+  Lock,
+  Wrench
 } from 'lucide-react';
 
 interface VaultDocument {
@@ -36,37 +38,31 @@ interface VaultDocument {
 
 export default function WorkerPortalPage() {
   const { user } = useAuth();
+  const { 
+    orders, 
+    acceptOrder, 
+    completeOrder, 
+    workerWallets, 
+    withdrawWorkerWallet, 
+    toolInventory 
+  } = useCoopData();
+
+  const workerId = user?.id || 'wrk-01';
+  const workerWalletBalance = workerWallets[workerId] ?? 4850;
 
   // Availability state
   const [isOnline, setIsOnline] = useState(true);
   const [sosActive, setSosActive] = useState(false);
+  const [withdrawResult, setWithdrawResult] = useState<{ success: boolean; utr: string; amount: number } | null>(null);
+  const [actionSuccessMsg, setActionSuccessMsg] = useState<string | null>(null);
 
-  // Incoming Job Lead State
-  const [activeJobLead, setActiveJobLead] = useState<{
-    id: string;
-    customerName: string;
-    category: string;
-    distanceKm: number;
-    locality: string;
-    issueDescription: string;
-    estimatedPayout: number;
-    isEmergency: boolean;
-  } | null>({
-    id: 'EMG-JOB-8821',
-    customerName: 'Suresh Kumar',
-    category: 'Electrical Emergency',
-    distanceKm: 2.1,
-    locality: 'Indiranagar 2nd Stage, Ward 88',
-    issueDescription: 'Main circuit breaker sparked and cut power to refrigeration line. Urgent assistance required.',
-    estimatedPayout: 850,
-    isEmergency: true
-  });
+  // Incoming and active orders
+  const incomingLead = orders.find(o => o.status === 'CONFIRMED');
+  const activeOngoingOrders = orders.filter(o => o.status === 'IN_PROGRESS');
+  const recentCompletedOrders = orders.filter(o => o.status === 'COMPLETED');
 
-  const [jobAccepted, setJobAccepted] = useState(false);
-
-  // Wallet & Withdraw state
-  const [walletBalance, setWalletBalance] = useState(4850);
-  const [withdrawSuccess, setWithdrawSuccess] = useState(false);
+  // Tools assigned to this worker
+  const myAssignedTools = toolInventory.filter(t => t.assignedWorkerId === workerId || t.assignedWorkerName?.includes('Ramesh'));
 
   // Cloud Storage Vault Documents
   const [documents, setDocuments] = useState<VaultDocument[]>([
@@ -107,14 +103,13 @@ export default function WorkerPortalPage() {
     setUploadSuccess(false);
 
     try {
-      // Call signed upload URL route
       const res = await fetch('/api/storage/upload-url', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           fileName: file.name,
           fileType: file.type || 'application/pdf',
-          workerId: user?.id || 'wrk-demo-01',
+          workerId: workerId,
           documentType: 'SKILL_LICENSE'
         })
       });
@@ -142,17 +137,40 @@ export default function WorkerPortalPage() {
   };
 
   const handleWithdraw = () => {
-    if (walletBalance <= 0) return;
-    setWithdrawSuccess(true);
+    if (workerWalletBalance <= 0) return;
+    const res = withdrawWorkerWallet(workerId, 'ramesh@okhdfcbank');
+    setWithdrawResult(res);
     setTimeout(() => {
-      setWalletBalance(0);
-      setWithdrawSuccess(false);
-    }, 2500);
+      setWithdrawResult(null);
+    }, 6000);
   };
+
+  const handleAcceptJob = (orderId: string) => {
+    acceptOrder(orderId, workerId);
+    setActionSuccessMsg('Job Accepted! Mutex dispatch lock held. Customer alerted you are en route.');
+    setTimeout(() => setActionSuccessMsg(null), 4000);
+  };
+
+  const handleCompleteJob = (orderId: string) => {
+    completeOrder(orderId);
+    setActionSuccessMsg('Job Completed! 90% direct payout has been credited to your available balance.');
+    setTimeout(() => setActionSuccessMsg(null), 5000);
+  };
+
+  // Compute live active escrow
+  const inTransitEscrow = activeOngoingOrders.reduce((acc, curr) => acc + curr.workerPayout, 0);
 
   return (
     <div className="space-y-8 animate-in fade-in duration-300">
       
+      {/* Toast Notification */}
+      {actionSuccessMsg && (
+        <div className="fixed top-20 right-4 z-50 p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs sm:text-sm font-semibold shadow-xl flex items-center gap-2">
+          <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+          <span>{actionSuccessMsg}</span>
+        </div>
+      )}
+
       {/* Worker Profile & Live Status Header */}
       <div className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
@@ -162,7 +180,7 @@ export default function WorkerPortalPage() {
               <span>Verified Cooperative Member • Kalyan Labour Society</span>
             </span>
             <span className="text-xs px-2.5 py-0.5 rounded-md bg-slate-100 text-slate-700 font-semibold">
-              Rating: ★ 4.88 / 5.0
+              Rating: ★ 4.92 / 5.0 (Peer Audited)
             </span>
           </div>
 
@@ -216,16 +234,23 @@ export default function WorkerPortalPage() {
               <Wallet className="w-5 h-5" />
             </div>
           </div>
-          <p className="text-3xl font-bold text-slate-900">₹{walletBalance.toLocaleString()}</p>
+          <p className="text-3xl font-bold text-slate-900">₹{workerWalletBalance.toLocaleString()}</p>
+          
           <div className="pt-2">
-            {withdrawSuccess ? (
-              <div className="p-2 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold text-center">
-                ✓ Payout sent to UPI (ramesh@okhdfcbank)
+            {withdrawResult ? (
+              <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs space-y-1">
+                <div className="flex items-center gap-1.5 font-bold">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                  <span>₹{withdrawResult.amount} Sent to UPI!</span>
+                </div>
+                <div className="font-mono text-[10px] text-emerald-700">
+                  {withdrawResult.utr} • ramesh@okhdfcbank
+                </div>
               </div>
             ) : (
               <button
                 type="button"
-                disabled={walletBalance === 0}
+                disabled={workerWalletBalance === 0}
                 onClick={handleWithdraw}
                 className="w-full py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs flex items-center justify-center gap-1.5 shadow-sm transition-all disabled:opacity-40"
               >
@@ -246,9 +271,9 @@ export default function WorkerPortalPage() {
               <Clock className="w-5 h-5" />
             </div>
           </div>
-          <p className="text-3xl font-bold text-blue-600">₹1,200</p>
+          <p className="text-3xl font-bold text-blue-600">₹{inTransitEscrow > 0 ? inTransitEscrow.toLocaleString() : '1,200'}</p>
           <p className="text-xs text-slate-500">
-            Auto-released upon customer OTP verification or completion photo.
+            Auto-released upon customer OTP verification or service completion.
           </p>
         </div>
 
@@ -269,8 +294,67 @@ export default function WorkerPortalPage() {
         </div>
       </section>
 
-      {/* INCOMING DISPATCH BROADCAST (JOB OPPORTUNITY) */}
-      {activeJobLead && (
+      {/* ACTIVE ONGOING JOBS (IF ANY) */}
+      {activeOngoingOrders.length > 0 && (
+        <section className="bg-white border-2 border-emerald-500/70 rounded-2xl p-6 shadow-sm space-y-4">
+          <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+            <div className="flex items-center gap-2">
+              <span className="px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1.5">
+                <Clock className="w-3.5 h-3.5 text-emerald-600" />
+                <span>ACTIVE JOB IN PROGRESS ({activeOngoingOrders.length})</span>
+              </span>
+            </div>
+            <span className="text-xs text-slate-400">Lock ID: Active Mutex Session</span>
+          </div>
+
+          <div className="space-y-4">
+            {activeOngoingOrders.map(order => (
+              <div key={order.id} className="p-4 rounded-xl bg-slate-50 border border-slate-200 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <span className="font-bold text-slate-900 text-base">{order.serviceCategory}</span>
+                    <span className="text-xs px-2 py-0.5 rounded bg-blue-100 text-blue-800 font-semibold">{order.id}</span>
+                  </div>
+                  <p className="text-xs text-slate-600 flex items-center gap-1">
+                    <MapPin className="w-3.5 h-3.5 text-slate-400" />
+                    <span>{order.location}</span>
+                  </p>
+                  <p className="text-xs text-slate-500">
+                    Client: <strong className="text-slate-700">{order.customerName}</strong>
+                  </p>
+                </div>
+
+                <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+                  <div className="text-right sm:pr-4">
+                    <span className="text-xs text-slate-400 block">Your 90% Take-Home:</span>
+                    <span className="text-xl font-bold text-emerald-600">₹{order.workerPayout}</span>
+                  </div>
+
+                  <a
+                    href="tel:9820144552"
+                    className="px-3.5 py-2 rounded-xl bg-white border border-slate-300 text-slate-700 font-semibold text-xs flex items-center justify-center gap-1.5 hover:bg-slate-100"
+                  >
+                    <Phone className="w-3.5 h-3.5" />
+                    <span>Call Client</span>
+                  </a>
+
+                  <button
+                    type="button"
+                    onClick={() => handleCompleteJob(order.id)}
+                    className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm transition-colors"
+                  >
+                    <CheckCircle2 className="w-4 h-4" />
+                    <span>Complete Job & Release 90% Payout</span>
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* INCOMING DISPATCH BROADCAST (LIVE JOB OPPORTUNITY) */}
+      {incomingLead && (
         <section className="bg-white border-2 border-blue-600/70 rounded-2xl p-6 shadow-md space-y-4 relative overflow-hidden">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
             <div className="flex items-center gap-2">
@@ -283,66 +367,101 @@ export default function WorkerPortalPage() {
 
             <div className="text-right">
               <span className="text-xs text-slate-500 block font-medium">Your 90% Take-Home Payout:</span>
-              <span className="text-2xl font-black text-emerald-600">₹{activeJobLead.estimatedPayout}</span>
+              <span className="text-2xl font-black text-emerald-600">₹{incomingLead.workerPayout}</span>
             </div>
           </div>
 
           <div className="space-y-2 text-xs sm:text-sm text-slate-700">
             <div className="flex items-center gap-2 text-slate-900 font-bold text-base">
-              <span>{activeJobLead.category}</span>
+              <span>{incomingLead.serviceCategory}</span>
               <span className="text-slate-300">•</span>
               <span className="text-blue-600 flex items-center gap-1 text-xs font-semibold">
                 <MapPin className="w-3.5 h-3.5" />
-                <span>{activeJobLead.distanceKm} km away</span>
+                <span>2.1 km away</span>
               </span>
             </div>
 
             <p className="text-xs text-slate-600 leading-relaxed bg-slate-50 p-3 rounded-xl border border-slate-200/60">
-              "{activeJobLead.issueDescription}"
+              "Customer requested immediate cooperative service dispatch at {incomingLead.location}."
             </p>
 
             <div className="flex items-center gap-4 text-xs text-slate-500 pt-1">
-              <span>Location: <strong className="text-slate-800">{activeJobLead.locality}</strong></span>
-              <span>Customer: <strong className="text-slate-800">{activeJobLead.customerName}</strong></span>
+              <span>Location: <strong className="text-slate-800">{incomingLead.location}</strong></span>
+              <span>Customer: <strong className="text-slate-800">{incomingLead.customerName}</strong></span>
+              <span>Scheduled: <strong className="text-slate-800">{incomingLead.scheduledTime}</strong></span>
             </div>
           </div>
 
-          {jobAccepted ? (
-            <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs sm:text-sm flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-5 h-5 text-emerald-600" />
-                <span>Job Accepted! Mutex lock secured. Customer informed you are en route.</span>
-              </div>
-              <a
-                href="tel:9820144552"
-                className="px-3.5 py-1.5 rounded-lg bg-emerald-600 text-white font-semibold text-xs flex items-center gap-1.5"
-              >
-                <Phone className="w-3.5 h-3.5" />
-                <span>Call Client</span>
-              </a>
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 gap-3 pt-2">
-              <button
-                type="button"
-                onClick={() => setJobAccepted(true)}
-                className="py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-sm transition-all"
-              >
-                <Check className="w-4 h-4" />
-                <span>Accept Job (Lock Dispatch)</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => setActiveJobLead(null)}
-                className="py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all"
-              >
-                <X className="w-4 h-4" />
-                <span>Pass to Peer Society Worker</span>
-              </button>
-            </div>
-          )}
+          <div className="grid grid-cols-2 gap-3 pt-2">
+            <button
+              type="button"
+              onClick={() => handleAcceptJob(incomingLead.id)}
+              className="py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-sm transition-all"
+            >
+              <Check className="w-4 h-4" />
+              <span>Accept Job (Lock Mutex Dispatch)</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => handleAcceptJob(incomingLead.id)}
+              className="py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all"
+            >
+              <X className="w-4 h-4" />
+              <span>Pass to Peer Society Worker</span>
+            </button>
+          </div>
         </section>
       )}
+
+      {/* COOPERATIVE SHARED POWER TOOLS SECTION */}
+      <section className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
+          <div>
+            <div className="flex items-center gap-2">
+              <Wrench className="w-4 h-4 text-blue-600" />
+              <h3 className="text-base font-bold text-slate-900">
+                My Checked-Out Cooperative Power Tools
+              </h3>
+            </div>
+            <p className="text-xs text-slate-500 mt-0.5">
+              Democratically shared equipment funded via the 5% Society Operational Treasury.
+            </p>
+          </div>
+
+          <span className="text-xs font-semibold px-3 py-1 bg-slate-100 text-slate-700 rounded-lg">
+            {myAssignedTools.length} Tools in Possession
+          </span>
+        </div>
+
+        {myAssignedTools.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {myAssignedTools.map(tool => (
+              <div key={tool.id} className="p-4 rounded-xl bg-slate-50 border border-slate-200 flex flex-col justify-between space-y-2">
+                <div>
+                  <div className="flex items-center justify-between">
+                    <span className="font-mono text-[10px] bg-slate-200 text-slate-800 px-2 py-0.5 rounded font-semibold">
+                      {tool.serialNumber}
+                    </span>
+                    <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-blue-100 text-blue-800">
+                      Condition: {tool.condition}
+                    </span>
+                  </div>
+                  <h4 className="text-sm font-bold text-slate-900 pt-1">{tool.name}</h4>
+                  <p className="text-xs text-slate-500">{tool.category}</p>
+                </div>
+                <div className="pt-2 border-t border-slate-200 text-xs text-slate-600 flex items-center justify-between">
+                  <span>Society: <strong>{tool.cooperativeChapter}</strong></span>
+                  <span className="text-emerald-700 font-semibold">₹{tool.dailyFee}/day subsidized</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="p-6 text-center text-xs text-slate-500 bg-slate-50 rounded-xl border border-dashed border-slate-200">
+            No heavy power tools checked out. Visit your Primary Society Locker to borrow industrial equipment for free or subsidized rates.
+          </div>
+        )}
+      </section>
 
       {/* CLOUD STORAGE DOCUMENT VAULT */}
       <section className="bg-white border border-slate-200/80 rounded-2xl p-6 sm:p-7 shadow-sm space-y-5">

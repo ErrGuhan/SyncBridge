@@ -1,11 +1,12 @@
 'use client';
 
 import React, { useState, useRef, useMemo } from 'react';
+import Link from 'next/link';
 import { useLanguage } from '../context/LanguageContext';
+import { useAuth } from '../context/AuthContext';
+import { useCoopData } from '../context/CoopDataContext';
 import { 
   Search, 
-  Mic, 
-  MicOff, 
   MapPin, 
   Star, 
   Phone, 
@@ -21,7 +22,7 @@ import {
   Clock,
   CheckCircle2
 } from 'lucide-react';
-import { MOCK_WORKERS, WorkerProfile } from '@/data/mockData';
+import { WorkerProfile } from '@/data/mockData';
 
 // ----------------------------------------------------------------------------
 // PROFESSIONAL CATEGORY METADATA & REFINED ICONS
@@ -81,10 +82,13 @@ const professionalCategories = [
 
 export default function ServiceDiscovery() {
   const { t } = useLanguage();
+  const { user } = useAuth();
+  const { workers, createOrder } = useCoopData();
+
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [bookingWorker, setBookingWorker] = useState<WorkerProfile | null>(null);
-  const [bookingSuccess, setBookingSuccess] = useState<string | null>(null);
+  const [confirmedOrder, setConfirmedOrder] = useState<any>(null);
 
   const carouselRef = useRef<HTMLDivElement>(null);
 
@@ -95,9 +99,9 @@ export default function ServiceDiscovery() {
     }
   };
 
-  // Filter Workers
+  // Filter Workers dynamically from reactive CoopDataContext
   const filteredWorkers = useMemo(() => {
-    return MOCK_WORKERS.filter((worker) => {
+    return workers.filter((worker) => {
       const matchesCat =
         selectedCategory === 'all' ||
         worker.trade.toLowerCase().includes(selectedCategory.toLowerCase()) ||
@@ -115,15 +119,22 @@ export default function ServiceDiscovery() {
 
       return matchesCat && matchesSearch;
     });
-  }, [selectedCategory, searchQuery]);
+  }, [workers, selectedCategory, searchQuery]);
 
   const confirmBooking = () => {
     if (!bookingWorker) return;
-    setBookingSuccess(`Booking request confirmed! ${bookingWorker.name} has received your order.`);
-    setTimeout(() => {
-      setBookingWorker(null);
-      setBookingSuccess(null);
-    }, 3800);
+    const order = createOrder({
+      workerId: bookingWorker.id,
+      workerName: bookingWorker.name,
+      workerTrade: bookingWorker.trade,
+      cooperativeName: bookingWorker.cooperativeName,
+      customerName: user?.name || 'Priya Sharma',
+      customerAddress: 'Indiranagar 2nd Stage, Ward 88, Bengaluru',
+      totalAmount: bookingWorker.hourlyRate,
+      issueDescription: `Standard service appointment for ${bookingWorker.trade}`,
+      serviceCategory: selectedCategory !== 'all' ? selectedCategory : bookingWorker.trade
+    });
+    setConfirmedOrder(order);
   };
 
   return (
@@ -182,7 +193,7 @@ export default function ServiceDiscovery() {
                 : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
             }`}
           >
-            All Trades ({MOCK_WORKERS.length})
+            All Trades ({workers.length})
           </button>
           {professionalCategories.map((c) => (
             <button
@@ -428,9 +439,39 @@ export default function ServiceDiscovery() {
               </div>
             </div>
 
-            {bookingSuccess ? (
-              <div className="p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold rounded-xl text-center">
-                {bookingSuccess}
+            {confirmedOrder ? (
+              <div className="space-y-3 animate-in fade-in duration-200">
+                <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-2xl text-left space-y-1.5">
+                  <div className="flex items-center gap-2 text-emerald-800 font-bold text-sm">
+                    <CheckCircle2 className="w-5 h-5 text-emerald-600" />
+                    <span>Booking Dispatched to Worker!</span>
+                  </div>
+                  <p className="text-xs text-emerald-700">
+                    Order Reference: <strong className="font-mono">{confirmedOrder.id}</strong>
+                  </p>
+                  <p className="text-xs text-slate-600 leading-relaxed">
+                    {confirmedOrder.workerName} has received this broadcast in their cooperative workspace.
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-2 pt-1">
+                  <button
+                    onClick={() => {
+                      setBookingWorker(null);
+                      setConfirmedOrder(null);
+                    }}
+                    className="flex-1 h-10 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-semibold transition-colors"
+                  >
+                    Done
+                  </button>
+                  <Link
+                    href="/bookings"
+                    className="flex-1 h-10 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold flex items-center justify-center gap-1.5 shadow-xs transition-colors"
+                  >
+                    <span>Track Live Dispatch</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </Link>
+                </div>
               </div>
             ) : (
               <div className="flex items-center gap-2 pt-1">
