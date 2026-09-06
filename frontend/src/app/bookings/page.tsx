@@ -107,7 +107,7 @@ export default function BookingsPage() {
       {/* -------------------------------------------------------------------- */}
       <div className="space-y-4">
         <div className="flex items-center justify-between border-b border-slate-200 pb-2">
-          <div className="flex items-center gap-1.5 overflow-x-auto">
+          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1">
             {['ALL', 'CONFIRMED', 'IN_PROGRESS', 'COMPLETED'].map((tab) => (
               <button
                 key={tab}
@@ -250,8 +250,8 @@ export default function BookingsPage() {
       {/* 4. ITEMISED COOPERATIVE INVOICE MODAL */}
       {/* -------------------------------------------------------------------- */}
       {viewingReceipt && (
-        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-2xs flex items-center justify-center p-4 animate-in fade-in duration-150">
-          <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 w-full max-w-md shadow-2xl space-y-5 animate-in zoom-in-95 duration-150">
+        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-2xs flex items-center justify-center p-3 sm:p-4 animate-in fade-in duration-150">
+          <div className="bg-white border border-slate-200 rounded-3xl p-5 sm:p-8 w-full max-w-md shadow-2xl space-y-4 sm:space-y-5 animate-in zoom-in-95 duration-150 max-h-[88vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
@@ -358,8 +358,8 @@ export default function BookingsPage() {
       {/* 5. RESTORATIVE ARBITRATION DISPUTE CLAIM MODAL */}
       {/* -------------------------------------------------------------------- */}
       {disputeBooking && (
-        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-2xs flex items-center justify-center p-4 animate-in fade-in duration-150">
-          <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 w-full max-w-md shadow-2xl space-y-4 animate-in zoom-in-95 duration-150">
+        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-2xs flex items-center justify-center p-3 sm:p-4 animate-in fade-in duration-150">
+          <div className="bg-white border border-slate-200 rounded-3xl p-5 sm:p-8 w-full max-w-md shadow-2xl space-y-4 animate-in zoom-in-95 duration-150 max-h-[88vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <div className="flex items-center gap-2">
                 <AlertTriangle className="w-5 h-5 text-amber-600" />

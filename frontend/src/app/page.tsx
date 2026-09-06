@@ -175,30 +175,30 @@ export default function HomePage() {
           {/* Quick Search Bar */}
           <form onSubmit={handleSearchSubmit} className="max-w-2xl">
             <div className="relative flex items-center bg-slate-50 border border-slate-300/80 rounded-2xl shadow-xs focus-within:border-blue-600 focus-within:ring-2 focus-within:ring-blue-100 focus-within:bg-white transition-all p-1.5">
-              <Search className="w-5 h-5 ml-3 text-slate-400 shrink-0" />
+              <Search className="w-5 h-5 ml-2.5 sm:ml-3 text-slate-400 shrink-0" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder={t('searchPlaceholder')}
-                className="flex-1 py-2.5 px-3 text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 outline-none bg-transparent"
+                className="flex-1 py-2.5 px-2.5 sm:px-3 text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 outline-none bg-transparent min-w-0"
               />
               <button
                 type="submit"
-                className="h-10 px-5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs sm:text-sm flex items-center gap-1.5 shadow-2xs transition-colors shrink-0"
+                className="h-10 px-3.5 sm:px-5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs sm:text-sm flex items-center gap-1.5 shadow-2xs transition-colors shrink-0"
               >
                 <span>{t('findArtisanBtn')}</span>
-                <ArrowRight className="w-4 h-4" />
+                <ArrowRight className="w-4 h-4 shrink-0" />
               </button>
             </div>
           </form>
 
-          {/* Quick Category Launcher Pills */}
+          {/* Quick Category Launcher Pills (Swipeable on Mobile) */}
           <div className="space-y-2 pt-2">
             <div className="text-xs font-bold uppercase tracking-wider text-slate-400">
               {t('popularServices')}
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
+            <div className="flex sm:grid sm:grid-cols-5 gap-2.5 overflow-x-auto no-scrollbar pb-1 -mx-2 px-2 sm:mx-0 sm:px-0">
               {QUICK_CATEGORIES.map((cat) => {
                 const Icon = cat.icon;
                 const catLabel = language === 'hi' ? cat.hindi : language === 'kn' ? cat.kannada : language === 'ta' ? cat.tamil : cat.name;
@@ -206,7 +206,7 @@ export default function HomePage() {
                   <Link
                     key={cat.id}
                     href={`/services?category=${cat.id}`}
-                    className={`p-3 rounded-2xl border transition-all flex flex-col items-center sm:items-start justify-between gap-2 text-center sm:text-left ${cat.color}`}
+                    className={`min-w-[130px] sm:min-w-0 flex-1 p-3 rounded-2xl border transition-all flex flex-col items-center sm:items-start justify-between gap-2 text-center sm:text-left shrink-0 ${cat.color}`}
                   >
                     <div className="w-9 h-9 rounded-xl bg-white/80 flex items-center justify-center shadow-2xs">
                       <Icon className="w-4 h-4" />

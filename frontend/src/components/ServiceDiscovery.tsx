@@ -261,14 +261,14 @@ export default function ServiceDiscovery() {
           )}
         </div>
 
-        {/* Quick Filter Badges */}
-        <div className="flex items-center gap-1.5 flex-wrap text-xs">
-          <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mr-1">
+        {/* Quick Filter Badges (Horizontal Scroll on Mobile) */}
+        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1 text-xs -mx-1 px-1">
+          <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mr-1 shrink-0">
             Filter:
           </span>
           <button
             onClick={() => setSelectedCategory('all')}
-            className={`px-3 py-1 rounded-full text-xs font-semibold transition-colors ${
+            className={`px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap shrink-0 transition-colors ${
               selectedCategory === 'all'
                 ? 'bg-blue-600 text-white shadow-2xs'
                 : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
@@ -280,7 +280,7 @@ export default function ServiceDiscovery() {
             <button
               key={c.id}
               onClick={() => setSelectedCategory(c.id)}
-              className={`px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1.5 transition-colors ${
+              className={`px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap shrink-0 flex items-center gap-1.5 transition-colors ${
                 selectedCategory === c.id
                   ? 'bg-blue-600 text-white shadow-2xs'
                   : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
@@ -566,8 +566,8 @@ export default function ServiceDiscovery() {
       {/* 4. CLEAN CONFIRMATION DRAWER */}
       {/* -------------------------------------------------------------------- */}
       {bookingWorker && (
-        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-end sm:items-center justify-center p-4 animate-in fade-in duration-150">
-          <div className="bg-white border border-slate-200 rounded-3xl p-6 w-full max-w-md shadow-2xl space-y-4 animate-in zoom-in-95 duration-150">
+        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-end sm:items-center justify-center p-3 sm:p-4 animate-in fade-in duration-150">
+          <div className="bg-white border border-slate-200 rounded-3xl p-5 sm:p-6 w-full max-w-md shadow-2xl space-y-4 animate-in zoom-in-95 duration-150 max-h-[88vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <h3 className="text-lg font-bold text-slate-900">
                 {isEmergency ? '🚨 Confirm Emergency Dispatch' : 'Confirm Service Booking'}

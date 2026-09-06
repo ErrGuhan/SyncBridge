@@ -105,7 +105,7 @@ export default function BottomNavigation() {
             <Link
               key={item.href}
               href={item.href}
-              className={`flex-1 flex flex-col items-center justify-center py-1.5 px-1 rounded-xl transition-all relative ${
+              className={`flex-1 min-h-[48px] flex flex-col items-center justify-center py-1 px-0.5 rounded-xl transition-all relative ${
                 item.isActive
                   ? 'text-blue-600'
                   : 'text-slate-500 hover:text-slate-900 active:scale-95'
@@ -115,15 +115,15 @@ export default function BottomNavigation() {
               <div className="relative">
                 <Icon
                   className={`w-5 h-5 transition-transform ${
-                    item.isActive ? 'scale-105 stroke-[2.2]' : 'stroke-[1.8]'
+                    item.isActive ? 'scale-110 stroke-[2.2]' : 'stroke-[1.8]'
                   }`}
                 />
                 {item.isActive && (
-                  <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-blue-600 rounded-full" />
+                  <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-blue-600 rounded-full" />
                 )}
               </div>
-              <span className={`text-[10px] mt-1 tracking-tight truncate ${
-                item.isActive ? 'font-semibold text-blue-700' : 'font-medium text-slate-500'
+              <span className={`text-[10px] leading-tight mt-1 tracking-tight truncate max-w-[64px] text-center ${
+                item.isActive ? 'font-bold text-blue-700' : 'font-medium text-slate-500'
               }`}>
                 {item.label}
               </span>
