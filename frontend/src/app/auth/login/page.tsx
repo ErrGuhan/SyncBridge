@@ -4,6 +4,7 @@ import React, { useState, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth, UserRole, DEMO_PERSONAS } from '@/context/AuthContext';
+import { useLanguage } from '@/context/LanguageContext';
 import { 
   User, 
   Briefcase, 
@@ -21,34 +22,44 @@ import {
   KeyRound
 } from 'lucide-react';
 
-const ROLE_ITEMS: { role: UserRole; title: string; subtitle: string; icon: any }[] = [
+const ROLE_ITEMS: { role: UserRole; title: string; titleKey: string; defaultTitle: string; subtitle: string; icon: any }[] = [
   {
     role: 'CUSTOMER',
     title: 'Customer',
+    titleKey: 'authRoleCustomer',
+    defaultTitle: 'Customer',
     subtitle: 'Book services & track dispatches',
     icon: User
   },
   {
     role: 'WORKER',
     title: 'Tradesperson',
+    titleKey: 'authRoleWorker',
+    defaultTitle: 'Tradesperson',
     subtitle: 'Accept jobs & view 90% wallet',
     icon: Briefcase
   },
   {
     role: 'COOP_ADMIN',
     title: 'Society Admin',
+    titleKey: 'authRoleAdmin',
+    defaultTitle: 'Society Admin',
     subtitle: 'Verify members & tool library',
     icon: Building2
   },
   {
     role: 'MANAGEMENT',
     title: 'Operations Team',
+    titleKey: 'authRoleManagement',
+    defaultTitle: 'Operations Team',
     subtitle: 'Demand forecast & arbitration',
     icon: BarChart3
   },
   {
     role: 'DEVELOPER',
     title: 'Technical Console',
+    titleKey: 'authRoleDev',
+    defaultTitle: 'Technical Console',
     subtitle: 'API mesh & telemetry metrics',
     icon: Terminal
   }
@@ -70,6 +81,7 @@ function RoleQuerySync({ onRoleChange }: { onRoleChange: (role: UserRole) => voi
 
 export default function LoginPage() {
   const router = useRouter();
+  const { t } = useLanguage();
   const [authMode, setAuthMode] = useState<'DEMO' | 'SUPABASE' | 'OTP'>('DEMO');
   const [selectedRole, setSelectedRole] = useState<UserRole>('CUSTOMER');
   const [email, setEmail] = useState('');
@@ -150,17 +162,17 @@ export default function LoginPage() {
           <span>Multi-Portal Authentication Gateway</span>
         </div>
         <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
-          Sign In to Your Dedicated Portal
+          {t('authGatewayTitle')}
         </h1>
         <p className="text-xs sm:text-sm text-slate-600 max-w-md mx-auto">
-          SyncBridge provides role-separated environments for Customers, Cooperative Tradespeople, Society Secretaries, and Operations.
+          {t('authGatewaySubtitle')}
         </p>
       </div>
 
       {/* Role Selection Tabs */}
       <div className="space-y-2">
         <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider block">
-          Select Active Persona & Access Domain:
+          {t('authPersonaHeading')}
         </label>
         <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
           {ROLE_ITEMS.map((item) => {
@@ -186,7 +198,9 @@ export default function LoginPage() {
                   <Icon className="w-4 h-4" />
                 </div>
                 <div>
-                  <div className="text-xs font-bold text-slate-900">{item.title}</div>
+                  <div className="text-xs font-bold text-slate-900">
+                    {t(item.titleKey) || item.defaultTitle}
+                  </div>
                   <div className="text-[10px] text-slate-500 line-clamp-1">{item.subtitle}</div>
                 </div>
               </button>
@@ -207,7 +221,7 @@ export default function LoginPage() {
           }`}
         >
           <Sparkles className="w-3.5 h-3.5 text-blue-600" />
-          <span>1-Click Hackathon Persona</span>
+          <span>{t('authDemoMode')}</span>
         </button>
         <button
           type="button"
@@ -219,7 +233,7 @@ export default function LoginPage() {
           }`}
         >
           <Phone className="w-3.5 h-3.5 text-blue-600" />
-          <span>Mobile Phone OTP</span>
+          <span>{t('authOtpMode')}</span>
         </button>
         <button
           type="button"
@@ -231,7 +245,7 @@ export default function LoginPage() {
           }`}
         >
           <Lock className="w-3.5 h-3.5 text-slate-500" />
-          <span>Email & Password</span>
+          <span>{t('authPasswordMode')}</span>
         </button>
       </div>
 

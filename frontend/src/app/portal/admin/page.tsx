@@ -37,9 +37,11 @@ import {
   PeerArbitrationCase,
   WorkerVerificationItem
 } from '@/data/mockData';
+import { useLanguage } from '@/context/LanguageContext';
 
 export default function CooperativeFederationAdminPage() {
   const { user } = useAuth();
+  const { t } = useLanguage();
   const { 
     verificationQueue, 
     approveWorker, 
@@ -178,10 +180,10 @@ export default function CooperativeFederationAdminPage() {
         <div className="space-y-1.5">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 text-xs font-semibold text-blue-700 border border-blue-200 mb-1">
             <Building2 className="w-3.5 h-3.5 text-blue-600" />
-            <span>Cooperative Federation Operations Console • NCCT Affiliated</span>
+            <span>{t('adminFederationTag')}</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-            Karnataka Primary Labour Cooperative Federation
+            {t('adminFederationTitle')}
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 max-w-2xl leading-relaxed">
             Presiding Administrator: <strong className="text-slate-800">{user?.name || 'Anand Patil (Society Secretary)'}</strong> • 
@@ -192,7 +194,7 @@ export default function CooperativeFederationAdminPage() {
         <div className="flex items-center gap-2.5 self-start md:self-center">
           <span className="px-3.5 py-2 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-semibold flex items-center gap-1.5">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span>Federation Quorum Active</span>
+            <span>{t('quorumActive')}</span>
           </span>
         </div>
       </div>
@@ -200,7 +202,7 @@ export default function CooperativeFederationAdminPage() {
       {/* Primary KPI Strip */}
       <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs space-y-1">
-          <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Federation GMV</span>
+          <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">{t('totalGmvLabel')}</span>
           <p className="text-2xl sm:text-3xl font-extrabold text-slate-900">₹{(totalGmv / 100000).toFixed(1)} Lakh</p>
           <span className="text-[11px] text-emerald-700 font-semibold block">90% Direct Pay: ₹{(workerTakeHome / 100000).toFixed(1)} Lakh</span>
         </div>
@@ -227,11 +229,11 @@ export default function CooperativeFederationAdminPage() {
       {/* Tab Navigation */}
       <div className="flex items-center gap-1.5 border-b border-slate-200 pb-2 overflow-x-auto">
         {[
-          { id: 'OVERVIEW', label: 'Federation Overview & Revenue', icon: BarChart3 },
-          { id: 'FORECASTING', label: 'AI Demand Forecasting', icon: Zap, badge: '2 Alerts' },
-          { id: 'DISPUTES', label: 'Peer Arbitration Queue', icon: Scale, badge: activeDisputes > 0 ? `${activeDisputes} Open` : undefined },
-          { id: 'VERIFICATIONS', label: 'e-KYC Verifications', icon: ShieldCheck, badge: pendingMembers > 0 ? `${pendingMembers}` : undefined },
-          { id: 'TOOLS', label: 'Equipment Fleet', icon: Wrench }
+          { id: 'OVERVIEW', label: t('tabOverview'), icon: BarChart3 },
+          { id: 'FORECASTING', label: t('tabForecasting'), icon: Zap, badge: '2 Alerts' },
+          { id: 'DISPUTES', label: t('tabDisputes'), icon: Scale, badge: activeDisputes > 0 ? `${activeDisputes} Open` : undefined },
+          { id: 'VERIFICATIONS', label: t('tabVerifications'), icon: ShieldCheck, badge: pendingMembers > 0 ? `${pendingMembers}` : undefined },
+          { id: 'TOOLS', label: t('tabTools'), icon: Wrench }
         ].map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;

@@ -183,7 +183,7 @@ export default function ServiceDiscovery() {
               <div className="flex items-center gap-2">
                 <Zap className="w-5 h-5 text-rose-600 fill-rose-600" />
                 <h2 className="text-base sm:text-lg font-extrabold text-rose-950 tracking-tight">
-                  Emergency Dispatch — Priority Matching Active
+                  {t('emergencyBannerTitle')}
                 </h2>
               </div>
             </div>
@@ -196,13 +196,13 @@ export default function ServiceDiscovery() {
                 href="/services"
                 className="text-xs text-rose-700 hover:text-rose-900 font-semibold underline ml-1"
               >
-                Exit Emergency Mode
+                {t('exitEmergencyMode')}
               </Link>
             </div>
           </div>
 
           <div className="p-3.5 bg-white/95 rounded-xl border border-rose-200 text-xs text-rose-950 font-medium leading-relaxed shadow-2xs">
-            ⚡ <strong className="text-rose-900 font-bold">100% of the emergency surge premium goes directly to the worker.</strong>{' '}
+            ⚡ <strong className="text-rose-900 font-bold">{t('emergencySurgeClaim')}</strong>{' '}
             Zero platform commission, zero corporate clawback. Nearest on-duty cooperative trade members are prioritized by real-time GPS proximity.
           </div>
 
@@ -222,10 +222,10 @@ export default function ServiceDiscovery() {
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
-              Verified Cooperative Service Directory
+              {t('servicesTitle')}
             </h1>
             <p className="text-sm text-slate-500 mt-1">
-              Connect directly with verified trade artisans within 5 km. 90% direct payout with zero hidden markups.
+              {t('servicesSubtitle')}
             </p>
           </div>
 
@@ -494,7 +494,7 @@ export default function ServiceDiscovery() {
                             <span className="text-base font-bold text-rose-700">₹{worker.hourlyRate + 250}</span>
                             <span className="text-[11px] text-slate-400 line-through">₹{worker.hourlyRate}</span>
                             <span className="text-[10px] font-bold text-rose-700 bg-rose-100 px-1.5 py-0.2 rounded border border-rose-200">
-                              Emergency Surge Rate
+                              {t('emergencySurgeBadge')}
                             </span>
                           </div>
                           <span className="text-[10px] text-emerald-700 font-bold block">
@@ -505,7 +505,7 @@ export default function ServiceDiscovery() {
                         <div>
                           <div className="flex items-baseline gap-1">
                             <span className="text-base font-bold text-slate-900">₹{worker.hourlyRate}</span>
-                            <span className="text-xs text-slate-500">/hr</span>
+                            <span className="text-xs text-slate-500">{t('perHour')}</span>
                           </div>
                           <span className="text-[10px] text-emerald-700 font-semibold block">
                             90% direct to worker (₹{Math.round(worker.hourlyRate * 0.90)})
@@ -521,7 +521,7 @@ export default function ServiceDiscovery() {
                         aria-label={`Call ${worker.name}`}
                       >
                         <Phone className="w-3.5 h-3.5" />
-                        <span>Call</span>
+                        <span>{t('callWorker')}</span>
                       </a>
 
                       <button
@@ -533,7 +533,7 @@ export default function ServiceDiscovery() {
                         }`}
                       >
                         {isEmergency && <Zap className="w-3.5 h-3.5 fill-white" />}
-                        <span>{isEmergency ? 'Instant SOS' : 'Book Now'}</span>
+                        <span>{isEmergency ? 'Instant SOS' : t('bookNow')}</span>
                         <ArrowRight className="w-3.5 h-3.5" />
                       </button>
                     </div>

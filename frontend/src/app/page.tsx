@@ -31,7 +31,8 @@ const QUICK_CATEGORIES = [
   {
     id: 'plumbing',
     name: 'Plumbing',
-    hindi: 'नलसाज़',
+    hindi: 'नलसाज़ (प्लंबर)',
+    kannada: 'ಪ್ಲಂಬರ್ (ಕೊಳವೆ ಕೆಲಸ)',
     tamil: 'குழாய் பணி',
     rate: '₹450/hr',
     icon: Droplets,
@@ -40,7 +41,8 @@ const QUICK_CATEGORIES = [
   {
     id: 'electrical',
     name: 'Electrical',
-    hindi: 'इलेक्ट्रीशियन',
+    hindi: 'इलेक्ट्रीशियन (बिजली)',
+    kannada: 'ಎಲೆಕ್ಟ್ರಿಷಿಯನ್',
     tamil: 'மின்சார பணி',
     rate: '₹500/hr',
     icon: Zap,
@@ -49,7 +51,8 @@ const QUICK_CATEGORIES = [
   {
     id: 'cleaning',
     name: 'Cleaning',
-    hindi: 'सफ़ाई',
+    hindi: 'सफ़ाई सेवा',
+    kannada: 'ಸ್ವಚ್ಛತೆ',
     tamil: 'சுத்தம்',
     rate: '₹420/hr',
     icon: Sparkles,
@@ -59,6 +62,7 @@ const QUICK_CATEGORIES = [
     id: 'appliance-repair',
     name: 'Appliances',
     hindi: 'उपकरण मरम्मत',
+    kannada: 'ಉಪಕರಣ ರಿಪೇರಿ',
     tamil: 'உபகரண பழுது',
     rate: '₹550/hr',
     icon: Wind,
@@ -67,7 +71,8 @@ const QUICK_CATEGORIES = [
   {
     id: 'carpentry',
     name: 'Carpentry',
-    hindi: 'बढ़ई',
+    hindi: 'बढ़ई (लकड़ी काम)',
+    kannada: 'ಬಡಗಿ (ಮರದ ಕೆಲಸ)',
     tamil: 'மர வேலை',
     rate: '₹520/hr',
     icon: Hammer,
@@ -167,14 +172,14 @@ export default function HomePage() {
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search trade, skill, or area (e.g. Electrician, Plumbing, Dadar)..."
+                placeholder={t('searchPlaceholder')}
                 className="flex-1 py-2.5 px-3 text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 outline-none bg-transparent"
               />
               <button
                 type="submit"
                 className="h-10 px-5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs sm:text-sm flex items-center gap-1.5 shadow-2xs transition-colors shrink-0"
               >
-                <span>Find Artisan</span>
+                <span>{t('findArtisanBtn')}</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
             </div>
@@ -183,12 +188,12 @@ export default function HomePage() {
           {/* Quick Category Launcher Pills */}
           <div className="space-y-2 pt-2">
             <div className="text-xs font-bold uppercase tracking-wider text-slate-400">
-              Popular Services
+              {t('popularServices')}
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
               {QUICK_CATEGORIES.map((cat) => {
                 const Icon = cat.icon;
-                const catLabel = language === 'hi' ? cat.hindi : language === 'ta' ? cat.tamil : cat.name;
+                const catLabel = language === 'hi' ? cat.hindi : language === 'kn' ? cat.kannada : language === 'ta' ? cat.tamil : cat.name;
                 return (
                   <Link
                     key={cat.id}
@@ -396,10 +401,10 @@ export default function HomePage() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 pb-3">
           <div>
             <h2 className="text-lg sm:text-xl font-bold text-slate-900">
-              The Cooperative Economic Difference
+              {t('coopDiffTitle')}
             </h2>
             <p className="text-xs text-slate-500">
-              Transparent financial distribution where capital serves labour, not corporate intermediaries.
+              {t('coopDiffDesc')}
             </p>
           </div>
           <div className="text-xs font-semibold text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200 self-start sm:self-auto">
@@ -417,9 +422,9 @@ export default function HomePage() {
               </div>
             </div>
             <div>
-              <h3 className="text-sm font-bold text-slate-900">Direct Worker Compensation</h3>
+              <h3 className="text-sm font-bold text-slate-900">{t('directCompTitle')}</h3>
               <p className="text-xs text-slate-600 mt-1 leading-relaxed">
-                Settled immediately via UPI to the member's wallet upon completion. Zero commission clawbacks.
+                {t('directCompDesc')}
               </p>
             </div>
             <div className="w-full bg-emerald-100 h-2 rounded-full overflow-hidden">
@@ -436,9 +441,9 @@ export default function HomePage() {
               </div>
             </div>
             <div>
-              <h3 className="text-sm font-bold text-slate-900">Primary Society Treasury</h3>
+              <h3 className="text-sm font-bold text-slate-900">{t('societyTreasuryTitle')}</h3>
               <p className="text-xs text-slate-600 mt-1 leading-relaxed">
-                Retained democratically by the local chapter for shared heavy power tool libraries and ops.
+                {t('societyTreasuryDesc')}
               </p>
             </div>
             <div className="w-full bg-blue-100 h-2 rounded-full overflow-hidden">
@@ -455,9 +460,9 @@ export default function HomePage() {
               </div>
             </div>
             <div>
-              <h3 className="text-sm font-bold text-slate-900">Welfare & Health Shield</h3>
+              <h3 className="text-sm font-bold text-slate-900">{t('welfareShieldTitle')}</h3>
               <p className="text-xs text-slate-600 mt-1 leading-relaxed">
-                Funds ₹5 Lakh emergency medical hospitalization, disability cover, and a 1% customer guarantee reserve.
+                {t('welfareShieldDesc')}
               </p>
             </div>
             <div className="w-full bg-amber-100 h-2 rounded-full overflow-hidden">
@@ -474,10 +479,10 @@ export default function HomePage() {
         <div className="flex items-center justify-between border-b border-slate-200 pb-3">
           <div>
             <h2 className="text-lg sm:text-xl font-bold text-slate-900">
-              Verified Cooperative Artisans
+              {t('verifiedArtisansTitle')}
             </h2>
             <p className="text-xs text-slate-500">
-              Top-rated tradespeople available in your district right now.
+              {t('verifiedArtisansSub')}
             </p>
           </div>
 
@@ -485,7 +490,7 @@ export default function HomePage() {
             href="/services"
             className="text-xs font-semibold text-blue-600 hover:text-blue-800 flex items-center gap-1"
           >
-            <span>View all 65+ artisans</span>
+            <span>{t('viewAllArtisans')}</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
@@ -550,7 +555,7 @@ export default function HomePage() {
                   href="/services"
                   className="h-8 px-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold flex items-center gap-1 transition-colors"
                 >
-                  <span>Book Now</span>
+                  <span>{t('bookNow')}</span>
                   <ArrowRight className="w-3 h-3" />
                 </Link>
               </div>
@@ -565,10 +570,10 @@ export default function HomePage() {
       <section className="bg-gradient-to-r from-slate-900 to-blue-950 rounded-3xl p-6 sm:p-8 text-white flex flex-col sm:flex-row items-center justify-between gap-6 shadow-sm">
         <div className="space-y-2 text-center sm:text-left">
           <h2 className="text-xl sm:text-2xl font-bold tracking-tight">
-            Are You a Skilled Tradesperson?
+            {t('joinAsWorkerTitle')}
           </h2>
           <p className="text-xs sm:text-sm text-slate-300 max-w-xl leading-relaxed">
-            Join your district's labour cooperative society. Retain 90% of your earnings, enjoy shared heavy tool libraries, and access national pension and healthcare schemes.
+            {t('joinAsWorkerDesc')}
           </p>
         </div>
 
@@ -577,7 +582,7 @@ export default function HomePage() {
             href="/register/worker"
             className="h-11 px-5 rounded-xl bg-blue-500 hover:bg-blue-400 text-white font-semibold text-xs sm:text-sm flex items-center gap-2 transition-colors shadow-sm"
           >
-            <span>Apply for Membership</span>
+            <span>{t('registerAsWorkerBtn')}</span>
             <ArrowRight className="w-4 h-4" />
           </Link>
         </div>

@@ -24,9 +24,11 @@ import {
 } from 'lucide-react';
 import { MOCK_BOOKINGS } from '@/data/mockData';
 import { calculateCoopSplit } from '@/lib/splitUtils';
+import { useLanguage } from '@/context/LanguageContext';
 
 export default function CustomerPortalPage() {
   const { user } = useAuth();
+  const { t } = useLanguage();
   
   // AI Diagnostic State
   const [promptText, setPromptText] = useState('');
@@ -71,13 +73,13 @@ export default function CustomerPortalPage() {
         <div>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 text-xs font-semibold text-blue-700 border border-blue-200 mb-2">
             <ShieldCheck className="w-3.5 h-3.5 text-blue-600" />
-            <span>Customer Service Hub • 1% Guarantee Recourse Active</span>
+            <span>{t('customerHubBadge')}</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
-            Welcome back, {user?.name || 'Valued Customer'}
+            {t('welcomeCustomer')}, {user?.name || 'Valued Customer'}
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 mt-1 max-w-xl leading-relaxed">
-            Directly book certified cooperative tradespeople within 5 km. Every booking provides 90% direct pay to the artisan with zero platform markups.
+            {t('customerSub')}
           </p>
         </div>
 
@@ -87,14 +89,14 @@ export default function CustomerPortalPage() {
             className="h-10 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs sm:text-sm flex items-center gap-1.5 shadow-sm transition-colors"
           >
             <Search className="w-4 h-4" />
-            <span>Find Trade Artisan</span>
+            <span>{t('findArtisanBtn')}</span>
           </Link>
           <Link
             href="/bookings"
             className="h-10 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs sm:text-sm flex items-center gap-1.5 transition-colors"
           >
             <Layers className="w-4 h-4" />
-            <span>All Orders</span>
+            <span>{t('allOrdersBtn')}</span>
           </Link>
         </div>
       </div>
@@ -108,10 +110,10 @@ export default function CustomerPortalPage() {
             </div>
             <div>
               <h2 className="text-lg font-bold text-slate-900">
-                Gemini AI Home Diagnostic Assistant
+                {t('geminiAssistantTitle')}
               </h2>
               <p className="text-xs text-slate-500">
-                Describe or snap a photo of any household issue to instantly diagnose the trade, tools, and fair quote range.
+                {t('geminiAssistantSub')}
               </p>
             </div>
           </div>

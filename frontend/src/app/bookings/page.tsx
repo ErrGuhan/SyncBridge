@@ -64,10 +64,10 @@ export default function BookingsPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-5">
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
-            My Service Orders
+            {t('bookingsTitle')}
           </h1>
           <p className="text-sm text-slate-500 mt-0.5">
-            Track active dispatches, inspect worker coordinates, and verify 90/5/5 cooperative settlement receipts.
+            {t('bookingsSubtitle')}
           </p>
         </div>
 
@@ -76,7 +76,7 @@ export default function BookingsPage() {
           className="h-10 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs sm:text-sm flex items-center gap-1.5 shadow-xs transition-colors self-start sm:self-auto"
         >
           <Plus className="w-4 h-4" />
-          <span>Book New Service</span>
+          <span>{t('bookNow')}</span>
         </Link>
       </div>
 
@@ -208,7 +208,7 @@ export default function BookingsPage() {
                       className="h-9 px-3 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold flex items-center gap-1.5 transition-colors"
                     >
                       <Phone className="w-3.5 h-3.5" />
-                      <span>Call Artisan</span>
+                      <span>{t('callWorker')}</span>
                     </a>
 
                     {isCompleted && (
@@ -230,7 +230,7 @@ export default function BookingsPage() {
                       className="h-9 px-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold flex items-center gap-1.5 shadow-2xs transition-colors"
                     >
                       <CheckCircle2 className="w-3.5 h-3.5" />
-                      <span>Confirm Completion</span>
+                      <span>{t('jobCompleted')}</span>
                     </button>
                   )}
 
@@ -240,7 +240,7 @@ export default function BookingsPage() {
                       onClick={() => setDisputeBooking(booking)}
                       className="text-xs text-slate-500 hover:text-amber-700 font-medium transition-colors"
                     >
-                      Dispute / Arbitration
+                      {t('disputeArbitration')}
                     </button>
                   )}
                 </div>

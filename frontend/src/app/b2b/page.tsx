@@ -14,8 +14,10 @@ import {
   FileCheck
 } from 'lucide-react';
 import { MOCK_B2G_CONTRACTS, B2GContract } from '@/data/mockData';
+import { useLanguage } from '@/context/LanguageContext';
 
 export default function B2GPortalPage() {
+  const { t } = useLanguage();
   const [contracts] = useState<B2GContract[]>(MOCK_B2G_CONTRACTS);
   const [showRfqSuccess, setShowRfqSuccess] = useState(false);
   const [institutionName, setInstitutionName] = useState('');
@@ -37,18 +39,15 @@ export default function B2GPortalPage() {
       <section className="text-center space-y-4 max-w-3xl mx-auto">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 text-xs font-semibold text-blue-700 border border-blue-200">
           <Building2 className="w-4 h-4 text-blue-600" />
-          <span>Institutional Demand & Public Enterprise Contracts</span>
+          <span>{t('b2bBannerTag')}</span>
         </div>
 
         <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-slate-900">
-          Institutional Anchor Demand & <br className="hidden sm:inline" />
-          <span className="text-blue-600">
-            B2B / B2G Facility Management
-          </span>
+          {t('b2bTitle')}
         </h1>
 
         <p className="text-sm sm:text-base text-slate-600 leading-relaxed max-w-2xl mx-auto">
-          Public-Private-Cooperative Partnerships anchoring primary labour cooperatives with long-term, high-volume maintenance contracts from Municipal Corporations, Dairy Federations, and Public Institutions.
+          {t('b2bSubtitle')}
         </p>
       </section>
 
@@ -57,7 +56,7 @@ export default function B2GPortalPage() {
         <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-2">
           <div className="flex items-center gap-2 text-blue-700 font-semibold text-xs uppercase tracking-wider">
             <ShieldCheck className="w-4 h-4 text-blue-600" />
-            <span>Guaranteed Demand Baseline</span>
+            <span>{t('b2bStatHours')}</span>
           </div>
           <p className="text-2xl font-bold text-slate-900">6,450+ hrs/mo</p>
           <p className="text-xs text-slate-500">Committed institutional hours preventing seasonal gig starvation.</p>
@@ -66,7 +65,7 @@ export default function B2GPortalPage() {
         <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-2">
           <div className="flex items-center gap-2 text-emerald-700 font-semibold text-xs uppercase tracking-wider">
             <Clock className="w-4 h-4 text-emerald-600" />
-            <span>7-Day Payout SLA</span>
+            <span>{t('b2bStatSLA')}</span>
           </div>
           <p className="text-2xl font-bold text-slate-900">100% On-Time</p>
           <p className="text-xs text-slate-500">Cooperative escrow eliminates traditional 90-day government contractor delays.</p>
@@ -75,7 +74,7 @@ export default function B2GPortalPage() {
         <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-2">
           <div className="flex items-center gap-2 text-indigo-700 font-semibold text-xs uppercase tracking-wider">
             <Award className="w-4 h-4 text-indigo-600" />
-            <span>SLA Compliance</span>
+            <span>{t('b2bStatCompliance')}</span>
           </div>
           <p className="text-2xl font-bold text-slate-900">98.6% Average</p>
           <p className="text-xs text-slate-500">Backed by certified master technicians and primary society pooling.</p>
@@ -90,7 +89,7 @@ export default function B2GPortalPage() {
               Contract Ledger
             </span>
             <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 mt-0.5">
-              Active Municipal & Cooperative Frameworks
+              {t('b2bLedgerTitle')}
             </h2>
           </div>
           <span className="text-xs text-slate-500">
@@ -177,7 +176,7 @@ export default function B2GPortalPage() {
               For Municipalities, PSU Warehouses & Cooperative Enterprises
             </span>
             <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mt-1">
-              Issue an Institutional Maintenance RFQ
+              {t('b2bIssueRfq')}
             </h2>
             <p className="text-xs sm:text-sm text-slate-600 mt-1">
               Directly empanel registered Labour Cooperatives for your ward offices, processing facilities, and campuses with transparent 90/5/5 accounting and guaranteed SLAs.
@@ -232,7 +231,7 @@ export default function B2GPortalPage() {
                   className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs sm:text-sm shadow-sm transition-all flex items-center justify-center gap-2"
                 >
                   <Send className="w-4 h-4" />
-                  <span>Submit Institutional RFQ</span>
+                  <span>{t('b2bSubmitRfq')}</span>
                 </button>
               </div>
             </form>

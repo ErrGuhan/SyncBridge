@@ -27,6 +27,8 @@ import {
   Wrench
 } from 'lucide-react';
 
+import { useLanguage } from '@/context/LanguageContext';
+
 interface VaultDocument {
   id: string;
   name: string;
@@ -38,6 +40,7 @@ interface VaultDocument {
 
 export default function WorkerPortalPage() {
   const { user } = useAuth();
+  const { t } = useLanguage();
   const { 
     orders, 
     acceptOrder, 
@@ -184,7 +187,7 @@ export default function WorkerPortalPage() {
           <div className="flex items-center gap-2 flex-wrap mb-2">
             <span className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-emerald-50 text-xs font-semibold text-emerald-700 border border-emerald-200">
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-              <span>Verified Cooperative Member • Kalyan Labour Society</span>
+              <span>{t('workerVerifiedBadge')}</span>
             </span>
             <span className="text-xs px-2.5 py-0.5 rounded-md bg-slate-100 text-slate-700 font-semibold">
               Rating: ★ 4.92 / 5.0 (Peer Audited)
@@ -215,7 +218,7 @@ export default function WorkerPortalPage() {
             }`}
           >
             <span className={`w-2 h-2 rounded-full ${isOnline ? 'bg-white animate-pulse' : 'bg-slate-400'}`} />
-            <span>{isOnline ? 'Online (Receiving Jobs)' : 'Offline'}</span>
+            <span>{isOnline ? t('onlineStatus') : t('offlineStatus')}</span>
           </button>
 
           <button
@@ -228,7 +231,7 @@ export default function WorkerPortalPage() {
             }`}
           >
             <Zap className="w-3.5 h-3.5" />
-            <span>{sosActive ? 'SOS Mode ON' : 'Emergency Opt-In'}</span>
+            <span>{sosActive ? t('sosModeOn') : t('sosEmergencyOptIn')}</span>
           </button>
         </div>
       </div>
@@ -239,7 +242,7 @@ export default function WorkerPortalPage() {
         <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-2">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-              Available 90% Wallet Balance
+              {t('availableWallet')}
             </span>
             <div className="p-2 rounded-xl bg-emerald-50 text-emerald-600">
               <Wallet className="w-5 h-5" />
@@ -265,7 +268,7 @@ export default function WorkerPortalPage() {
                 onClick={handleWithdraw}
                 className="w-full py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs flex items-center justify-center gap-1.5 shadow-sm transition-all disabled:opacity-40"
               >
-                <span>Instant Withdraw to UPI / Bank</span>
+                <span>{t('withdrawUpi')}</span>
                 <ArrowUpRight className="w-3.5 h-3.5" />
               </button>
             )}
@@ -276,7 +279,7 @@ export default function WorkerPortalPage() {
         <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-2">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-              Active Job Escrow (In Transit)
+              {t('activeJobEscrow')}
             </span>
             <div className="p-2 rounded-xl bg-blue-50 text-blue-600">
               <Clock className="w-5 h-5" />
@@ -293,7 +296,7 @@ export default function WorkerPortalPage() {
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                Accrued Pension Corpus (5% Pool)
+                {t('pensionCorpus')}
               </span>
               <div className="p-2 rounded-xl bg-indigo-50 text-indigo-600">
                 <Award className="w-5 h-5" />
@@ -320,7 +323,7 @@ export default function WorkerPortalPage() {
           <div>
             <div className="flex items-center gap-2">
               <h3 className="text-base font-bold text-slate-900">
-                Weekly Cooperative Earnings & 90/5/5 Breakdown
+                {t('weeklyBreakdownTitle')}
               </h3>
               <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
                 Pure Cooperative Mathematics
@@ -343,7 +346,7 @@ export default function WorkerPortalPage() {
           <div className="p-4 rounded-xl bg-emerald-50/60 border border-emerald-200/80 space-y-1">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-emerald-800 uppercase tracking-wider">
-                90% Worker Take-Home
+                {t('workerTakeHome')}
               </span>
               <span className="text-xs font-bold px-2 py-0.5 rounded bg-emerald-200/80 text-emerald-900 font-mono">
                 90.0%
@@ -358,7 +361,7 @@ export default function WorkerPortalPage() {
           <div className="p-4 rounded-xl bg-blue-50/60 border border-blue-200/80 space-y-1">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-blue-800 uppercase tracking-wider">
-                5% Society Operational Treasury
+                {t('societyTreasuryShare')}
               </span>
               <span className="text-xs font-bold px-2 py-0.5 rounded bg-blue-200/80 text-blue-900 font-mono">
                 5.0%
@@ -373,7 +376,7 @@ export default function WorkerPortalPage() {
           <div className="p-4 rounded-xl bg-amber-50/60 border border-amber-200/80 space-y-1">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-amber-800 uppercase tracking-wider">
-                5% Mutual Aid & Healthcare
+                {t('mutualAidShare')}
               </span>
               <span className="text-xs font-bold px-2 py-0.5 rounded bg-amber-200/80 text-amber-900 font-mono">
                 5.0%
@@ -407,7 +410,7 @@ export default function WorkerPortalPage() {
             <div className="flex items-center gap-2">
               <span className="px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1.5">
                 <Clock className="w-3.5 h-3.5 text-emerald-600" />
-                <span>ACTIVE JOB IN PROGRESS ({activeOngoingOrders.length})</span>
+                <span>{t('activeJobTitle')} ({activeOngoingOrders.length})</span>
               </span>
             </div>
             <span className="text-xs text-slate-400">Lock ID: Active Mutex Session</span>
@@ -450,7 +453,7 @@ export default function WorkerPortalPage() {
                     className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm transition-colors"
                   >
                     <CheckCircle2 className="w-4 h-4" />
-                    <span>Complete Job & Release 90% Payout</span>
+                    <span>{t('completeJobBtn')}</span>
                   </button>
                 </div>
               </div>
@@ -505,7 +508,7 @@ export default function WorkerPortalPage() {
               className="py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-sm transition-all"
             >
               <Check className="w-4 h-4" />
-              <span>Accept Job (Lock Mutex Dispatch)</span>
+              <span>{t('acceptJobBtn')}</span>
             </button>
             <button
               type="button"
@@ -513,7 +516,7 @@ export default function WorkerPortalPage() {
               className="py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all"
             >
               <X className="w-4 h-4" />
-              <span>Pass to Peer Society Worker</span>
+              <span>{t('passJobBtn')}</span>
             </button>
           </div>
         </section>

@@ -15,8 +15,10 @@ import {
   ArrowRight
 } from 'lucide-react';
 import { MOCK_WELFARE_FUND_SNAPSHOT } from '@/data/mockData';
+import { useLanguage } from '@/context/LanguageContext';
 
 export default function WelfarePortalPage() {
+  const { t } = useLanguage();
   const [pensionMonthlyContrib, setPensionMonthlyContrib] = useState<number>(500);
 
   // Pension estimation calculation
@@ -31,18 +33,15 @@ export default function WelfarePortalPage() {
       <section className="text-center space-y-4 max-w-3xl mx-auto">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 text-xs font-semibold text-emerald-700 border border-emerald-200">
           <HeartHandshake className="w-4 h-4 text-emerald-600" />
-          <span>Worker Social Security & Mutual Aid Trust</span>
+          <span>{t('footerWelfareTrust')}</span>
         </div>
 
         <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-slate-900">
-          Dignity & Non-Exploitative <br className="hidden sm:inline" />
-          <span className="text-emerald-600">
-            Social Security Infrastructure
-          </span>
+          {t('welfareHeading')}
         </h1>
 
         <p className="text-sm sm:text-base text-slate-600 leading-relaxed max-w-2xl mx-auto">
-          Unlike commercial gig platforms where unorganized workers bear 100% of health and accident risks, 5% of every transaction across our cooperative network automatically fuels a collective mutual aid trust.
+          {t('welfareSub')}
         </p>
       </section>
 
