@@ -11,6 +11,7 @@ import {
   MOCK_VERIFICATION_QUEUE, 
   MOCK_PEER_ARBITRATION_CASES 
 } from '@/data/mockData';
+import { calculateCoopSplit } from '@/lib/splitUtils';
 
 export interface PowerToolItem {
   id: string;
@@ -140,10 +141,33 @@ export function CoopDataProvider({ children }: { children: React.ReactNode }) {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('syncbridge_orders');
       if (saved) {
-        try { return JSON.parse(saved); } catch (e) {}
+        try {
+          const parsed = JSON.parse(saved);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            return parsed.map((item: BookingItem) => {
+              const split = calculateCoopSplit(item.totalAmount);
+              return {
+                ...item,
+                workerPayout: split.workerPayout,
+                coopFee: split.coopFee,
+                welfareFund: split.welfareFund,
+                guaranteeFund: split.guaranteeFund
+              };
+            });
+          }
+        } catch (e) {}
       }
     }
-    return MOCK_BOOKINGS;
+    return MOCK_BOOKINGS.map(item => {
+      const split = calculateCoopSplit(item.totalAmount);
+      return {
+        ...item,
+        workerPayout: split.workerPayout,
+        coopFee: split.coopFee,
+        welfareFund: split.welfareFund,
+        guaranteeFund: split.guaranteeFund
+      };
+    });
   });
 
   // 2. Workers state
@@ -278,9 +302,7 @@ export function CoopDataProvider({ children }: { children: React.ReactNode }) {
     serviceCategory: string;
   }): BookingItem => {
     const total = orderData.totalAmount || 500;
-    const workerPayout = Math.round(total * 0.9);
-    const coopFee = Math.round(total * 0.05);
-    const welfare = Math.round(total * 0.05);
+    const split = calculateCoopSplit(total);
 
     const newOrder: BookingItem = {
       id: `BKG-2026-${Math.floor(1000 + Math.random() * 9000)}`,
@@ -295,10 +317,10 @@ export function CoopDataProvider({ children }: { children: React.ReactNode }) {
       isEmergency: orderData.isEmergency || false,
       totalAmount: total,
       emergencySurgeAmount: orderData.isEmergency ? 250 : 0,
-      workerPayout: workerPayout,
-      coopFee: coopFee,
-      welfareFund: welfare,
-      guaranteeFund: Math.round(total * 0.01),
+      workerPayout: split.workerPayout,
+      coopFee: split.coopFee,
+      welfareFund: split.welfareFund,
+      guaranteeFund: split.guaranteeFund,
       location: orderData.customerAddress || 'Indiranagar 2nd Stage, Bengaluru',
       ncctBadge: 'Certified Trade Artisan'
     };

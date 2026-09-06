@@ -45,6 +45,8 @@ export default function TopAccessibleHeader() {
   const navLinks = [
     { name: 'Services', href: '/services' },
     { name: 'My Orders', href: '/bookings' },
+    { name: 'Worker Portal', href: '/portal/worker' },
+    { name: 'Federation Admin', href: '/portal/admin' },
     { name: 'B2B Contracts', href: '/b2b' },
     { name: 'Welfare Fund', href: '/welfare' }
   ];
@@ -191,9 +193,9 @@ export default function TopAccessibleHeader() {
                   className="fixed inset-0 z-40 bg-slate-900/10 backdrop-blur-2xs sm:hidden" 
                   onClick={() => setShowLangMenu(false)} 
                 />
-                <div className="fixed sm:absolute left-4 right-4 sm:left-auto sm:right-0 top-16 sm:top-12 bg-white border border-slate-200 rounded-xl p-1.5 shadow-lg sm:w-44 z-50 animate-in fade-in zoom-in-95 duration-150">
+                <div className="fixed sm:absolute left-4 right-4 sm:left-auto sm:right-0 top-16 sm:top-12 bg-white border border-slate-200 rounded-xl p-1.5 shadow-xl sm:w-56 z-50 animate-in fade-in zoom-in-95 duration-150 space-y-1">
                   <div className="px-2.5 py-1 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                    Select Language
+                    Active Languages
                   </div>
                   {langOptions.map((opt) => (
                     <button
@@ -215,6 +217,26 @@ export default function TopAccessibleHeader() {
                       {language === opt.code && <Check className="w-3.5 h-3.5 text-blue-700" />}
                     </button>
                   ))}
+
+                  {/* 22 Scheduled Languages Roadmap */}
+                  <div className="pt-2 border-t border-slate-100">
+                    <div className="px-2.5 py-1 text-[9px] font-bold text-slate-400 uppercase tracking-wider">
+                      22 Languages Roadmap
+                    </div>
+                    <div className="px-2 py-1 flex flex-wrap gap-1 text-[10px] text-slate-500">
+                      <span className="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600">বাংলা</span>
+                      <span className="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600">తెలుగు</span>
+                      <span className="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600">मराठी</span>
+                      <span className="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600">ગુજરાતી</span>
+                      <span className="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600">ಕನ್ನಡ</span>
+                      <span className="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600">മലയാളം</span>
+                      <span className="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600">ଓଡ଼ିଆ</span>
+                      <span className="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600">ਪੰਜਾਬੀ</span>
+                    </div>
+                    <p className="px-2.5 pt-1 text-[9px] text-slate-400 italic">
+                      Bhashini AI translation integration in progress
+                    </p>
+                  </div>
                 </div>
               </>
             )}
@@ -252,15 +274,15 @@ export default function TopAccessibleHeader() {
             </Link>
           )}
 
-          {/* Sleek Emergency SOS Button */}
+          {/* Distinct Emergency SOS Action Button */}
           <Link
             href="/services?emergency=true"
-            className="h-10 px-2.5 sm:px-3 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-2xs group"
+            className="h-10 px-3 sm:px-3.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white border border-rose-600 text-xs font-bold flex items-center gap-1.5 transition-all shadow-sm shadow-rose-600/20 group shrink-0"
             aria-label="Emergency SOS Dispatch"
           >
-            <span className="w-2 h-2 rounded-full bg-rose-600 animate-ping" />
-            <Zap className="w-3.5 h-3.5 text-rose-600 group-hover:scale-110 transition-transform" />
-            <span className="font-bold hidden sm:inline">SOS</span>
+            <span className="w-2 h-2 rounded-full bg-white animate-ping" />
+            <Zap className="w-3.5 h-3.5 text-white fill-white group-hover:scale-110 transition-transform" />
+            <span className="font-bold tracking-tight">Emergency SOS</span>
           </Link>
         </div>
 

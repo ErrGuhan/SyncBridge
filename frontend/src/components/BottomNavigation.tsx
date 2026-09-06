@@ -74,20 +74,20 @@ export default function BottomNavigation() {
       isActive: pathname === '/'
     },
     {
-      label: t('navSearch'),
+      label: t('navServices'),
       href: '/services',
       icon: Search,
       isActive: pathname.startsWith('/services')
     },
     {
-      label: t('navJobs'),
+      label: t('navOrders'),
       href: '/bookings',
       icon: ClipboardList,
       isActive: pathname.startsWith('/bookings')
     },
     portalItem,
     {
-      label: 'Login',
+      label: t('navSignIn'),
       href: '/auth/login',
       icon: LayoutGrid,
       isActive: pathname.startsWith('/auth')

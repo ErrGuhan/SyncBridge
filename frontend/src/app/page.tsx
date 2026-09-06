@@ -21,15 +21,18 @@ import {
   AlertTriangle,
   Wrench,
   Clock,
-  Phone
+  Phone,
+  Building2
 } from 'lucide-react';
 import { MOCK_WORKERS } from '@/data/mockData';
+import { useLanguage } from '@/context/LanguageContext';
 
 const QUICK_CATEGORIES = [
   {
     id: 'plumbing',
     name: 'Plumbing',
     hindi: 'नलसाज़',
+    tamil: 'குழாய் பணி',
     rate: '₹450/hr',
     icon: Droplets,
     color: 'text-blue-600 bg-blue-50 hover:bg-blue-100 border-blue-200'
@@ -38,6 +41,7 @@ const QUICK_CATEGORIES = [
     id: 'electrical',
     name: 'Electrical',
     hindi: 'इलेक्ट्रीशियन',
+    tamil: 'மின்சார பணி',
     rate: '₹500/hr',
     icon: Zap,
     color: 'text-amber-600 bg-amber-50 hover:bg-amber-100 border-amber-200'
@@ -46,6 +50,7 @@ const QUICK_CATEGORIES = [
     id: 'cleaning',
     name: 'Cleaning',
     hindi: 'सफ़ाई',
+    tamil: 'சுத்தம்',
     rate: '₹420/hr',
     icon: Sparkles,
     color: 'text-emerald-600 bg-emerald-50 hover:bg-emerald-100 border-emerald-200'
@@ -54,6 +59,7 @@ const QUICK_CATEGORIES = [
     id: 'appliance-repair',
     name: 'Appliances',
     hindi: 'उपकरण मरम्मत',
+    tamil: 'உபகரண பழுது',
     rate: '₹550/hr',
     icon: Wind,
     color: 'text-cyan-600 bg-cyan-50 hover:bg-cyan-100 border-cyan-200'
@@ -62,6 +68,7 @@ const QUICK_CATEGORIES = [
     id: 'carpentry',
     name: 'Carpentry',
     hindi: 'बढ़ई',
+    tamil: 'மர வேலை',
     rate: '₹520/hr',
     icon: Hammer,
     color: 'text-orange-700 bg-orange-50 hover:bg-orange-100 border-orange-200'
@@ -70,6 +77,7 @@ const QUICK_CATEGORIES = [
 
 export default function HomePage() {
   const router = useRouter();
+  const { language, t } = useLanguage();
   const [searchQuery, setSearchQuery] = useState('');
   
   // AI Diagnostic Quick Assistant state
@@ -137,11 +145,17 @@ export default function HomePage() {
 
           <div className="space-y-3">
             <h1 className="text-3xl sm:text-5xl font-extrabold text-slate-900 tracking-tight leading-[1.15]">
-              90% Payout to Workers. <br className="hidden sm:block" />
-              <span className="text-blue-600">Zero Corporate Cut.</span>
+              {language === 'en' ? (
+                <>
+                  90% Payout to Workers. <br className="hidden sm:block" />
+                  <span className="text-blue-600">Zero Corporate Cut.</span>
+                </>
+              ) : (
+                <span>{t('heroHeadline')}</span>
+              )}
             </h1>
             <p className="text-sm sm:text-base text-slate-600 max-w-2xl leading-relaxed">
-              Book skilled trade artisans directly without extractive platform middlemen. Fair transparent pricing, same-day settlement, and ₹5 Lakh mutual aid health coverage for every member.
+              {t('heroSub')}
             </p>
           </div>
 
@@ -174,6 +188,7 @@ export default function HomePage() {
             <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
               {QUICK_CATEGORIES.map((cat) => {
                 const Icon = cat.icon;
+                const catLabel = language === 'hi' ? cat.hindi : language === 'ta' ? cat.tamil : cat.name;
                 return (
                   <Link
                     key={cat.id}
@@ -184,7 +199,7 @@ export default function HomePage() {
                       <Icon className="w-4 h-4" />
                     </div>
                     <div>
-                      <div className="font-bold text-slate-900 text-xs sm:text-sm">{cat.name}</div>
+                      <div className="font-bold text-slate-900 text-xs sm:text-sm">{catLabel}</div>
                       <div className="text-[10px] text-slate-500">{cat.rate}</div>
                     </div>
                   </Link>
@@ -193,6 +208,51 @@ export default function HomePage() {
             </div>
           </div>
 
+        </div>
+      </section>
+
+      {/* -------------------------------------------------------------------- */}
+      {/* 1.5 COMPACT 4-STAT COOPERATIVE IMPACT STRIP */}
+      {/* -------------------------------------------------------------------- */}
+      <section className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
+        <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-2xs flex items-center gap-3.5">
+          <div className="w-11 h-11 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center font-bold shrink-0">
+            <Building2 className="w-5 h-5" />
+          </div>
+          <div>
+            <div className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">44,859+</div>
+            <div className="text-xs text-slate-500 font-medium">{t('statsCoops')}</div>
+          </div>
+        </div>
+
+        <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-2xs flex items-center gap-3.5">
+          <div className="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold shrink-0">
+            <Wallet className="w-5 h-5" />
+          </div>
+          <div>
+            <div className="text-xl sm:text-2xl font-black text-emerald-600 tracking-tight">90%</div>
+            <div className="text-xs text-slate-500 font-medium">{t('statsRetention')}</div>
+          </div>
+        </div>
+
+        <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-2xs flex items-center gap-3.5">
+          <div className="w-11 h-11 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center font-bold shrink-0">
+            <HeartHandshake className="w-5 h-5" />
+          </div>
+          <div>
+            <div className="text-xl sm:text-2xl font-black text-amber-600 tracking-tight">₹1.45 Cr+</div>
+            <div className="text-xs text-slate-500 font-medium">{t('statsCorpus')}</div>
+          </div>
+        </div>
+
+        <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-2xs flex items-center gap-3.5">
+          <div className="w-11 h-11 rounded-xl bg-indigo-50 text-indigo-700 flex items-center justify-center font-bold shrink-0">
+            <MapPin className="w-5 h-5" />
+          </div>
+          <div>
+            <div className="text-xl sm:text-2xl font-black text-indigo-600 tracking-tight">5 km</div>
+            <div className="text-xs text-slate-500 font-medium">{t('statsRadius')}</div>
+          </div>
         </div>
       </section>
 

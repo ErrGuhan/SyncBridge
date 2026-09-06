@@ -548,11 +548,11 @@ export const MOCK_BOOKINGS: BookingItem[] = [
     status: 'IN_PROGRESS',
     isEmergency: true,
     totalAmount: 850,
-    emergencySurgeAmount: 250, // 100% of surge goes to worker
-    workerPayout: 790,         // (600 * 90%) + 250 = 540 + 250 = 790
-    coopFee: 30,               // 600 * 5% = 30
-    welfareFund: 30,           // 600 * 5% = 30
-    guaranteeFund: 6,          // 600 * 1% = 6
+    emergencySurgeAmount: 0,
+    workerPayout: 765,         // Exactly 90% of ₹850
+    coopFee: 43,              // 5% of ₹850 (rounded)
+    welfareFund: 42,           // 5% of ₹850 (765 + 43 + 42 = 850)
+    guaranteeFund: 8,          // 1% of ₹850
     location: 'Flat 302, Palm Meadows, Koramangala, Bengaluru',
     ncctBadge: 'Skill India Sanitaryware Specialist'
   },

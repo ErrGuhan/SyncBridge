@@ -16,7 +16,9 @@ import {
   CheckCircle2, 
   AlertCircle,
   Sparkles,
-  ShieldCheck
+  ShieldCheck,
+  Phone,
+  KeyRound
 } from 'lucide-react';
 
 const ROLE_ITEMS: { role: UserRole; title: string; subtitle: string; icon: any }[] = [
@@ -52,16 +54,29 @@ const ROLE_ITEMS: { role: UserRole; title: string; subtitle: string; icon: any }
   }
 ];
 
-function LoginInner() {
-  const router = useRouter();
+// Silent query parameter synchronizer (isolated in Suspense to prevent SSR page-blocking)
+function RoleQuerySync({ onRoleChange }: { onRoleChange: (role: UserRole) => void }) {
   const searchParams = useSearchParams();
-  const initialRoleParam = searchParams.get('role')?.toUpperCase() as UserRole;
-  const initialRole: UserRole = ROLE_ITEMS.some(r => r.role === initialRoleParam) ? initialRoleParam : 'CUSTOMER';
+  const roleParam = searchParams?.get('role')?.toUpperCase() as UserRole;
 
-  const [authMode, setAuthMode] = useState<'DEMO' | 'SUPABASE'>('DEMO');
-  const [selectedRole, setSelectedRole] = useState<UserRole>(initialRole);
+  React.useEffect(() => {
+    if (roleParam && ROLE_ITEMS.some(r => r.role === roleParam)) {
+      onRoleChange(roleParam);
+    }
+  }, [roleParam, onRoleChange]);
+
+  return null;
+}
+
+export default function LoginPage() {
+  const router = useRouter();
+  const [authMode, setAuthMode] = useState<'DEMO' | 'SUPABASE' | 'OTP'>('DEMO');
+  const [selectedRole, setSelectedRole] = useState<UserRole>('CUSTOMER');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [otpCode, setOtpCode] = useState('');
+  const [otpSent, setOtpSent] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -84,7 +99,7 @@ function LoginInner() {
         const targetUrl = getPortalUrlForRole(selectedRole);
         router.push(targetUrl);
       } else {
-        setErrorMessage(res.error || 'Invalid credentials');
+        setErrorMessage(res.error || 'Invalid credentials. You can use 1-Click Persona Access above for demo.');
       }
     } catch (err: any) {
       setErrorMessage(err.message || 'Login failed');
@@ -93,11 +108,41 @@ function LoginInner() {
     }
   };
 
+  const handleOtpSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!otpSent) {
+      if (phoneNumber.length < 10) {
+        setErrorMessage('Please enter a valid 10-digit mobile number.');
+        return;
+      }
+      setErrorMessage(null);
+      setOtpSent(true);
+      return;
+    }
+
+    if (otpCode.length < 4) {
+      setErrorMessage('Please enter the 4-digit OTP.');
+      return;
+    }
+
+    setIsSubmitting(true);
+    setTimeout(() => {
+      loginAsDemoUser(selectedRole);
+      const targetUrl = getPortalUrlForRole(selectedRole);
+      router.push(targetUrl);
+    }, 800);
+  };
+
   const currentPersona = DEMO_PERSONAS[selectedRole];
 
   return (
     <div className="max-w-3xl mx-auto py-6 sm:py-10 space-y-6 animate-in fade-in duration-300">
       
+      {/* Silent client query synchronizer */}
+      <Suspense fallback={null}>
+        <RoleQuerySync onRoleChange={setSelectedRole} />
+      </Suspense>
+
       {/* Title Header */}
       <div className="text-center space-y-2">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 text-xs font-semibold text-blue-700 border border-blue-200">
@@ -108,230 +153,275 @@ function LoginInner() {
           Sign In to Your Dedicated Portal
         </h1>
         <p className="text-xs sm:text-sm text-slate-600 max-w-md mx-auto">
-          Select your cooperative role to access specialized tools and services.
+          SyncBridge provides role-separated environments for Customers, Cooperative Tradespeople, Society Secretaries, and Operations.
         </p>
       </div>
 
-      {/* Segmented Auth Mode Switcher */}
-      <div className="flex justify-center">
-        <div className="bg-slate-100 p-1 rounded-2xl border border-slate-200/80 flex items-center gap-1">
-          <button
-            type="button"
-            onClick={() => setAuthMode('DEMO')}
-            className={`px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all ${
-              authMode === 'DEMO'
-                ? 'bg-white text-blue-700 shadow-xs border border-slate-200/60'
-                : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            <Sparkles className="w-3.5 h-3.5 text-blue-600" />
-            <span>⚡ 1-Click Demo Persona</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setAuthMode('SUPABASE')}
-            className={`px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all ${
-              authMode === 'SUPABASE'
-                ? 'bg-white text-blue-700 shadow-xs border border-slate-200/60'
-                : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            <Lock className="w-3.5 h-3.5 text-slate-700" />
-            <span>🔐 Supabase Account</span>
-          </button>
-        </div>
-      </div>
-
-      {/* 5 Role Selectors Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
-        {ROLE_ITEMS.map((item) => {
-          const Icon = item.icon;
-          const isSelected = selectedRole === item.role;
-          return (
-            <button
-              key={item.role}
-              type="button"
-              onClick={() => {
-                setSelectedRole(item.role);
-                setErrorMessage(null);
-              }}
-              className={`p-3 rounded-2xl text-left border transition-all flex flex-col justify-between gap-2 ${
-                isSelected
-                  ? 'bg-blue-50 border-blue-600 shadow-xs ring-1 ring-blue-600'
-                  : 'bg-white border-slate-200/80 hover:border-slate-300 hover:bg-slate-50'
-              }`}
-            >
-              <div className="flex items-center justify-between w-full">
-                <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${
+      {/* Role Selection Tabs */}
+      <div className="space-y-2">
+        <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider block">
+          Select Active Persona & Access Domain:
+        </label>
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+          {ROLE_ITEMS.map((item) => {
+            const Icon = item.icon;
+            const isSelected = selectedRole === item.role;
+            return (
+              <button
+                key={item.role}
+                type="button"
+                onClick={() => {
+                  setSelectedRole(item.role);
+                  setErrorMessage(null);
+                }}
+                className={`p-3 rounded-xl border text-left transition-all flex flex-col justify-between gap-2 ${
+                  isSelected
+                    ? 'border-blue-600 bg-blue-50/50 shadow-sm ring-1 ring-blue-600/20'
+                    : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50/50'
+                }`}
+              >
+                <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
                   isSelected ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-600'
                 }`}>
                   <Icon className="w-4 h-4" />
                 </div>
-                {isSelected && (
-                  <span className="w-2 h-2 rounded-full bg-blue-600" />
-                )}
-              </div>
-
-              <div>
-                <div className="text-xs font-bold text-slate-900">{item.title}</div>
-                <div className="text-[10px] text-slate-500 mt-0.5 line-clamp-1">{item.subtitle}</div>
-              </div>
-            </button>
-          );
-        })}
+                <div>
+                  <div className="text-xs font-bold text-slate-900">{item.title}</div>
+                  <div className="text-[10px] text-slate-500 line-clamp-1">{item.subtitle}</div>
+                </div>
+              </button>
+            );
+          })}
+        </div>
       </div>
 
-      {/* Main Interactive Card */}
-      <div className="bg-white border border-slate-200/80 rounded-3xl shadow-xs p-6 sm:p-8">
-        
-        {authMode === 'DEMO' ? (
-          /* 1-Click Fast Persona Mode */
-          <div className="space-y-5">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
-              <div>
-                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-50 text-[11px] font-semibold text-emerald-700 border border-emerald-200 mb-1">
-                  <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
-                  <span>Instant Evaluator Access</span>
-                </div>
-                <h3 className="text-lg font-bold text-slate-900">
-                  Ready to test as {currentPersona.label}?
-                </h3>
-              </div>
+      {/* Mode Switcher */}
+      <div className="bg-slate-100 p-1 rounded-xl flex items-center gap-1 text-xs font-semibold">
+        <button
+          type="button"
+          onClick={() => setAuthMode('DEMO')}
+          className={`flex-1 py-2 rounded-lg transition-all flex items-center justify-center gap-1.5 ${
+            authMode === 'DEMO'
+              ? 'bg-white text-blue-700 shadow-xs'
+              : 'text-slate-600 hover:text-slate-900'
+          }`}
+        >
+          <Sparkles className="w-3.5 h-3.5 text-blue-600" />
+          <span>1-Click Hackathon Persona</span>
+        </button>
+        <button
+          type="button"
+          onClick={() => setAuthMode('OTP')}
+          className={`flex-1 py-2 rounded-lg transition-all flex items-center justify-center gap-1.5 ${
+            authMode === 'OTP'
+              ? 'bg-white text-blue-700 shadow-xs'
+              : 'text-slate-600 hover:text-slate-900'
+          }`}
+        >
+          <Phone className="w-3.5 h-3.5 text-blue-600" />
+          <span>Mobile Phone OTP</span>
+        </button>
+        <button
+          type="button"
+          onClick={() => setAuthMode('SUPABASE')}
+          className={`flex-1 py-2 rounded-lg transition-all flex items-center justify-center gap-1.5 ${
+            authMode === 'SUPABASE'
+              ? 'bg-white text-blue-700 shadow-xs'
+              : 'text-slate-600 hover:text-slate-900'
+          }`}
+        >
+          <Lock className="w-3.5 h-3.5 text-slate-500" />
+          <span>Email & Password</span>
+        </button>
+      </div>
 
-              <span className="text-xs font-semibold px-2.5 py-1 rounded-lg bg-blue-50 text-blue-700 border border-blue-200 self-start sm:self-auto">
-                Role: {currentPersona.role}
-              </span>
+      {/* Auth Card Container */}
+      <div className="bg-white border border-slate-200/80 rounded-2xl p-6 sm:p-8 shadow-sm space-y-5">
+        
+        {/* Error notification */}
+        {errorMessage && (
+          <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
+            <span>{errorMessage}</span>
+          </div>
+        )}
+
+        {/* 1. DEMO FAST LOGIN */}
+        {authMode === 'DEMO' && (
+          <div className="space-y-4">
+            <div className="flex items-start gap-4 p-4 rounded-xl bg-blue-50/50 border border-blue-100">
+              <div className="w-12 h-12 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold text-lg shrink-0">
+                {currentPersona.user.name.charAt(0)}
+              </div>
+              <div className="space-y-0.5 min-w-0 flex-1">
+                <div className="flex items-center gap-2">
+                  <h3 className="text-sm font-bold text-slate-900">{currentPersona.user.name}</h3>
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 font-semibold">
+                    {currentPersona.label}
+                  </span>
+                </div>
+                <p className="text-xs text-slate-500">{currentPersona.user.email}</p>
+                {currentPersona.user.trade && (
+                  <p className="text-xs text-slate-700 font-medium">
+                    Trade: {currentPersona.user.trade} • {currentPersona.user.cooperativeName}
+                  </p>
+                )}
+              </div>
             </div>
 
-            {/* Persona Details Card */}
-            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2 text-xs text-slate-700">
-              <div className="flex items-center justify-between font-bold text-slate-900 text-sm">
-                <span>{currentPersona.user.name}</span>
-                <span className="font-mono text-xs font-normal text-slate-500">{currentPersona.user.email}</span>
-              </div>
-              {currentPersona.user.trade && (
-                <div>Certified Trade: <span className="font-semibold text-slate-800">{currentPersona.user.trade}</span></div>
-              )}
-              {currentPersona.user.cooperativeName && (
-                <div>Labour Society: <span className="font-semibold text-slate-800">{currentPersona.user.cooperativeName}</span></div>
-              )}
+            <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/80 text-xs text-slate-600 space-y-1">
+              <p className="font-semibold text-slate-800">Target Environment:</p>
+              <p className="font-mono text-slate-500 text-[11px]">{currentPersona.targetPath}</p>
+              <p className="text-[11px] text-slate-500">
+                Instantly signs you in as a verified member with active Supabase session & local storage context.
+              </p>
             </div>
 
             <button
               type="button"
               onClick={() => handleDemoSignIn(selectedRole)}
-              className="w-full h-12 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm flex items-center justify-center gap-2 shadow-sm transition-all"
+              className="w-full h-12 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm flex items-center justify-center gap-2 shadow-sm transition-all"
             >
-              <span>Launch {currentPersona.label} Workspace</span>
+              <span>Launch {ROLE_ITEMS.find(r => r.role === selectedRole)?.title} Portal</span>
               <ArrowRight className="w-4 h-4" />
             </button>
-
-            <p className="text-[11px] text-center text-slate-400">
-              Zero passwords needed. Session state persists in local memory with live Supabase JWT capabilities.
-            </p>
           </div>
-        ) : (
-          /* Live Supabase Email/Password Mode */
-          <div className="space-y-4">
-            <div>
-              <h3 className="text-base font-bold text-slate-900">
-                Sign In with Supabase Credentials
-              </h3>
-              <p className="text-xs text-slate-500 mt-0.5">
-                Authenticate against your live Supabase project (<code className="text-slate-700 font-mono">qniqutaavdjnutnprjdk</code>).
+        )}
+
+        {/* 2. MOBILE PHONE OTP */}
+        {authMode === 'OTP' && (
+          <form onSubmit={handleOtpSubmit} className="space-y-4">
+            <div className="space-y-1">
+              <label className="text-xs font-semibold text-slate-700">Mobile Phone Number</label>
+              <div className="flex items-center border border-slate-300 rounded-xl focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-100 transition-all overflow-hidden">
+                <span className="px-3.5 py-2.5 bg-slate-50 border-r border-slate-200 text-slate-700 font-medium text-xs sm:text-sm">
+                  🇮🇳 +91
+                </span>
+                <input
+                  type="tel"
+                  maxLength={10}
+                  value={phoneNumber}
+                  onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, ''))}
+                  placeholder="98201 11221"
+                  className="flex-1 px-3 py-2.5 text-xs sm:text-sm font-semibold text-slate-900 outline-none"
+                />
+              </div>
+              <p className="text-[11px] text-slate-400">
+                Instant OTP authentication tailored for artisan field members.
               </p>
             </div>
 
-            {errorMessage && (
-              <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-center gap-2">
-                <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
-                <span>{errorMessage}</span>
+            {otpSent && (
+              <div className="space-y-1.5 animate-in fade-in duration-200">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-semibold text-slate-700">Enter OTP (One-Time Password)</label>
+                  <span className="text-[10px] text-emerald-600 font-semibold">Demo code: 2608</span>
+                </div>
+                <input
+                  type="text"
+                  maxLength={4}
+                  value={otpCode}
+                  onChange={(e) => setOtpCode(e.target.value)}
+                  placeholder="2608"
+                  className="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-center tracking-widest font-mono text-base font-bold text-slate-900 outline-none focus:ring-2 focus:ring-blue-600"
+                />
               </div>
             )}
 
-            <form onSubmit={handleEmailSignIn} className="space-y-4">
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">
-                  Email Address
-                </label>
-                <div className="relative">
-                  <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-3.5" />
-                  <input
-                    type="email"
-                    required
-                    placeholder={currentPersona.user.email}
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="w-full pl-9 pr-3.5 py-2.5 rounded-xl border border-slate-300 text-slate-900 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 bg-white"
-                  />
-                </div>
-              </div>
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="w-full h-11 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-xs transition-all disabled:opacity-50"
+            >
+              {isSubmitting ? (
+                <span>Verifying Credentials...</span>
+              ) : otpSent ? (
+                <>
+                  <span>Verify OTP & Enter Portal</span>
+                  <ArrowRight className="w-4 h-4" />
+                </>
+              ) : (
+                <>
+                  <span>Send Login OTP via SMS</span>
+                  <ArrowRight className="w-4 h-4" />
+                </>
+              )}
+            </button>
+          </form>
+        )}
 
-              <div>
-                <div className="flex items-center justify-between mb-1">
-                  <label className="block text-xs font-semibold text-slate-700">
-                    Password
-                  </label>
-                  <a href="#forgot" className="text-[11px] text-blue-600 hover:underline">
-                    Forgot password?
-                  </a>
-                </div>
-                <div className="relative">
-                  <Lock className="w-4 h-4 text-slate-400 absolute left-3 top-3.5" />
-                  <input
-                    type="password"
-                    required
-                    placeholder="••••••••"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="w-full pl-9 pr-3.5 py-2.5 rounded-xl border border-slate-300 text-slate-900 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 bg-white"
-                  />
-                </div>
+        {/* 3. EMAIL & PASSWORD (SUPABASE) */}
+        {authMode === 'SUPABASE' && (
+          <form onSubmit={handleEmailSignIn} className="space-y-4">
+            <div className="space-y-1">
+              <label className="text-xs font-semibold text-slate-700">Email Address</label>
+              <div className="relative flex items-center border border-slate-300 rounded-xl focus-within:border-blue-600 focus-within:ring-2 focus-within:ring-blue-100 transition-all">
+                <Mail className="w-4 h-4 ml-3 text-slate-400" />
+                <input
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder={currentPersona.user.email}
+                  className="flex-1 py-2.5 px-3 text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 outline-none bg-transparent"
+                />
               </div>
+            </div>
 
-              <div className="pt-1">
+            <div className="space-y-1">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-semibold text-slate-700">Password</label>
                 <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="w-full h-11 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-xs transition-all disabled:opacity-50"
+                  type="button"
+                  onClick={() => handleDemoSignIn(selectedRole)}
+                  className="text-[11px] text-blue-600 hover:underline"
                 >
-                  {isSubmitting ? (
-                    <span>Authenticating...</span>
-                  ) : (
-                    <>
-                      <span>Sign In to {ROLE_ITEMS.find(r => r.role === selectedRole)?.title}</span>
-                      <ArrowRight className="w-4 h-4" />
-                    </>
-                  )}
+                  Use demo credentials?
                 </button>
               </div>
-            </form>
-
-            <div className="text-center pt-2 border-t border-slate-100 text-xs text-slate-500">
-              <span>Need to register a new member or enterprise account? </span>
-              <Link href="/auth/register" className="text-blue-600 font-semibold hover:underline">
-                Register here
-              </Link>
+              <div className="relative flex items-center border border-slate-300 rounded-xl focus-within:border-blue-600 focus-within:ring-2 focus-within:ring-blue-100 transition-all">
+                <Lock className="w-4 h-4 ml-3 text-slate-400" />
+                <input
+                  type="password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••••••"
+                  className="flex-1 py-2.5 px-3 text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 outline-none bg-transparent"
+                />
+              </div>
             </div>
-          </div>
+
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="w-full h-11 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-xs transition-all disabled:opacity-50"
+            >
+              {isSubmitting ? (
+                <span>Authenticating...</span>
+              ) : (
+                <>
+                  <span>Sign In to {ROLE_ITEMS.find(r => r.role === selectedRole)?.title}</span>
+                  <ArrowRight className="w-4 h-4" />
+                </>
+              )}
+            </button>
+          </form>
         )}
+
+        <div className="text-center pt-2 border-t border-slate-100 text-xs text-slate-500">
+          <span>Need to register a new member or enterprise account? </span>
+          <Link href="/register/worker" className="text-blue-600 font-semibold hover:underline">
+            Register as Artisan
+          </Link>
+          <span> • </span>
+          <Link href="/auth/register" className="text-blue-600 font-semibold hover:underline">
+            Client / Co-op Sign Up
+          </Link>
+        </div>
 
       </div>
 
     </div>
-  );
-}
-
-export default function LoginPage() {
-  return (
-    <Suspense fallback={
-      <div className="max-w-md mx-auto py-16 text-center space-y-3 text-slate-500 text-xs">
-        <div className="w-8 h-8 mx-auto border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
-        <p>Loading Authentication Gateway...</p>
-      </div>
-    }>
-      <LoginInner />
-    </Suspense>
   );
 }

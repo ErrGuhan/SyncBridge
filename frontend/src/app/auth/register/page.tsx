@@ -42,7 +42,7 @@ export default function RegisterGatewayPage() {
             </div>
             <h3 className="text-lg font-bold text-slate-900">Customer Account</h3>
             <p className="text-xs text-slate-600 leading-relaxed">
-              Book certified plumbers, electricians, appliance technicians, and carpenters within 10 km. Enjoy 1% guarantee damage recourse and transparent 90/5/5 fee breakdowns.
+              Book certified plumbers, electricians, appliance technicians, and carpenters within 5 km. Enjoy 1% guarantee damage recourse and transparent 90/5/5 fee breakdowns.
             </p>
             <ul className="space-y-1.5 text-xs text-slate-600">
               <li className="flex items-center gap-2">

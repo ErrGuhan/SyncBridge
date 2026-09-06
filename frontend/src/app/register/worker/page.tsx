@@ -4,7 +4,7 @@ import { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Worker Registration & Skill Profiling — SyncBridge Cooperative',
-  description: 'Join a democratic labour cooperative society, secure 80% direct pay, and access mutual aid insurance.',
+  description: 'Join a democratic labour cooperative society, secure 90% direct pay, and access mutual aid insurance.',
 };
 
 export default function WorkerRegisterPage() {

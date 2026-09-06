@@ -23,6 +23,7 @@ import {
   PhoneCall
 } from 'lucide-react';
 import { MOCK_BOOKINGS } from '@/data/mockData';
+import { calculateCoopSplit } from '@/lib/splitUtils';
 
 export default function CustomerPortalPage() {
   const { user } = useAuth();
@@ -76,7 +77,7 @@ export default function CustomerPortalPage() {
             Welcome back, {user?.name || 'Valued Customer'}
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 mt-1 max-w-xl leading-relaxed">
-            Directly book certified cooperative tradespeople within 10 km. Every booking provides 90% direct pay to the artisan with zero platform markups.
+            Directly book certified cooperative tradespeople within 5 km. Every booking provides 90% direct pay to the artisan with zero platform markups.
           </p>
         </div>
 
@@ -268,39 +269,42 @@ export default function CustomerPortalPage() {
         </div>
 
         <div className="divide-y divide-slate-100 text-xs text-slate-700">
-          {MOCK_BOOKINGS.slice(0, 3).map((b) => (
-            <div key={b.id} className="py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <div className="space-y-1">
-                <div className="flex items-center gap-2">
-                  <span className="font-bold text-slate-900 text-sm">{b.serviceCategory} Service</span>
-                  <span className="font-mono text-[10px] px-2 py-0.5 rounded bg-slate-100 text-slate-600 font-medium">
-                    {b.id}
-                  </span>
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                    ✓ Completed
-                  </span>
-                </div>
-                <p className="text-slate-500 text-[11px]">
-                  Worker: <strong className="text-slate-700">{b.workerName}</strong> ({b.workerTrade}) • {b.scheduledDate}
-                </p>
-              </div>
-
-              <div className="flex items-center gap-4 self-start sm:self-auto">
-                <div className="text-right">
-                  <span className="text-sm font-bold text-slate-900 block">₹{b.totalAmount}</span>
-                  <span className="text-[10px] text-emerald-700 font-medium">₹{b.workerPayout} direct to worker (90%)</span>
+          {MOCK_BOOKINGS.slice(0, 3).map((b) => {
+            const split = calculateCoopSplit(b.totalAmount);
+            return (
+              <div key={b.id} className="py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <span className="font-bold text-slate-900 text-sm">{b.serviceCategory} Service</span>
+                    <span className="font-mono text-[10px] px-2 py-0.5 rounded bg-slate-100 text-slate-600 font-medium">
+                      {b.id}
+                    </span>
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                      ✓ Completed
+                    </span>
+                  </div>
+                  <p className="text-slate-500 text-[11px]">
+                    Worker: <strong className="text-slate-700">{b.workerName}</strong> ({b.workerTrade}) • {b.scheduledDate}
+                  </p>
                 </div>
 
-                <a
-                  href="tel:9820111221"
-                  className="p-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-600"
-                  title="Call Hub"
-                >
-                  <PhoneCall className="w-4 h-4" />
-                </a>
+                <div className="flex items-center gap-4 self-start sm:self-auto">
+                  <div className="text-right">
+                    <span className="text-sm font-bold text-slate-900 block">₹{b.totalAmount}</span>
+                    <span className="text-[10px] text-emerald-700 font-medium">₹{split.workerPayout} direct to worker (90%)</span>
+                  </div>
+
+                  <a
+                    href="tel:9820111221"
+                    className="p-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-600"
+                    title="Call Hub"
+                  >
+                    <PhoneCall className="w-4 h-4" />
+                  </a>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </section>
 

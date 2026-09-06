@@ -57,7 +57,8 @@ export default function WorkerPortalPage() {
   const [actionSuccessMsg, setActionSuccessMsg] = useState<string | null>(null);
 
   // Incoming and active orders
-  const incomingLead = orders.find(o => o.status === 'CONFIRMED');
+  const [declinedOrderIds, setDeclinedOrderIds] = useState<string[]>([]);
+  const incomingLead = orders.find(o => o.status === 'CONFIRMED' && !declinedOrderIds.includes(o.id));
   const activeOngoingOrders = orders.filter(o => o.status === 'IN_PROGRESS');
   const recentCompletedOrders = orders.filter(o => o.status === 'COMPLETED');
 
@@ -157,6 +158,12 @@ export default function WorkerPortalPage() {
     setTimeout(() => setActionSuccessMsg(null), 5000);
   };
 
+  const handlePassJob = (orderId: string) => {
+    setDeclinedOrderIds(prev => [...prev, orderId]);
+    setActionSuccessMsg('Job passed to peer artisan in Kalyan Labour Society (5 km radius).');
+    setTimeout(() => setActionSuccessMsg(null), 4000);
+  };
+
   // Compute live active escrow
   const inTransitEscrow = activeOngoingOrders.reduce((acc, curr) => acc + curr.workerPayout, 0);
 
@@ -181,6 +188,10 @@ export default function WorkerPortalPage() {
             </span>
             <span className="text-xs px-2.5 py-0.5 rounded-md bg-slate-100 text-slate-700 font-semibold">
               Rating: ★ 4.92 / 5.0 (Peer Audited)
+            </span>
+            <span className="text-xs px-2.5 py-0.5 rounded-md bg-emerald-50 text-emerald-700 font-semibold border border-emerald-200 flex items-center gap-1">
+              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+              <span>Dispute Standing: 0 Inquiries (100% Clean Record)</span>
             </span>
           </div>
 
@@ -278,19 +289,114 @@ export default function WorkerPortalPage() {
         </div>
 
         {/* Mutual Aid Accrual */}
-        <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-2">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-              Accrued Pension Corpus (5% Pool)
-            </span>
-            <div className="p-2 rounded-xl bg-indigo-50 text-indigo-600">
-              <Award className="w-5 h-5" />
+        <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-2 flex flex-col justify-between">
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                Accrued Pension Corpus (5% Pool)
+              </span>
+              <div className="p-2 rounded-xl bg-indigo-50 text-indigo-600">
+                <Award className="w-5 h-5" />
+              </div>
             </div>
+            <p className="text-3xl font-bold text-indigo-600">₹42,800</p>
+            <p className="text-xs text-slate-500">
+              Part of ₹1.45 Cr collective trust with 50% cooperative matching grant.
+            </p>
           </div>
-          <p className="text-3xl font-bold text-indigo-600">₹42,800</p>
-          <p className="text-xs text-slate-500">
-            With 50% cooperative federation matching grant.
-          </p>
+
+          <Link
+            href="/welfare"
+            className="text-xs font-semibold text-indigo-600 hover:text-indigo-800 flex items-center gap-1 pt-2"
+          >
+            <span>View Welfare Fund & ₹5L Shield →</span>
+          </Link>
+        </div>
+      </section>
+
+      {/* WEEKLY & TODAY'S 90/5/5 EARNINGS BREAKDOWN */}
+      <section className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+          <div>
+            <div className="flex items-center gap-2">
+              <h3 className="text-base font-bold text-slate-900">
+                Weekly Cooperative Earnings & 90/5/5 Breakdown
+              </h3>
+              <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                Pure Cooperative Mathematics
+              </span>
+            </div>
+            <p className="text-xs text-slate-500 mt-0.5">
+              This week: 8 completed jobs across Dadar & Bandra. Total client volume: ₹14,200.
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2 text-xs font-semibold">
+            <span className="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700">
+              Today: 3 Jobs (₹2,430 net take-home)
+            </span>
+          </div>
+        </div>
+
+        {/* 3 Metric Cards for the 90/5/5 distribution */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+          <div className="p-4 rounded-xl bg-emerald-50/60 border border-emerald-200/80 space-y-1">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-emerald-800 uppercase tracking-wider">
+                90% Worker Take-Home
+              </span>
+              <span className="text-xs font-bold px-2 py-0.5 rounded bg-emerald-200/80 text-emerald-900 font-mono">
+                90.0%
+              </span>
+            </div>
+            <p className="text-2xl font-black text-emerald-700">₹12,780</p>
+            <p className="text-[11px] text-emerald-600">
+              Credited instantly to your available balance.
+            </p>
+          </div>
+
+          <div className="p-4 rounded-xl bg-blue-50/60 border border-blue-200/80 space-y-1">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-blue-800 uppercase tracking-wider">
+                5% Society Operational Treasury
+              </span>
+              <span className="text-xs font-bold px-2 py-0.5 rounded bg-blue-200/80 text-blue-900 font-mono">
+                5.0%
+              </span>
+            </div>
+            <p className="text-2xl font-black text-blue-700">₹710</p>
+            <p className="text-[11px] text-blue-600">
+              Funds power tool lockers & secretary dispatch.
+            </p>
+          </div>
+
+          <div className="p-4 rounded-xl bg-amber-50/60 border border-amber-200/80 space-y-1">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-amber-800 uppercase tracking-wider">
+                5% Mutual Aid & Healthcare
+              </span>
+              <span className="text-xs font-bold px-2 py-0.5 rounded bg-amber-200/80 text-amber-900 font-mono">
+                5.0%
+              </span>
+            </div>
+            <p className="text-2xl font-black text-amber-700">₹710</p>
+            <p className="text-[11px] text-amber-600">
+              ₹5L health shield + pension corpus matching.
+            </p>
+          </div>
+        </div>
+
+        {/* Proportional Split Visual Bar */}
+        <div className="space-y-1.5 pt-1">
+          <div className="w-full bg-slate-100 h-3 rounded-full overflow-hidden flex shadow-inner">
+            <div className="bg-emerald-500 h-full transition-all" style={{ width: '90%' }} title="90% Worker Take-Home (₹12,780)" />
+            <div className="bg-blue-500 h-full transition-all" style={{ width: '5%' }} title="5% Society Operational (₹710)" />
+            <div className="bg-amber-500 h-full transition-all" style={{ width: '5%' }} title="5% Welfare & Pension (₹710)" />
+          </div>
+          <div className="flex items-center justify-between text-[11px] text-slate-400">
+            <span>Total Gross Client Volume: ₹14,200</span>
+            <span>Mathematical Check: ₹12,780 + ₹710 + ₹710 = ₹14,200 (Exact 100%)</span>
+          </div>
         </div>
       </section>
 
@@ -403,7 +509,7 @@ export default function WorkerPortalPage() {
             </button>
             <button
               type="button"
-              onClick={() => handleAcceptJob(incomingLead.id)}
+              onClick={() => handlePassJob(incomingLead.id)}
               className="py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all"
             >
               <X className="w-4 h-4" />

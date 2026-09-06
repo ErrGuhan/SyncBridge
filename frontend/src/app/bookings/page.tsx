@@ -20,6 +20,7 @@ import {
   Receipt
 } from 'lucide-react';
 import { BookingItem } from '@/data/mockData';
+import { calculateCoopSplit } from '@/lib/splitUtils';
 
 export default function BookingsPage() {
   const { t } = useLanguage();
@@ -136,6 +137,7 @@ export default function BookingsPage() {
           {filteredBookings.map((booking) => {
             const isCompleted = booking.status === 'COMPLETED';
             const isInProgress = booking.status === 'IN_PROGRESS';
+            const split = calculateCoopSplit(booking.totalAmount);
 
             return (
               <div
@@ -190,11 +192,11 @@ export default function BookingsPage() {
                   </div>
                   <div className="flex justify-between text-emerald-800 font-semibold">
                     <span>90% Direct Artisan Take-Home:</span>
-                    <span>₹{booking.workerPayout}</span>
+                    <span>₹{split.workerPayout}</span>
                   </div>
                   <div className="flex justify-between text-slate-500 text-[11px]">
                     <span>5% Society Reserve + 5% Welfare Fund:</span>
-                    <span>₹{booking.coopFee + booking.welfareFund}</span>
+                    <span>₹{split.coopFee + split.welfareFund}</span>
                   </div>
                 </div>
 
@@ -293,32 +295,37 @@ export default function BookingsPage() {
             </div>
 
             {/* Financial Transparency Table */}
-            <div className="space-y-2 border-t border-slate-100 pt-3 text-xs">
-              <div className="flex justify-between font-bold text-sm text-slate-900 pb-1 border-b border-slate-100">
-                <span>Gross Service Charge</span>
-                <span>₹{viewingReceipt.totalAmount}.00</span>
-              </div>
+            {(() => {
+              const rSplit = calculateCoopSplit(viewingReceipt.totalAmount);
+              return (
+                <div className="space-y-2 border-t border-slate-100 pt-3 text-xs">
+                  <div className="flex justify-between font-bold text-sm text-slate-900 pb-1 border-b border-slate-100">
+                    <span>Gross Service Charge</span>
+                    <span>₹{viewingReceipt.totalAmount}.00</span>
+                  </div>
 
-              <div className="flex justify-between text-emerald-800 font-semibold pt-1">
-                <span>• 90% Direct Artisan Take-Home (UPI Settled)</span>
-                <span>₹{viewingReceipt.workerPayout}.00</span>
-              </div>
+                  <div className="flex justify-between text-emerald-800 font-semibold pt-1">
+                    <span>• 90% Direct Artisan Take-Home (UPI Settled)</span>
+                    <span>₹{rSplit.workerPayout}.00</span>
+                  </div>
 
-              <div className="flex justify-between text-blue-700">
-                <span>• 5% Primary Society Operational Reserve</span>
-                <span>₹{viewingReceipt.coopFee}.00</span>
-              </div>
+                  <div className="flex justify-between text-blue-700">
+                    <span>• 5% Primary Society Operational Reserve</span>
+                    <span>₹{rSplit.coopFee}.00</span>
+                  </div>
 
-              <div className="flex justify-between text-amber-700">
-                <span>• 5% Mutual Aid & Health Hospitalization Pool</span>
-                <span>₹{viewingReceipt.welfareFund}.00</span>
-              </div>
+                  <div className="flex justify-between text-amber-700">
+                    <span>• 5% Mutual Aid & Health Hospitalization Pool</span>
+                    <span>₹{rSplit.welfareFund}.00</span>
+                  </div>
 
-              <div className="flex justify-between text-slate-400 text-[11px] pt-1">
-                <span>• 1% Central Guarantee Escrow Protection</span>
-                <span>₹{viewingReceipt.guaranteeFund}.00</span>
-              </div>
-            </div>
+                  <div className="flex justify-between text-slate-400 text-[11px] pt-1">
+                    <span>• 1% Central Guarantee Escrow Protection</span>
+                    <span>₹{rSplit.guaranteeFund}.00</span>
+                  </div>
+                </div>
+              );
+            })()}
 
             <div className="p-3 bg-emerald-50 rounded-xl border border-emerald-200 text-xs text-emerald-800 text-center font-medium">
               ✓ Transaction Verified on Cooperative Distributed Ledger

@@ -13,18 +13,41 @@ interface TranslationMap {
 }
 
 export const translations: TranslationMap = {
-  // Navigation
+  // Navigation (Harmonized Header & Mobile Nav)
   navHome: { en: 'Home', hi: 'मुख्य पृष्ठ', ta: 'முகப்பு' },
-  navSearch: { en: 'Find Help', hi: 'सेवा खोजें', ta: 'சேவை தேடு' },
-  navJobs: { en: 'My Jobs', hi: 'मेरे काम', ta: 'என் வேலைகள்' },
+  navServices: { en: 'Services', hi: 'सेवाएं', ta: 'சேவைகள்' },
+  navSearch: { en: 'Services', hi: 'सेवाएं', ta: 'சேவைகள்' },
+  navOrders: { en: 'My Orders', hi: 'मेरे ऑर्डर्स', ta: 'என் ஆர்டர்கள்' },
+  navJobs: { en: 'My Orders', hi: 'मेरे ऑर्डर्स', ta: 'என் ஆர்டர்கள்' },
+  navWorker: { en: 'Worker Portal', hi: 'कारीगर पोर्टल', ta: 'தொழிலாளர் போர்டல்' },
+  navAdmin: { en: 'Federation Admin', hi: 'फेडरेशन एडमिन', ta: 'கூட்டமைப்பு நிர்வாகம்' },
+  navSignIn: { en: 'Sign In', hi: 'साइन इन', ta: 'உள்நுழைக' },
+  navWelfare: { en: 'Welfare Fund', hi: 'कल्याण कोष', ta: 'நல நிதி' },
   navProfile: { en: 'Profile', hi: 'प्रोफ़ाइल', ta: 'சுயவிவரம்' },
 
   // Header & Controls
   appName: { en: 'SyncBridge Co-op', hi: 'सिंकब्रिज सहकारी', ta: 'சின்க்பிரிட்ஜ் கூட்டுறவு' },
-  memberOwned: { en: '100% Worker Owned', hi: '100% कामगार स्वामित्व', ta: '100% தொழிலாளர் உரிமை' },
-  emergencyHelp: { en: 'Emergency Help', hi: 'आपातकालीन सहायता', ta: 'அவசர உதவி' },
+  memberOwned: { en: '100% Worker-Member Owned', hi: '100% कामगार स्वामित्व', ta: '100% தொழிலாளர் உரிமை' },
+  emergencyHelp: { en: 'Emergency SOS', hi: 'आपातकालीन सहायता (SOS)', ta: 'அவசர உதவி (SOS)' },
+  emergencySOS: { en: 'Emergency SOS', hi: 'आपातकालीन सहायता (SOS)', ta: 'அவசர உதவி (SOS)' },
   tapToSpeak: { en: 'Tap to Speak', hi: 'बोलने के लिए दबाएं', ta: 'பேச தட்டவும்' },
   listening: { en: 'Listening...', hi: 'सुन रहे हैं...', ta: 'கேட்கிறது...' },
+
+  // Homepage Hero & Impact
+  heroHeadline: { 
+    en: '90% Payout to Workers. Zero Corporate Cut.', 
+    hi: 'कामगारों को 90% भुगतान। शून्य बिचौलिया कमीशन।', 
+    ta: 'தொழிலாளர்களுக்கு 90% ஊதியம். இடைத்தரகர் பூஜ்ஜியம்.' 
+  },
+  heroSub: { 
+    en: 'Book skilled trade artisans directly without extractive platform middlemen. Fair transparent pricing, same-day settlement, and ₹5 Lakh mutual aid health coverage for every member.', 
+    hi: 'शोषक बिचौलियों के बिना सीधे कुशल कामगारों को बुक करें। पारदर्शी मूल्य निर्धारण, उसी दिन भुगतान और ₹5 लाख का पारस्परिक स्वास्थ्य कवर।', 
+    ta: 'இடைத்தரகர்கள் இன்றி திறமையான தொழிலாளர்களை நேரடியாக பதிவு செய்யுங்கள். வெளிப்படையான கட்டணம், உடனடி தீர்வு மற்றும் ₹5 லட்சம் சுகாதார பாதுகாப்பு.' 
+  },
+  statsCoops: { en: 'Primary Cooperatives Digitized', hi: 'प्राथमिक सहकारी समितियां डिजिटाइज़्ड', ta: 'டிஜிட்டல் கூட்டுறவு சங்கங்கள்' },
+  statsRetention: { en: 'Direct Worker Take-Home', hi: 'कारीगर को सीधा भुगतान', ta: 'நேரடி தொழிலாளர் வருவாய்' },
+  statsCorpus: { en: 'Mutual Aid Welfare Corpus', hi: 'पारस्परिक सहायता कल्याण कोष', ta: 'பரஸ்பர நல நிதி' },
+  statsRadius: { en: 'Geofenced Dispatch Radius', hi: 'जियोफेंस्ड सेवा दायरा', ta: 'உள்ளூர் சேவை ஆரம்' },
 
   // Service Discovery
   findServiceTitle: { en: 'What help do you need?', hi: 'आपको क्या मदद चाहिए?', ta: 'உங்களுக்கு என்ன உதவி வேண்டும்?' },
