@@ -1,10 +1,12 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { Geist, Geist_Mono } from 'next/font/google';
 import TopAccessibleHeader from '@/components/TopAccessibleHeader';
 import BottomNavigation from '@/components/BottomNavigation';
 import { LanguageProvider } from '@/context/LanguageContext';
 import { AuthProvider } from '@/context/AuthContext';
 import { CoopDataProvider } from '@/context/CoopDataContext';
+import { NAV_LINKS, EMERGENCY_LINK } from '@/config/nav';
 import './globals.css';
 
 const geistSans = Geist({
@@ -70,6 +72,24 @@ export default function RootLayout({
                         <strong className="text-amber-700">5%</strong> Welfare Trust
                       </span>
                     </div>
+                  </div>
+
+                  {/* Shared Navigation Links */}
+                  <div className="flex items-center justify-between gap-4 flex-wrap text-xs pt-1 border-b border-slate-100 pb-3">
+                    <div className="flex items-center gap-4 sm:gap-6 flex-wrap font-medium">
+                      {NAV_LINKS.map(link => (
+                        <Link key={link.href} href={link.href} className="text-slate-600 hover:text-blue-600 transition-colors">
+                          {link.label}
+                        </Link>
+                      ))}
+                    </div>
+                    <Link
+                      href={EMERGENCY_LINK.href}
+                      className="text-rose-600 hover:text-rose-700 font-bold flex items-center gap-1 transition-colors"
+                    >
+                      <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
+                      <span>{EMERGENCY_LINK.label}</span>
+                    </Link>
                   </div>
 
                   {/* Sovereign Tech & Compliance Metadata */}

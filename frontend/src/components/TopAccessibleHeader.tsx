@@ -20,6 +20,8 @@ import {
   LogOut
 } from 'lucide-react';
 
+import { NAV_LINKS, EMERGENCY_LINK } from '@/config/nav';
+
 export default function TopAccessibleHeader() {
   const pathname = usePathname();
   const { language, setLanguage } = useLanguage();
@@ -31,6 +33,7 @@ export default function TopAccessibleHeader() {
   const langOptions: { code: Language; label: string; native: string }[] = [
     { code: 'en', label: 'English', native: 'English' },
     { code: 'hi', label: 'Hindi', native: 'हिन्दी' },
+    { code: 'kn', label: 'Kannada', native: 'ಕನ್ನಡ' },
     { code: 'ta', label: 'Tamil', native: 'தமிழ்' }
   ];
 
@@ -42,14 +45,7 @@ export default function TopAccessibleHeader() {
     { name: 'Technical Console', href: '/portal/developer', role: 'DEVELOPER', icon: Terminal, desc: 'API mesh & Supabase health' },
   ];
 
-  const navLinks = [
-    { name: 'Services', href: '/services' },
-    { name: 'My Orders', href: '/bookings' },
-    { name: 'Worker Portal', href: '/portal/worker' },
-    { name: 'Federation Admin', href: '/portal/admin' },
-    { name: 'B2B Contracts', href: '/b2b' },
-    { name: 'Welfare Fund', href: '/welfare' }
-  ];
+  const navLinks = NAV_LINKS;
 
   return (
     <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-xs">
@@ -96,7 +92,7 @@ export default function TopAccessibleHeader() {
                       : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                   }`}
                 >
-                  {link.name}
+                  {link.label}
                 </Link>
               );
             })}
@@ -182,7 +178,7 @@ export default function TopAccessibleHeader() {
             >
               <Globe className="w-4 h-4 text-slate-500" />
               <span className="font-semibold text-slate-800 hidden sm:inline">
-                {language === 'en' ? 'English' : language === 'hi' ? 'हिन्दी' : 'தமிழ்'}
+                {language === 'en' ? 'English' : language === 'hi' ? 'हिन्दी' : language === 'kn' ? 'ಕನ್ನಡ' : 'தமிழ்'}
               </span>
               <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
             </button>
@@ -276,13 +272,13 @@ export default function TopAccessibleHeader() {
 
           {/* Distinct Emergency SOS Action Button */}
           <Link
-            href="/services?emergency=true"
+            href={EMERGENCY_LINK.href}
             className="h-10 px-3 sm:px-3.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white border border-rose-600 text-xs font-bold flex items-center gap-1.5 transition-all shadow-sm shadow-rose-600/20 group shrink-0"
             aria-label="Emergency SOS Dispatch"
           >
             <span className="w-2 h-2 rounded-full bg-white animate-ping" />
             <Zap className="w-3.5 h-3.5 text-white fill-white group-hover:scale-110 transition-transform" />
-            <span className="font-bold tracking-tight">Emergency SOS</span>
+            <span className="font-bold tracking-tight">{EMERGENCY_LINK.label}</span>
           </Link>
         </div>
 

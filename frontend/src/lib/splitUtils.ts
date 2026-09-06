@@ -31,3 +31,6 @@ export function calculateCoopSplit(totalAmount: number): CoopSplit {
     guaranteeFund
   };
 }
+
+export { splitPayout } from './payout';
+

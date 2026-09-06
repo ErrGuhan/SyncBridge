@@ -467,19 +467,19 @@ export default function ServiceDiscovery() {
                       <div className="flex items-center justify-between text-slate-700 flex-wrap gap-1">
                         <span className="flex items-center gap-1 font-semibold text-emerald-700">
                           <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                          Aadhaar e-KYC & Police Verified
+                          <span>e-KYC: Verified ✓ (Aadhaar-linked)</span>
                         </span>
                         <span className="font-mono text-[10px] px-1.5 py-0.2 rounded bg-white border border-slate-200 text-slate-600">
-                          {worker.eShramUan ? worker.eShramUan.replace(/(\d{4})-(\d{4})-(\d{4})/, '$1-XXXX-$3') : 'UAN: 1009-XXXX-4412'}
+                          UAN: {worker.eShramUan ? worker.eShramUan.replace(/(\d{4})-(\d{4})-(\d{4})/, '$1-XXXX-$3') : 'XXXX-XXXX-3821'}
                         </span>
                       </div>
 
                       <div className="flex items-center justify-between text-[10px] text-slate-500 pt-0.5 border-t border-slate-200/60">
-                        <span className="truncate">
-                          Vouched by: <strong className="text-slate-700 font-medium">{worker.cooperativeName}</strong>
+                        <span className="text-emerald-700 font-medium">
+                          Police Verification: Cleared ✓ (Apr 2026)
                         </span>
-                        <span className="font-mono text-slate-400 shrink-0 ml-1">
-                          {worker.ncdSocietyCode || 'NCD-KA-BLR-0042'}
+                        <span className="truncate ml-1">
+                          Vouched: <strong className="text-slate-700 font-medium">{worker.cooperativeName}</strong>
                         </span>
                       </div>
                     </div>
@@ -488,13 +488,30 @@ export default function ServiceDiscovery() {
                   {/* Pricing & Direct Booking Buttons */}
                   <div className="pt-2.5 border-t border-slate-100 flex items-center justify-between gap-2">
                     <div>
-                      <div className="flex items-baseline gap-1">
-                        <span className="text-base font-bold text-slate-900">₹{worker.hourlyRate}</span>
-                        <span className="text-xs text-slate-500">/hr</span>
-                      </div>
-                      <span className="text-[10px] text-emerald-700 font-semibold block">
-                        90% direct to worker (₹{Math.round(worker.hourlyRate * 0.90)})
-                      </span>
+                      {isEmergency ? (
+                        <div>
+                          <div className="flex items-baseline gap-1.5 flex-wrap">
+                            <span className="text-base font-bold text-rose-700">₹{worker.hourlyRate + 250}</span>
+                            <span className="text-[11px] text-slate-400 line-through">₹{worker.hourlyRate}</span>
+                            <span className="text-[10px] font-bold text-rose-700 bg-rose-100 px-1.5 py-0.2 rounded border border-rose-200">
+                              Emergency Surge Rate
+                            </span>
+                          </div>
+                          <span className="text-[10px] text-emerald-700 font-bold block">
+                            100% surge (+₹250) + 90% base = ₹{Math.round(worker.hourlyRate * 0.90) + 250} to worker
+                          </span>
+                        </div>
+                      ) : (
+                        <div>
+                          <div className="flex items-baseline gap-1">
+                            <span className="text-base font-bold text-slate-900">₹{worker.hourlyRate}</span>
+                            <span className="text-xs text-slate-500">/hr</span>
+                          </div>
+                          <span className="text-[10px] text-emerald-700 font-semibold block">
+                            90% direct to worker (₹{Math.round(worker.hourlyRate * 0.90)})
+                          </span>
+                        </div>
+                      )}
                     </div>
 
                     <div className="flex items-center gap-2">

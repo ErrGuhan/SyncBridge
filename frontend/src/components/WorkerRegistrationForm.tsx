@@ -9,6 +9,7 @@ import {
   User, 
   MapPin, 
   Check, 
+  X,
   Mic, 
   MicOff, 
   Camera, 
@@ -49,6 +50,8 @@ export default function WorkerRegistrationForm() {
   const [isDetectingGps, setIsDetectingGps] = useState<boolean>(false);
   const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
   const [speakingText, setSpeakingText] = useState<string | null>(null);
+  const [termsAccepted, setTermsAccepted] = useState<boolean>(true);
+  const [hasExistingCoop, setHasExistingCoop] = useState<boolean>(true);
 
   const playVoicePrompt = (text: string, lang = 'hi-IN') => {
     if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
@@ -307,6 +310,44 @@ export default function WorkerRegistrationForm() {
             <p className="text-xs text-slate-400">
               OTP will be sent to this number upon proceeding.
             </p>
+          </div>
+
+          {/* Accessible Color-Coded Yes/No Pattern (Accessibility Requirement) */}
+          <div className="space-y-2 pt-3 border-t border-slate-100">
+            <label className="text-xs font-bold text-slate-700 block">
+              Are you currently a member of a Primary Labour Cooperative? (सहकारी समिति सदस्यता)
+            </label>
+            <div className="grid grid-cols-2 gap-3 pt-1">
+              <button
+                type="button"
+                onClick={() => setHasExistingCoop(true)}
+                className={`h-11 rounded-xl border font-bold text-xs flex items-center justify-center gap-2 transition-all ${
+                  hasExistingCoop
+                    ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm ring-2 ring-emerald-400/30'
+                    : 'bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border-emerald-300'
+                }`}
+              >
+                <Check className="w-4 h-4 stroke-[2.5]" />
+                <span>Yes / Accept (हाँ)</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setHasExistingCoop(false)}
+                className={`h-11 rounded-xl border font-bold text-xs flex items-center justify-center gap-2 transition-all ${
+                  !hasExistingCoop
+                    ? 'bg-rose-600 text-white border-rose-600 shadow-sm ring-2 ring-rose-400/30'
+                    : 'bg-rose-50 hover:bg-rose-100 text-rose-800 border-rose-300'
+                }`}
+              >
+                <X className="w-4 h-4 stroke-[2.5]" />
+                <span>No / Decline (नहीं)</span>
+              </button>
+            </div>
+            {!hasExistingCoop && (
+              <p className="text-[11px] text-slate-500 bg-slate-50 p-2 rounded-lg border border-slate-200">
+                ℹ️ We will automatically assign you to your nearest district cooperative chapter (e.g. Kalyan / Metro Technicians).
+              </p>
+            )}
           </div>
         </div>
       )}
@@ -633,6 +674,47 @@ export default function WorkerRegistrationForm() {
               <span>
                 <strong>Govt Verification Safeguard:</strong> In case of portal latency, your onboarding is immediately routed to your local Primary Cooperative Secretary for manual verification.
               </span>
+            </div>
+
+            {/* Color-Coded Iconographic Yes/No Acceptance (Accessibility Requirement) */}
+            <div className="space-y-2 pt-2 border-t border-slate-100">
+              <label className="text-xs font-bold text-slate-800 block">
+                Cooperative Bylaws & Mutual Aid Membership (सहकारी नियम व सहमति)
+              </label>
+              <p className="text-[11px] text-slate-500">
+                I agree to the transparent 90/5/5 cooperative dividend model and mutual aid charter.
+              </p>
+              <div className="grid grid-cols-2 gap-3 pt-1">
+                <button
+                  type="button"
+                  onClick={() => setTermsAccepted(true)}
+                  className={`h-12 rounded-xl border font-bold text-xs flex items-center justify-center gap-2 transition-all ${
+                    termsAccepted
+                      ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm ring-2 ring-emerald-400/30'
+                      : 'bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border-emerald-300'
+                  }`}
+                >
+                  <Check className="w-5 h-5 stroke-[2.5]" />
+                  <span>Accept (स्वीकार)</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setTermsAccepted(false)}
+                  className={`h-12 rounded-xl border font-bold text-xs flex items-center justify-center gap-2 transition-all ${
+                    !termsAccepted
+                      ? 'bg-rose-600 text-white border-rose-600 shadow-sm ring-2 ring-rose-400/30'
+                      : 'bg-rose-50 hover:bg-rose-100 text-rose-800 border-rose-300'
+                  }`}
+                >
+                  <X className="w-5 h-5 stroke-[2.5]" />
+                  <span>Decline (अस्वीकार)</span>
+                </button>
+              </div>
+              {!termsAccepted && (
+                <p className="text-[11px] text-rose-700 font-semibold bg-rose-50 p-2.5 rounded-lg border border-rose-200">
+                  ⚠️ If declined, your registration requires in-person verification at the Primary Cooperative Society branch.
+                </p>
+              )}
             </div>
           </div>
         </div>

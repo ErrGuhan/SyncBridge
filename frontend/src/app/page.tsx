@@ -524,6 +524,22 @@ export default function HomePage() {
                 </span>
               </div>
 
+              <div className="p-2 rounded-xl bg-slate-50 border border-slate-200 text-[11px] space-y-1">
+                <div className="flex items-center justify-between text-slate-700">
+                  <span className="flex items-center gap-1 font-semibold text-emerald-700">
+                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                    <span>e-KYC: Verified ✓</span>
+                  </span>
+                  <span className="font-mono text-[10px] text-slate-500">
+                    UAN: {worker.eShramUan ? worker.eShramUan.replace(/(\d{4})-(\d{4})-(\d{4})/, '$1-XXXX-$3') : 'XXXX-XXXX-3821'}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between text-[10px] text-slate-500 pt-0.5 border-t border-slate-200/50">
+                  <span className="text-emerald-700 font-medium">Police: Cleared ✓</span>
+                  <span className="truncate ml-1">{worker.cooperativeName}</span>
+                </div>
+              </div>
+
               <div className="flex items-center justify-between pt-2 border-t border-slate-100">
                 <div>
                   <span className="text-sm font-bold text-slate-900">₹{worker.hourlyRate}</span>
