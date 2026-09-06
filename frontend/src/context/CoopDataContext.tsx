@@ -155,7 +155,7 @@ export function CoopDataProvider({ children }: { children: React.ReactNode }) {
               };
             });
           }
-        } catch (e) {}
+        } catch {}
       }
     }
     return MOCK_BOOKINGS.map(item => {
@@ -175,7 +175,7 @@ export function CoopDataProvider({ children }: { children: React.ReactNode }) {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('syncbridge_workers');
       if (saved) {
-        try { return JSON.parse(saved); } catch (e) {}
+        try { return JSON.parse(saved); } catch {}
       }
     }
     return MOCK_WORKERS;
@@ -186,7 +186,7 @@ export function CoopDataProvider({ children }: { children: React.ReactNode }) {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('syncbridge_verifications');
       if (saved) {
-        try { return JSON.parse(saved); } catch (e) {}
+        try { return JSON.parse(saved); } catch {}
       }
     }
     return MOCK_VERIFICATION_QUEUE;
@@ -197,7 +197,7 @@ export function CoopDataProvider({ children }: { children: React.ReactNode }) {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('syncbridge_tools');
       if (saved) {
-        try { return JSON.parse(saved); } catch (e) {}
+        try { return JSON.parse(saved); } catch {}
       }
     }
     return DEFAULT_TOOLS;
@@ -208,7 +208,7 @@ export function CoopDataProvider({ children }: { children: React.ReactNode }) {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('syncbridge_arbitrations');
       if (saved) {
-        try { return JSON.parse(saved); } catch (e) {}
+        try { return JSON.parse(saved); } catch {}
       }
     }
     return MOCK_PEER_ARBITRATION_CASES;
@@ -219,7 +219,7 @@ export function CoopDataProvider({ children }: { children: React.ReactNode }) {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('syncbridge_wallets');
       if (saved) {
-        try { return JSON.parse(saved); } catch (e) {}
+        try { return JSON.parse(saved); } catch {}
       }
     }
     return {
@@ -334,7 +334,7 @@ export function CoopDataProvider({ children }: { children: React.ReactNode }) {
   const acceptOrder = (orderId: string, workerId: string) => {
     setOrders(prev => prev.map(o => {
       if (o.id === orderId) {
-        return { ...o, status: 'IN_PROGRESS' };
+        return { ...o, status: 'IN_PROGRESS', workerId: workerId || o.workerId };
       }
       return o;
     }));
@@ -378,7 +378,7 @@ export function CoopDataProvider({ children }: { children: React.ReactNode }) {
 
     return {
       success: true,
-      utr,
+      utr: `${utr} (${upiId})`,
       amount: balance
     };
   };
@@ -524,8 +524,8 @@ export function CoopDataProvider({ children }: { children: React.ReactNode }) {
           ...c,
           hearingStatus: decision,
           restorativeRemedy: decision === 'RESTORED'
-            ? `Council Unanimous Decision: Worker exonerated. Mutual Aid guarantee escrow reimbursed customer ₹${c.guaranteePayoutAmount}.`
-            : `Council Decision: Mediated 50/50 mutual settlement with guarantee rework voucher issued.`
+            ? `Council Decision (Verified by ${voter}): Worker exonerated. Mutual Aid guarantee escrow reimbursed customer ₹${c.guaranteePayoutAmount}.`
+            : `Council Decision (Mediated by ${voter}): 50/50 mutual settlement with guarantee rework voucher issued.`
         };
       }
       return c;

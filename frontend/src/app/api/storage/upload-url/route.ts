@@ -28,12 +28,13 @@ export async function POST(req: NextRequest) {
       storagePath,
       signedUploadUrl,
       publicUrl,
+      contentType: fileType || 'application/octet-stream',
       expiresInSeconds: 900,
       protocol: 'GCS_V4_COMPLIANT'
     });
-  } catch (err: any) {
+  } catch (err: unknown) {
     return NextResponse.json(
-      { error: err.message || 'Failed to generate storage upload URL' },
+      { error: err instanceof Error ? err.message : 'Failed to generate storage upload URL' },
       { status: 500 }
     );
   }

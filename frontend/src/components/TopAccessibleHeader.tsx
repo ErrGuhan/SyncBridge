@@ -180,8 +180,21 @@ export default function TopAccessibleHeader() {
                       onClick={() => setShowPortalMenu(false)}
                       className="text-blue-600 font-semibold hover:underline text-xs"
                     >
-                      Switch Account / Sign In →
+                      Switch Account →
                     </Link>
+                    {user && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          logout();
+                          setShowPortalMenu(false);
+                        }}
+                        className="text-slate-400 hover:text-rose-600 font-semibold text-xs flex items-center gap-1 transition-colors"
+                      >
+                        <LogOut className="w-3.5 h-3.5" />
+                        <span>Sign Out</span>
+                      </button>
+                    )}
                   </div>
                 </div>
               </>

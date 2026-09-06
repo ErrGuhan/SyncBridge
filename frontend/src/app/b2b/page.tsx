@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import Link from 'next/link';
 import { 
   Building2, 
   ShieldCheck, 
@@ -9,9 +8,7 @@ import {
   Clock, 
   Users, 
   Send, 
-  Award,
-  ArrowRight,
-  FileCheck
+  Award
 } from 'lucide-react';
 import { MOCK_B2G_CONTRACTS, B2GContract } from '@/data/mockData';
 import { useLanguage } from '@/context/LanguageContext';

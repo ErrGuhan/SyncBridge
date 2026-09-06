@@ -59,6 +59,7 @@ export function useEmergencySocket(options: UseEmergencySocketOptions = {}) {
   } = options;
 
   const socketRef = useRef<Socket | null>(null);
+  const [socket, setSocket] = useState<Socket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const [activeDispatches, setActiveDispatches] = useState<EmergencyDispatch[]>([]);
   const [acceptedWorker, setAcceptedWorker] = useState<AssignedWorkerInfo | null>(null);
@@ -70,38 +71,40 @@ export function useEmergencySocket(options: UseEmergencySocketOptions = {}) {
   useEffect(() => {
     if (!autoConnect) return;
 
-    const socket: Socket = io(socketUrl, {
+    const newSocket: Socket = io(socketUrl, {
       transports: ['websocket', 'polling'],
       reconnectionAttempts: 5,
       reconnectionDelay: 1000
     });
 
-    socketRef.current = socket;
+    socketRef.current = newSocket;
 
-    socket.on('connect', () => {
+    newSocket.on('connect', () => {
+      setSocket(newSocket);
       setIsConnected(true);
       setErrorMessage(null);
-      console.log(`⚡ Connected to Emergency Dispatch Socket (ID: ${socket.id})`);
+      console.log(`⚡ Connected to Emergency Dispatch Socket (ID: ${newSocket.id})`);
 
       // If workerId is provided, register worker into pool
       if (workerId) {
-        socket.emit('WORKER_REGISTER', { workerId });
+        newSocket.emit('WORKER_REGISTER', { workerId });
       }
     });
 
-    socket.on('disconnect', () => {
+    newSocket.on('disconnect', () => {
+      setSocket(null);
       setIsConnected(false);
       console.log('🔌 Disconnected from Emergency Dispatch Socket');
     });
 
-    socket.on('connect_error', (err) => {
+    newSocket.on('connect_error', (err) => {
       console.warn('Socket connection error:', err.message);
       setIsConnected(false);
       setErrorMessage(`Socket connection failed: ${err.message}`);
     });
 
     // 1. Worker receives geofenced Emergency Dispatch
-    socket.on('EMERGENCY_DISPATCH', (dispatch: EmergencyDispatch) => {
+    newSocket.on('EMERGENCY_DISPATCH', (dispatch: EmergencyDispatch) => {
       console.log('🚨 Received EMERGENCY_DISPATCH:', dispatch);
       setActiveDispatches((prev) => {
         if (prev.some((d) => d.bookingId === dispatch.bookingId)) return prev;
@@ -110,7 +113,7 @@ export function useEmergencySocket(options: UseEmergencySocketOptions = {}) {
     });
 
     // 2. Worker wins the atomic lock lease
-    socket.on('EMERGENCY_ACCEPT_CONFIRMED', (data) => {
+    newSocket.on('EMERGENCY_ACCEPT_CONFIRMED', (data) => {
       console.log('✅ EMERGENCY_ACCEPT_CONFIRMED:', data);
       setLockStatus('LOCKED');
       // Remove from pending dispatches
@@ -118,7 +121,7 @@ export function useEmergencySocket(options: UseEmergencySocketOptions = {}) {
     });
 
     // 2b. Worker missed lock due to concurrent acceptance (Race Condition Prevented)
-    socket.on('EMERGENCY_LOCK_FAILED', (data) => {
+    newSocket.on('EMERGENCY_LOCK_FAILED', (data) => {
       console.warn('🔒 EMERGENCY_LOCK_FAILED:', data.message);
       setLockStatus('LOCK_FAILED');
       setErrorMessage(data.message || 'Job already accepted by another member-worker.');
@@ -129,13 +132,13 @@ export function useEmergencySocket(options: UseEmergencySocketOptions = {}) {
     });
 
     // 2c. Another worker claimed the job -> broadcasted to all workers to dismiss prompt
-    socket.on('EMERGENCY_JOB_TAKEN', (data) => {
+    newSocket.on('EMERGENCY_JOB_TAKEN', (data) => {
       console.log('ℹ️ EMERGENCY_JOB_TAKEN by another worker:', data.claimedBy);
       setActiveDispatches((prev) => prev.filter((d) => d.bookingId !== data.bookingId));
     });
 
     // 3. Customer notified that worker accepted the emergency dispatch
-    socket.on('EMERGENCY_ACCEPTED', (payload) => {
+    newSocket.on('EMERGENCY_ACCEPTED', (payload) => {
       console.log('🎉 EMERGENCY_ACCEPTED notification received:', payload);
       if (payload.assignedWorker) {
         setAcceptedWorker(payload.assignedWorker);
@@ -152,13 +155,14 @@ export function useEmergencySocket(options: UseEmergencySocketOptions = {}) {
     });
 
     // 4. Live location stream with zero HTTP polling
-    socket.on('WORKER_LOCATION_STREAM', (coords: WorkerLiveCoordinates) => {
+    newSocket.on('WORKER_LOCATION_STREAM', (coords: WorkerLiveCoordinates) => {
       setLiveWorkerLocation(coords);
     });
 
     return () => {
-      socket.disconnect();
+      newSocket.disconnect();
       socketRef.current = null;
+      setSocket(null);
     };
   }, [socketUrl, workerId, autoConnect]);
 
@@ -264,7 +268,7 @@ export function useEmergencySocket(options: UseEmergencySocketOptions = {}) {
   }, []);
 
   return {
-    socket: socketRef.current,
+    socket,
     isConnected,
     activeDispatches,
     acceptedWorker,

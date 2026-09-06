@@ -14,15 +14,14 @@ import {
   ArrowRight, 
   Lock, 
   Mail, 
-  CheckCircle2, 
   AlertCircle,
   Sparkles,
   ShieldCheck,
   Phone,
-  KeyRound
+  LucideIcon
 } from 'lucide-react';
 
-const ROLE_ITEMS: { role: UserRole; title: string; titleKey: string; defaultTitle: string; subtitle: string; icon: any }[] = [
+const ROLE_ITEMS: { role: UserRole; title: string; titleKey: string; defaultTitle: string; subtitle: string; icon: LucideIcon }[] = [
   {
     role: 'CUSTOMER',
     title: 'Customer',
@@ -113,8 +112,8 @@ export default function LoginPage() {
       } else {
         setErrorMessage(res.error || 'Invalid credentials. You can use 1-Click Persona Access above for demo.');
       }
-    } catch (err: any) {
-      setErrorMessage(err.message || 'Login failed');
+    } catch (err: unknown) {
+      setErrorMessage(err instanceof Error ? err.message : 'Login failed');
     } finally {
       setIsSubmitting(false);
     }

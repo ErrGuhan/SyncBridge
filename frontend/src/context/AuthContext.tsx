@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 
 export type UserRole = 'CUSTOMER' | 'WORKER' | 'COOP_ADMIN' | 'MANAGEMENT' | 'DEVELOPER';
@@ -109,44 +109,63 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 const STORAGE_KEY_USER = 'syncbridge_user';
 const STORAGE_KEY_TOKEN = 'supabase_token';
 
+const AUTH_STORE_EVENT = 'syncbridge_auth_update';
+
+function subscribeToAuth(callback: () => void) {
+  if (typeof window === 'undefined') return () => {};
+  window.addEventListener('storage', callback);
+  window.addEventListener(AUTH_STORE_EVENT, callback);
+  return () => {
+    window.removeEventListener('storage', callback);
+    window.removeEventListener(AUTH_STORE_EVENT, callback);
+  };
+}
+
+function getStoredUserSnapshot(): string | null {
+  try {
+    return localStorage.getItem(STORAGE_KEY_USER);
+  } catch {
+    return null;
+  }
+}
+
+function getServerUserSnapshot(): string | null {
+  return null;
+}
+
+function getStoredTokenSnapshot(): string | null {
+  try {
+    return sessionStorage.getItem(STORAGE_KEY_TOKEN);
+  } catch {
+    return null;
+  }
+}
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<AuthUser | null>(null);
-  const [token, setToken] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const rawUser = React.useSyncExternalStore(subscribeToAuth, getStoredUserSnapshot, getServerUserSnapshot);
+  const rawToken = React.useSyncExternalStore(subscribeToAuth, getStoredTokenSnapshot, () => null);
 
-  useEffect(() => {
-    // Rehydrate from localStorage or initialize with Customer default
+  const user = React.useMemo<AuthUser | null>(() => {
+    if (!rawUser) return null;
     try {
-      const storedUser = localStorage.getItem(STORAGE_KEY_USER);
-      const storedToken = sessionStorage.getItem(STORAGE_KEY_TOKEN);
-
-      if (storedUser) {
-        setUser(JSON.parse(storedUser));
-        setToken(storedToken || 'demo-jwt-token-active');
-      } else {
-        // Default persona for initial exploration is Customer
-        const defaultPersona = DEMO_PERSONAS.CUSTOMER;
-        setUser(defaultPersona.user);
-        setToken('demo-jwt-token-customer');
-      }
+      return JSON.parse(rawUser) as AuthUser;
     } catch {
-      setUser(DEMO_PERSONAS.CUSTOMER.user);
-    } finally {
-      setIsLoading(false);
+      return null;
     }
-  }, []);
+  }, [rawUser]);
+
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const loginAsDemoUser = (targetRole: UserRole) => {
     const persona = DEMO_PERSONAS[targetRole];
     if (!persona) return;
 
-    setUser(persona.user);
     const mockToken = `sb_jwt_${targetRole.toLowerCase()}_${Date.now()}`;
-    setToken(mockToken);
 
     try {
       localStorage.setItem(STORAGE_KEY_USER, JSON.stringify(persona.user));
       sessionStorage.setItem(STORAGE_KEY_TOKEN, mockToken);
+      window.dispatchEvent(new Event(AUTH_STORE_EVENT));
     } catch (e) {
       console.warn('Storage unavailable', e);
     }
@@ -168,11 +187,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           name: email.split('@')[0].replace('.', ' ').toUpperCase(),
           role: requestedRole
         };
-        setUser(fallbackUser);
         const demoToken = `sb_jwt_local_${Date.now()}`;
-        setToken(demoToken);
         localStorage.setItem(STORAGE_KEY_USER, JSON.stringify(fallbackUser));
         sessionStorage.setItem(STORAGE_KEY_TOKEN, demoToken);
+        window.dispatchEvent(new Event(AUTH_STORE_EVENT));
         return { success: true };
       }
 
@@ -185,16 +203,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         phone: data.user.phone
       };
 
-      setUser(verifiedUser);
-      setToken(data.session?.access_token || null);
+      const tokenVal = data.session?.access_token || `sb_jwt_sess_${Date.now()}`;
       localStorage.setItem(STORAGE_KEY_USER, JSON.stringify(verifiedUser));
-      if (data.session?.access_token) {
-        sessionStorage.setItem(STORAGE_KEY_TOKEN, data.session.access_token);
-      }
+      sessionStorage.setItem(STORAGE_KEY_TOKEN, tokenVal);
+      window.dispatchEvent(new Event(AUTH_STORE_EVENT));
 
       return { success: true };
-    } catch (err: any) {
-      return { success: false, error: err.message || 'Authentication failed' };
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Authentication failed';
+      return { success: false, error: message };
     } finally {
       setIsLoading(false);
     }
@@ -205,11 +222,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       supabase.auth.signOut();
       localStorage.removeItem(STORAGE_KEY_USER);
       sessionStorage.removeItem(STORAGE_KEY_TOKEN);
+      window.dispatchEvent(new Event(AUTH_STORE_EVENT));
     } catch {
       // Ignore
     }
-    setUser(null);
-    setToken(null);
   };
 
   const getPortalUrlForRole = (r: UserRole): string => {
@@ -221,7 +237,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       value={{
         user,
         role: user?.role || 'CUSTOMER',
-        token,
+        token: rawToken,
         isAuthenticated: Boolean(user),
         isLoading,
         loginAsDemoUser,

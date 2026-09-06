@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext } from 'react';
 
 export type Language = 'en' | 'hi' | 'kn' | 'ta';
 
@@ -237,24 +237,41 @@ const LanguageContext = createContext<LanguageContextType>({
   t: (key: string) => key
 });
 
-export function LanguageProvider({ children }: { children: React.ReactNode }) {
-  const [language, setLanguageState] = useState<Language>('en');
+const LANG_STORE_EVENT = 'syncbridge_lang_update';
 
-  useEffect(() => {
-    try {
-      const saved = localStorage.getItem('syncbridge_lang') as Language;
-      if (saved && (saved === 'en' || saved === 'hi' || saved === 'kn' || saved === 'ta')) {
-        setLanguageState(saved);
-      }
-    } catch {
-      // ignore storage error
+function subscribeToLang(callback: () => void) {
+  if (typeof window === 'undefined') return () => {};
+  window.addEventListener('storage', callback);
+  window.addEventListener(LANG_STORE_EVENT, callback);
+  return () => {
+    window.removeEventListener('storage', callback);
+    window.removeEventListener(LANG_STORE_EVENT, callback);
+  };
+}
+
+function getStoredLangSnapshot(): Language {
+  try {
+    const saved = localStorage.getItem('syncbridge_lang') as Language;
+    if (saved && (saved === 'en' || saved === 'hi' || saved === 'kn' || saved === 'ta')) {
+      return saved;
     }
-  }, []);
+  } catch {
+    // ignore storage error
+  }
+  return 'en';
+}
+
+function getServerLangSnapshot(): Language {
+  return 'en';
+}
+
+export function LanguageProvider({ children }: { children: React.ReactNode }) {
+  const language = React.useSyncExternalStore<Language>(subscribeToLang, getStoredLangSnapshot, getServerLangSnapshot);
 
   const setLanguage = (lang: Language) => {
-    setLanguageState(lang);
     try {
       localStorage.setItem('syncbridge_lang', lang);
+      window.dispatchEvent(new Event(LANG_STORE_EVENT));
     } catch {
       // ignore
     }

@@ -3,7 +3,7 @@
 import React from 'react';
 import AdminDashboard from '@/components/AdminDashboard';
 import { useAuth } from '@/context/AuthContext';
-import { ShieldCheck, BarChart3, Building2, Layers } from 'lucide-react';
+import { BarChart3 } from 'lucide-react';
 
 export default function ManagementPortalPage() {
   const { user } = useAuth();

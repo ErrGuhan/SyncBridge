@@ -6,13 +6,7 @@ import {
   HeartHandshake, 
   ShieldCheck, 
   TrendingUp, 
-  Wallet, 
-  CheckCircle2, 
-  Clock, 
-  AlertCircle, 
-  Building2, 
-  Users, 
-  ArrowRight
+  Wallet
 } from 'lucide-react';
 import { MOCK_WELFARE_FUND_SNAPSHOT } from '@/data/mockData';
 import { useLanguage } from '@/context/LanguageContext';

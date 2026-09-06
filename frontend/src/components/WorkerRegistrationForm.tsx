@@ -2,10 +2,8 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { useLanguage } from '../context/LanguageContext';
 import { useCoopData } from '@/context/CoopDataContext';
 import { 
-  Phone, 
   User, 
   MapPin, 
   Check, 
@@ -18,7 +16,6 @@ import {
   ShieldCheck, 
   Navigation,
   CheckCircle2,
-  Clock,
   Volume2,
   Zap,
   Droplets,
@@ -28,7 +25,6 @@ import {
 } from 'lucide-react';
 
 export default function WorkerRegistrationForm() {
-  const { t } = useLanguage();
   const { submitWorkerApplication } = useCoopData();
   const [step, setStep] = useState<number>(1);
   const totalSteps = 5;
@@ -250,6 +246,14 @@ export default function WorkerRegistrationForm() {
   return (
     <div className="max-w-lg mx-auto py-4 space-y-6">
       
+      {/* Audio Guide Playing Feedback */}
+      {speakingText && (
+        <div className="p-2.5 rounded-xl bg-blue-50 border border-blue-200 text-blue-800 text-xs font-semibold flex items-center gap-2 animate-pulse">
+          <Volume2 className="w-4 h-4 text-blue-600 shrink-0" />
+          <span>Audio Guide: Playing spoken instructions...</span>
+        </div>
+      )}
+
       {/* Stepper Header */}
       <div className="space-y-2">
         <div className="flex items-center justify-between text-xs font-semibold text-slate-500">

@@ -15,16 +15,11 @@ import {
   Award, 
   ShieldCheck, 
   ArrowUpRight, 
-  AlertCircle, 
   Zap, 
-  Radio,
-  Send,
-  Calendar,
-  Check,
-  X,
-  Building2,
-  Lock,
-  Wrench
+  Radio, 
+  Check, 
+  X, 
+  Wrench 
 } from 'lucide-react';
 
 import { useLanguage } from '@/context/LanguageContext';
@@ -318,90 +313,100 @@ export default function WorkerPortalPage() {
       </section>
 
       {/* WEEKLY & TODAY'S 90/5/5 EARNINGS BREAKDOWN */}
-      <section className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
-          <div>
-            <div className="flex items-center gap-2">
-              <h3 className="text-base font-bold text-slate-900">
-                {t('weeklyBreakdownTitle')}
-              </h3>
-              <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
-                Pure Cooperative Mathematics
-              </span>
+      {(() => {
+        const completedVolume = recentCompletedOrders.reduce((sum, o) => sum + o.totalAmount, 0) || 14200;
+        const completedTakeHome = Math.round(completedVolume * 0.9);
+        const completedSociety = Math.round(completedVolume * 0.05);
+        const completedWelfare = Math.round(completedVolume * 0.05);
+        const jobsCount = recentCompletedOrders.length > 0 ? recentCompletedOrders.length : 8;
+
+        return (
+          <section className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+              <div>
+                <div className="flex items-center gap-2">
+                  <h3 className="text-base font-bold text-slate-900">
+                    {t('weeklyBreakdownTitle')}
+                  </h3>
+                  <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                    Pure Cooperative Mathematics
+                  </span>
+                </div>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  This week: {jobsCount} completed jobs across Dadar &amp; Bandra. Total client volume: ₹{completedVolume.toLocaleString()}.
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2 text-xs font-semibold">
+                <span className="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700">
+                  Today: 3 Jobs (₹2,430 net take-home)
+                </span>
+              </div>
             </div>
-            <p className="text-xs text-slate-500 mt-0.5">
-              This week: 8 completed jobs across Dadar & Bandra. Total client volume: ₹14,200.
-            </p>
-          </div>
 
-          <div className="flex items-center gap-2 text-xs font-semibold">
-            <span className="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700">
-              Today: 3 Jobs (₹2,430 net take-home)
-            </span>
-          </div>
-        </div>
+            {/* 3 Metric Cards for the 90/5/5 distribution */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+              <div className="p-4 rounded-xl bg-emerald-50/60 border border-emerald-200/80 space-y-1">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-emerald-800 uppercase tracking-wider">
+                    {t('workerTakeHome')}
+                  </span>
+                  <span className="text-xs font-bold px-2 py-0.5 rounded bg-emerald-200/80 text-emerald-900 font-mono">
+                    90.0%
+                  </span>
+                </div>
+                <p className="text-2xl font-black text-emerald-700">₹{completedTakeHome.toLocaleString()}</p>
+                <p className="text-[11px] text-emerald-600">
+                  Credited instantly to your available balance.
+                </p>
+              </div>
 
-        {/* 3 Metric Cards for the 90/5/5 distribution */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
-          <div className="p-4 rounded-xl bg-emerald-50/60 border border-emerald-200/80 space-y-1">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-emerald-800 uppercase tracking-wider">
-                {t('workerTakeHome')}
-              </span>
-              <span className="text-xs font-bold px-2 py-0.5 rounded bg-emerald-200/80 text-emerald-900 font-mono">
-                90.0%
-              </span>
+              <div className="p-4 rounded-xl bg-blue-50/60 border border-blue-200/80 space-y-1">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-blue-800 uppercase tracking-wider">
+                    {t('societyTreasuryShare')}
+                  </span>
+                  <span className="text-xs font-bold px-2 py-0.5 rounded bg-blue-200/80 text-blue-900 font-mono">
+                    5.0%
+                  </span>
+                </div>
+                <p className="text-2xl font-black text-blue-700">₹{completedSociety.toLocaleString()}</p>
+                <p className="text-[11px] text-blue-600">
+                  Funds power tool lockers &amp; secretary dispatch.
+                </p>
+              </div>
+
+              <div className="p-4 rounded-xl bg-amber-50/60 border border-amber-200/80 space-y-1">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-amber-800 uppercase tracking-wider">
+                    {t('mutualAidShare')}
+                  </span>
+                  <span className="text-xs font-bold px-2 py-0.5 rounded bg-amber-200/80 text-amber-900 font-mono">
+                    5.0%
+                  </span>
+                </div>
+                <p className="text-2xl font-black text-amber-700">₹{completedWelfare.toLocaleString()}</p>
+                <p className="text-[11px] text-amber-600">
+                  ₹5L health shield + pension corpus matching.
+                </p>
+              </div>
             </div>
-            <p className="text-2xl font-black text-emerald-700">₹12,780</p>
-            <p className="text-[11px] text-emerald-600">
-              Credited instantly to your available balance.
-            </p>
-          </div>
 
-          <div className="p-4 rounded-xl bg-blue-50/60 border border-blue-200/80 space-y-1">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-blue-800 uppercase tracking-wider">
-                {t('societyTreasuryShare')}
-              </span>
-              <span className="text-xs font-bold px-2 py-0.5 rounded bg-blue-200/80 text-blue-900 font-mono">
-                5.0%
-              </span>
+            {/* Proportional Split Visual Bar */}
+            <div className="space-y-1.5 pt-1">
+              <div className="w-full bg-slate-100 h-3 rounded-full overflow-hidden flex shadow-inner">
+                <div className="bg-emerald-500 h-full transition-all" style={{ width: '90%' }} title={`90% Worker Take-Home (₹${completedTakeHome.toLocaleString()})`} />
+                <div className="bg-blue-500 h-full transition-all" style={{ width: '5%' }} title={`5% Society Operational (₹${completedSociety.toLocaleString()})`} />
+                <div className="bg-amber-500 h-full transition-all" style={{ width: '5%' }} title={`5% Welfare & Pension (₹${completedWelfare.toLocaleString()})`} />
+              </div>
+              <div className="flex items-center justify-between text-[11px] text-slate-400">
+                <span>Total Gross Client Volume: ₹{completedVolume.toLocaleString()}</span>
+                <span>Mathematical Check: ₹{completedTakeHome.toLocaleString()} + ₹{completedSociety.toLocaleString()} + ₹{completedWelfare.toLocaleString()} = ₹{completedVolume.toLocaleString()} (Exact 100%)</span>
+              </div>
             </div>
-            <p className="text-2xl font-black text-blue-700">₹710</p>
-            <p className="text-[11px] text-blue-600">
-              Funds power tool lockers & secretary dispatch.
-            </p>
-          </div>
-
-          <div className="p-4 rounded-xl bg-amber-50/60 border border-amber-200/80 space-y-1">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-amber-800 uppercase tracking-wider">
-                {t('mutualAidShare')}
-              </span>
-              <span className="text-xs font-bold px-2 py-0.5 rounded bg-amber-200/80 text-amber-900 font-mono">
-                5.0%
-              </span>
-            </div>
-            <p className="text-2xl font-black text-amber-700">₹710</p>
-            <p className="text-[11px] text-amber-600">
-              ₹5L health shield + pension corpus matching.
-            </p>
-          </div>
-        </div>
-
-        {/* Proportional Split Visual Bar */}
-        <div className="space-y-1.5 pt-1">
-          <div className="w-full bg-slate-100 h-3 rounded-full overflow-hidden flex shadow-inner">
-            <div className="bg-emerald-500 h-full transition-all" style={{ width: '90%' }} title="90% Worker Take-Home (₹12,780)" />
-            <div className="bg-blue-500 h-full transition-all" style={{ width: '5%' }} title="5% Society Operational (₹710)" />
-            <div className="bg-amber-500 h-full transition-all" style={{ width: '5%' }} title="5% Welfare & Pension (₹710)" />
-          </div>
-          <div className="flex items-center justify-between text-[11px] text-slate-400">
-            <span>Total Gross Client Volume: ₹14,200</span>
-            <span>Mathematical Check: ₹12,780 + ₹710 + ₹710 = ₹14,200 (Exact 100%)</span>
-          </div>
-        </div>
-      </section>
+          </section>
+        );
+      })()}
 
       {/* ACTIVE ONGOING JOBS (IF ANY) */}
       {activeOngoingOrders.length > 0 && (
@@ -491,7 +496,7 @@ export default function WorkerPortalPage() {
             </div>
 
             <p className="text-xs text-slate-600 leading-relaxed bg-slate-50 p-3 rounded-xl border border-slate-200/60">
-              "Customer requested immediate cooperative service dispatch at {incomingLead.location}."
+              &quot;Customer requested immediate cooperative service dispatch at {incomingLead.location}.&quot;
             </p>
 
             <div className="flex items-center gap-4 text-xs text-slate-500 pt-1">

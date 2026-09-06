@@ -7,33 +7,38 @@ import JobStatusTracker from '@/components/JobStatusTracker';
 import { 
   Sparkles, 
   Search, 
-  MapPin, 
-  Calendar, 
-  Clock, 
   ShieldCheck, 
   ArrowRight, 
-  FileText, 
-  CheckCircle2, 
   AlertTriangle, 
   Wrench, 
-  Flame,
-  Send,
-  Camera,
-  Layers,
-  PhoneCall
+  Layers, 
+  PhoneCall,
+  CheckCircle2
 } from 'lucide-react';
-import { MOCK_BOOKINGS } from '@/data/mockData';
+import { useCoopData } from '@/context/CoopDataContext';
 import { calculateCoopSplit } from '@/lib/splitUtils';
 import { useLanguage } from '@/context/LanguageContext';
+
+interface AiDiagnosticResponse {
+  tradeCategory: string;
+  urgencyLevel: 'EMERGENCY' | 'HIGH' | 'STANDARD';
+  fairPriceRange?: { min: number; max: number };
+  estimatedHours?: number;
+  suggestedTools?: string[];
+  diagnosisSummary: string;
+  safetyCaution?: string;
+  isAiGenerated?: boolean;
+}
 
 export default function CustomerPortalPage() {
   const { user } = useAuth();
   const { t } = useLanguage();
+  const { orders } = useCoopData();
   
   // AI Diagnostic State
   const [promptText, setPromptText] = useState('');
   const [isDiagnosing, setIsDiagnosing] = useState(false);
-  const [aiResult, setAiResult] = useState<any>(null);
+  const [aiResult, setAiResult] = useState<AiDiagnosticResponse | null>(null);
 
   const samplePrompts = [
     'Water pipe burst under kitchen sink, flooding floor',
@@ -220,7 +225,7 @@ export default function CustomerPortalPage() {
               </div>
 
               <Link
-                href={`/services?category=${encodeURIComponent(aiResult.tradeCategory)}`}
+                href={`/services?category=${encodeURIComponent(aiResult.tradeCategory.toLowerCase())}&ai=true&desc=${encodeURIComponent(promptText || aiResult.diagnosisSummary)}${aiResult.urgencyLevel === 'EMERGENCY' ? '&emergency=true' : ''}`}
                 className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs flex items-center justify-center gap-1.5 shadow-sm transition-all"
               >
                 <span>Book Certified {aiResult.tradeCategory}</span>
@@ -232,26 +237,48 @@ export default function CustomerPortalPage() {
       </section>
 
       {/* ACTIVE LIVE DISPATCH TIMELINE */}
-      <section className="space-y-3">
-        <div className="flex items-center justify-between">
-          <h2 className="text-base font-bold text-slate-900">
-            Active Service Dispatch
-          </h2>
-          <span className="text-xs text-slate-500">
-            Order #BKG-2026-8819 • Real-Time GPS Tracking
-          </span>
-        </div>
+      {(() => {
+        const activeOrder = orders.find(o => o.status === 'CONFIRMED' || o.status === 'IN_PROGRESS');
+        if (activeOrder) {
+          return (
+            <section className="space-y-3">
+              <div className="flex items-center justify-between">
+                <h2 className="text-base font-bold text-slate-900">
+                  Active Service Dispatch
+                </h2>
+                <span className="text-xs text-slate-500 font-mono">
+                  Order #{activeOrder.id} • Real-Time GPS Tracking
+                </span>
+              </div>
 
-        <JobStatusTracker
-          initialState="YELLOW"
-          bookingNumber="BKG-2026-8819"
-          workerName="Ramesh Chavan (NCCT Certified)"
-          workerPhone="+91 98201 11221"
-          workerTrade="Master Electrician"
-          workerEtaMinutes={12}
-          totalAmount={1200}
-        />
-      </section>
+              <JobStatusTracker
+                initialState={activeOrder.status === 'CONFIRMED' ? 'RED' : 'YELLOW'}
+                bookingNumber={activeOrder.id}
+                workerName={activeOrder.workerName}
+                workerTrade={activeOrder.workerTrade}
+                workerEtaMinutes={12}
+                totalAmount={activeOrder.totalAmount}
+              />
+            </section>
+          );
+        }
+        return (
+          <div className="p-5 rounded-2xl bg-white border border-slate-200 text-center space-y-2">
+            <CheckCircle2 className="w-8 h-8 text-emerald-600 mx-auto" />
+            <h3 className="font-bold text-slate-900 text-sm">No Active Dispatches Right Now</h3>
+            <p className="text-xs text-slate-500 max-w-sm mx-auto">
+              All previous services have been fulfilled and verified. Need on-demand trade assistance?
+            </p>
+            <Link
+              href="/services"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold mt-2"
+            >
+              <span>Explore Trade Services</span>
+              <ArrowRight className="w-3 h-3" />
+            </Link>
+          </div>
+        );
+      })()}
 
       {/* RECENT BOOKINGS & 90/5/5 TRANSPARENT RECEIPTS */}
       <section className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm space-y-4">
@@ -271,7 +298,7 @@ export default function CustomerPortalPage() {
         </div>
 
         <div className="divide-y divide-slate-100 text-xs text-slate-700">
-          {MOCK_BOOKINGS.slice(0, 3).map((b) => {
+          {orders.filter(b => b.status === 'COMPLETED').slice(0, 4).map((b) => {
             const split = calculateCoopSplit(b.totalAmount);
             return (
               <div key={b.id} className="py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">

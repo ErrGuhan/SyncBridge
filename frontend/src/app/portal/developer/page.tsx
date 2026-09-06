@@ -1,19 +1,14 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { 
   Terminal, 
   Server, 
   Database, 
-  Cpu, 
-  Activity, 
   CheckCircle2, 
-  ExternalLink, 
   RefreshCw, 
   Key, 
-  ShieldCheck,
   Zap,
-  Layers,
   Code
 } from 'lucide-react';
 
@@ -32,7 +27,7 @@ export default function DeveloperPortalPage() {
   const [lastPingTime, setLastPingTime] = useState<string>('Just now');
   const [apiResponseJson, setApiResponseJson] = useState<string | null>(null);
 
-  const [services, setServices] = useState<ServiceNode[]>([
+  const [services] = useState<ServiceNode[]>([
     {
       name: 'API Gateway & Auth Proxy',
       port: 3000,
@@ -88,8 +83,8 @@ export default function DeveloperPortalPage() {
       const data = await res.json();
       setApiResponseJson(JSON.stringify(data, null, 2));
       setLastPingTime(new Date().toLocaleTimeString());
-    } catch (e: any) {
-      setApiResponseJson(JSON.stringify({ error: e.message, status: 'Failed to connect' }, null, 2));
+    } catch (e: unknown) {
+      setApiResponseJson(JSON.stringify({ error: e instanceof Error ? e.message : 'Failed to connect', status: 'Failed to connect' }, null, 2));
     } finally {
       setIsPinging(false);
     }

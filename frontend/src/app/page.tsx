@@ -17,12 +17,9 @@ import {
   Hammer, 
   Star, 
   MapPin, 
-  CheckCircle2, 
-  AlertTriangle,
-  Wrench,
-  Clock,
-  Phone,
-  Building2
+  AlertTriangle, 
+  Wrench, 
+  Building2 
 } from 'lucide-react';
 import { MOCK_WORKERS } from '@/data/mockData';
 import { useLanguage } from '@/context/LanguageContext';
@@ -80,6 +77,17 @@ const QUICK_CATEGORIES = [
   }
 ];
 
+interface AiDiagnosticResponse {
+  tradeCategory: string;
+  urgencyLevel: 'EMERGENCY' | 'HIGH' | 'STANDARD';
+  fairPriceRange?: { min: number; max: number };
+  estimatedHours?: number;
+  suggestedTools?: string[];
+  diagnosisSummary: string;
+  safetyCaution?: string;
+  isAiGenerated?: boolean;
+}
+
 export default function HomePage() {
   const router = useRouter();
   const { language, t } = useLanguage();
@@ -88,7 +96,7 @@ export default function HomePage() {
   // AI Diagnostic Quick Assistant state
   const [aiPrompt, setAiPrompt] = useState('');
   const [isDiagnosing, setIsDiagnosing] = useState(false);
-  const [aiResult, setAiResult] = useState<any>(null);
+  const [aiResult, setAiResult] = useState<AiDiagnosticResponse | null>(null);
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -383,7 +391,7 @@ export default function HomePage() {
               </div>
 
               <Link
-                href={`/services?category=${encodeURIComponent(aiResult.tradeCategory.toLowerCase())}`}
+                href={`/services?category=${encodeURIComponent(aiResult.tradeCategory.toLowerCase())}&ai=true&desc=${encodeURIComponent(aiPrompt || aiResult.diagnosisSummary)}${aiResult.urgencyLevel === 'EMERGENCY' ? '&emergency=true' : ''}`}
                 className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs flex items-center justify-center gap-1.5 shadow-xs transition-all"
               >
                 <span>Book Certified {aiResult.tradeCategory}</span>

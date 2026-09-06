@@ -16,9 +16,9 @@ export async function GET() {
         runtime: 'Vercel Serverless / Edge Function'
       }
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     return NextResponse.json(
-      { success: false, error: error?.message || 'Forecasting failed' },
+      { success: false, error: error instanceof Error ? error.message : 'Forecasting failed' },
       { status: 500 }
     );
   }

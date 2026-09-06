@@ -1,11 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useLanguage } from '../context/LanguageContext';
 import { 
   Phone, 
-  MapPin, 
-  CheckCircle2, 
   Clock, 
   ShieldCheck, 
   Navigation,
@@ -33,7 +30,6 @@ export default function JobStatusTracker({
   workerEtaMinutes = 12,
   totalAmount = 1200
 }: JobStatusTrackerProps) {
-  const { t } = useLanguage();
   const [trafficState, setTrafficState] = useState<JobTrafficState>(initialState);
 
   const workerPayout = Math.round(totalAmount * 0.9);

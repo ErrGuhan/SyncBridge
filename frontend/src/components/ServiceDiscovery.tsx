@@ -15,20 +15,15 @@ import {
   ShieldCheck, 
   ArrowRight, 
   ChevronLeft, 
-  ChevronRight,
-  Droplets,
-  Zap,
-  Sparkles,
-  Wind,
-  Hammer,
-  Clock,
-  CheckCircle2,
-  AlertTriangle,
-  BadgeCheck,
-  Building2,
-  FileCheck
+  ChevronRight, 
+  Droplets, 
+  Zap, 
+  Sparkles, 
+  Wind, 
+  Hammer, 
+  CheckCircle2 
 } from 'lucide-react';
-import { WorkerProfile } from '@/data/mockData';
+import { BookingItem, WorkerProfile } from '@/data/mockData';
 
 // ----------------------------------------------------------------------------
 // PROFESSIONAL CATEGORY METADATA & REFINED ICONS
@@ -97,13 +92,22 @@ export default function ServiceDiscovery() {
   const { workers, createOrder } = useCoopData();
   const searchParams = useSearchParams();
 
-  // Deliverable #8: Emergency Dispatch Query Param Detection
+  const urlCategory = searchParams?.get('category');
+  const urlQuery = searchParams?.get('q');
   const isEmergency = searchParams?.get('emergency') === 'true';
+  const isAiDirected = searchParams?.get('ai') === 'true';
+  const aiProblem = searchParams?.get('desc') || searchParams?.get('problem') || '';
 
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [customCategory, setCustomCategory] = useState<string | null>(null);
+  const [customQuery, setCustomQuery] = useState<string | null>(null);
   const [bookingWorker, setBookingWorker] = useState<WorkerProfile | null>(null);
-  const [confirmedOrder, setConfirmedOrder] = useState<any>(null);
+  const [confirmedOrder, setConfirmedOrder] = useState<BookingItem | null>(null);
+
+  const selectedCategory = customCategory ?? (urlCategory || 'all');
+  const searchQuery = customQuery ?? (urlQuery || '');
+
+  const setSelectedCategory = (cat: string) => setCustomCategory(cat);
+  const setSearchQuery = (q: string) => setCustomQuery(q);
 
   const carouselRef = useRef<HTMLDivElement>(null);
 
@@ -160,7 +164,9 @@ export default function ServiceDiscovery() {
       customerName: user?.name || 'Priya Sharma',
       customerAddress: 'Indiranagar 2nd Stage, Ward 88, Bengaluru',
       totalAmount: grossTotal,
-      issueDescription: isEmergency
+      issueDescription: aiProblem
+        ? `AI DIAGNOSIS DIRECT: ${aiProblem} (Verified trade requirement: ${bookingWorker.trade})`
+        : isEmergency
         ? `EMERGENCY DISPATCH: Urgent on-demand service for ${bookingWorker.trade} (100% surge premium passes directly to worker)`
         : `Standard service appointment for ${bookingWorker.trade}`,
       isEmergency: isEmergency,
@@ -386,6 +392,21 @@ export default function ServiceDiscovery() {
       {/* 3. VERIFIED WORKER LIST FOR SELECTED CATEGORY */}
       {/* -------------------------------------------------------------------- */}
       <div className="space-y-4">
+        {isAiDirected && aiProblem && (
+          <div className="p-4 rounded-2xl bg-indigo-50 border border-indigo-200 text-indigo-900 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 animate-in fade-in">
+            <div className="flex items-center gap-2.5">
+              <Sparkles className="w-5 h-5 text-indigo-600 shrink-0" />
+              <div>
+                <span className="font-bold text-slate-900">AI Diagnostic Requirement: </span>
+                <span className="text-slate-700 font-medium">&quot;{aiProblem}&quot;</span>
+              </div>
+            </div>
+            <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-white text-indigo-700 border border-indigo-200 shrink-0 self-start sm:self-auto">
+              Pre-filled Diagnosis Active
+            </span>
+          </div>
+        )}
+
         <div className="flex items-center justify-between border-b border-slate-200 pb-3">
           <div className="flex items-center gap-2">
             <h3 className="text-base font-bold text-slate-900">
@@ -422,12 +443,8 @@ export default function ServiceDiscovery() {
                   {/* Worker Identity & Trust Badges */}
                   <div className="space-y-3">
                     <div className="flex items-start gap-3.5">
-                      <div className="w-12 h-12 rounded-xl bg-slate-100 border border-slate-200 overflow-hidden flex-shrink-0 flex items-center justify-center text-slate-700 font-bold text-lg">
-                        {worker.avatarUrl ? (
-                          <img src={worker.avatarUrl} alt={worker.name} className="w-full h-full object-cover" />
-                        ) : (
-                          worker.name.charAt(0)
-                        )}
+                      <div className="w-12 h-12 rounded-xl bg-blue-50 border border-blue-200 overflow-hidden flex-shrink-0 flex items-center justify-center text-blue-700 font-bold text-base shadow-2xs">
+                        {worker.name.charAt(0)}
                       </div>
 
                       <div className="flex-1 min-w-0 space-y-0.5">

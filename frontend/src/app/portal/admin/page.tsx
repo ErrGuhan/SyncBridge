@@ -1,41 +1,26 @@
 'use client';
 
 import React, { useState } from 'react';
-import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { useCoopData } from '@/context/CoopDataContext';
 import { 
   Building2, 
-  Users, 
   Wrench, 
   Wallet, 
   Check, 
   X, 
   CheckCircle2, 
-  Clock, 
   ShieldCheck, 
-  ArrowUpRight, 
-  Plus,
-  Search,
   Award,
   BarChart3,
-  TrendingUp,
-  AlertTriangle,
   Radio,
   Zap,
   Flame,
-  Scale,
-  Gavel,
-  ShieldAlert,
-  Send,
-  Calendar,
-  Layers
+  Scale
 } from 'lucide-react';
 import { 
   MOCK_DEMAND_FORECASTS, 
-  DemandForecastItem, 
-  PeerArbitrationCase,
-  WorkerVerificationItem
+  DemandForecastItem
 } from '@/data/mockData';
 import { useLanguage } from '@/context/LanguageContext';
 
@@ -49,9 +34,6 @@ export default function CooperativeFederationAdminPage() {
     toolInventory, 
     checkOutTool, 
     returnTool, 
-    societyTreasury, 
-    welfareFund,
-    orders,
     arbitrationCases,
     voteArbitration
   } = useCoopData();
@@ -241,7 +223,7 @@ export default function CooperativeFederationAdminPage() {
             <button
               key={tab.id}
               type="button"
-              onClick={() => setActiveTab(tab.id as any)}
+              onClick={() => setActiveTab(tab.id as 'OVERVIEW' | 'FORECASTING' | 'DISPUTES' | 'VERIFICATIONS' | 'TOOLS')}
               className={`px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 whitespace-nowrap transition-all ${
                 isActive
                   ? 'bg-slate-900 text-white shadow-xs'

@@ -10,14 +10,10 @@ import {
   MapPin, 
   CheckCircle2, 
   Phone, 
-  ArrowRight,
-  ShieldCheck, 
   Plus, 
-  FileText, 
   AlertTriangle,
-  Download,
-  Star,
-  Receipt
+  Receipt,
+  Printer
 } from 'lucide-react';
 import { BookingItem } from '@/data/mockData';
 import { calculateCoopSplit } from '@/lib/splitUtils';
@@ -41,7 +37,7 @@ export default function BookingsPage() {
     return b.status === filter;
   });
 
-  const activeOrder = orders.find(o => o.status === 'CONFIRMED' || o.status === 'IN_PROGRESS') || orders[0];
+  const activeOrder = orders.find(o => o.status === 'CONFIRMED' || o.status === 'IN_PROGRESS');
 
   const handleDisputeSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -327,17 +323,33 @@ export default function BookingsPage() {
               );
             })()}
 
-            <div className="p-3 bg-emerald-50 rounded-xl border border-emerald-200 text-xs text-emerald-800 text-center font-medium">
-              ✓ Transaction Verified on Cooperative Distributed Ledger
+            <div className="p-3 bg-emerald-50 rounded-xl border border-emerald-200 text-xs text-emerald-800 space-y-1">
+              <div className="flex items-center justify-between font-semibold">
+                <span>✓ Verified on Cooperative Ledger</span>
+                <span className="font-mono text-[10px] text-emerald-700">UTR: COOP-{viewingReceipt.id}-90X</span>
+              </div>
+              <p className="text-[11px] text-emerald-700">
+                Non-extractive patronage credit recorded. Eligible for Annual Cooperative Dividend distribution.
+              </p>
             </div>
 
-            <button
-              type="button"
-              onClick={() => setViewingReceipt(null)}
-              className="w-full h-11 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold shadow-xs transition-colors"
-            >
-              Close Receipt
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => window.print()}
+                className="flex-1 h-11 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold shadow-xs transition-colors flex items-center justify-center gap-1.5"
+              >
+                <Printer className="w-3.5 h-3.5" />
+                <span>Print / Save PDF</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setViewingReceipt(null)}
+                className="h-11 px-4 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-semibold transition-colors"
+              >
+                Close
+              </button>
+            </div>
           </div>
         </div>
       )}

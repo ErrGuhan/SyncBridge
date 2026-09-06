@@ -113,6 +113,7 @@ export interface WelfareFundSnapshot {
 
 export interface BookingItem {
   id: string;
+  workerId?: string;
   serviceCategory: string;
   workerName: string;
   workerTrade: string;

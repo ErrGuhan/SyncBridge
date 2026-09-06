@@ -46,7 +46,7 @@ Analyze this household or commercial maintenance issue and output a valid JSON o
 Problem description: ${problemDescription || 'See attached image'}
 Currency: Indian Rupees (INR ₹) based on fair 90% direct cooperative worker compensation rates.`;
 
-        const contents: any[] = [{ text: prompt }];
+        const contents: Array<Record<string, unknown>> = [{ text: prompt }];
 
         if (imageBase64 && mimeType) {
           contents.push({
@@ -70,8 +70,8 @@ Currency: Indian Rupees (INR ₹) based on fair 90% direct cooperative worker co
           ...parsed,
           isAiGenerated: true
         });
-      } catch (geminiErr: any) {
-        console.warn('[Gemini API Warning, falling back to heuristic engine]:', geminiErr.message);
+      } catch (geminiErr: unknown) {
+        console.warn('[Gemini API Warning, falling back to heuristic engine]:', geminiErr instanceof Error ? geminiErr.message : String(geminiErr));
       }
     }
 
@@ -137,9 +137,9 @@ Currency: Indian Rupees (INR ₹) based on fair 90% direct cooperative worker co
     }
 
     return NextResponse.json(result);
-  } catch (err: any) {
+  } catch (err: unknown) {
     return NextResponse.json(
-      { error: err.message || 'Failed to process AI diagnosis' },
+      { error: err instanceof Error ? err.message : 'Failed to process AI diagnosis' },
       { status: 500 }
     );
   }

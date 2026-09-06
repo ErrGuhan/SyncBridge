@@ -151,9 +151,9 @@ export interface FallbackVerificationResponseDTO {
 
 export class ApiError extends Error {
   public status: number;
-  public data: any;
+  public data: unknown;
 
-  constructor(status: number, message: string, data?: any) {
+  constructor(status: number, message: string, data?: unknown) {
     super(message);
     this.name = 'ApiError';
     this.status = status;
@@ -217,9 +217,10 @@ export function handleUnauthorized(): void {
   }
 
   const currentPath = window.location.pathname;
-  if (!currentPath.includes('/login') && !currentPath.includes('/register')) {
-    const redirectUrl = `/login?redirect=${encodeURIComponent(currentPath)}`;
-    window.location.href = redirectUrl;
+  if (!currentPath.includes('/auth/login') && !currentPath.includes('/auth/register')) {
+    const redirectUrl = `/auth/login?redirect=${encodeURIComponent(currentPath)}`;
+    // eslint-disable-next-line @next/next/no-location-assign-relative-destination
+    window.location.assign(`${window.location.origin}${redirectUrl}`);
   }
 }
 
@@ -266,10 +267,10 @@ export async function request<T>(
     }
 
     // Parse JSON payload or handle empty response
-    let responseData: any = null;
+    let responseData: Record<string, unknown> | null = null;
     const contentType = response.headers.get('content-type');
     if (contentType && contentType.includes('application/json')) {
-      responseData = await response.json();
+      responseData = (await response.json()) as Record<string, unknown>;
     } else {
       const text = await response.text();
       responseData = text ? { message: text } : {};
@@ -277,19 +278,20 @@ export async function request<T>(
 
     if (!response.ok) {
       const errorMessage =
-        responseData?.message ||
-        responseData?.error ||
+        (typeof responseData?.message === 'string' ? responseData.message : null) ||
+        (typeof responseData?.error === 'string' ? responseData.error : null) ||
         `HTTP Request failed with status ${response.status}`;
       throw new ApiError(response.status, errorMessage, responseData);
     }
 
-    return responseData as T;
-  } catch (error: any) {
+    return responseData as unknown as T;
+  } catch (error: unknown) {
     if (error instanceof ApiError) {
       throw error;
     }
     // Network errors or fetch aborts
-    throw new ApiError(0, error.message || 'Network error occurred. Please check your connection.');
+    const msg = error instanceof Error ? error.message : 'Network error occurred. Please check your connection.';
+    throw new ApiError(0, msg);
   }
 }
 
@@ -401,7 +403,7 @@ export async function verifyWorkerOfflineFallback(payload: {
 export async function fetchSecretaryReviewQueue(): Promise<{
   success: boolean;
   count: number;
-  data: any[];
+  data: Record<string, unknown>[];
 }> {
   return await request('/api/users/admin/secretary-queue', {
     method: 'GET'

@@ -30,13 +30,10 @@ import {
 } from 'lucide-react';
 import { 
   MOCK_ADMIN_METRICS, 
-  MOCK_VERIFICATION_QUEUE, 
   MOCK_DEMAND_FORECASTS,
-  MOCK_PEER_ARBITRATION_CASES,
   MOCK_WELFARE_FUND_SNAPSHOT,
   WorkerVerificationItem,
-  DemandForecastItem,
-  PeerArbitrationCase
+  DemandForecastItem
 } from '@/data/mockData';
 import { useCoopData } from '@/context/CoopDataContext';
 
@@ -46,10 +43,7 @@ export default function AdminDashboard() {
     approveWorker, 
     rejectWorker, 
     arbitrationCases, 
-    voteArbitration, 
-    orders, 
-    welfareFund, 
-    societyTreasury 
+    voteArbitration
   } = useCoopData();
 
   const [activeTab, setActiveTab] = useState<'VERIFICATION' | 'PEER_ARBITRATION' | 'AI_FORECAST' | 'WELFARE_FUND'>('VERIFICATION');
@@ -848,7 +842,7 @@ export default function AdminDashboard() {
                         <span>Customer Claim ({c.customerName})</span>
                         <span className="bg-rose-100 text-rose-800 px-2 py-0.5 rounded text-[11px] font-bold">★ {c.customerRating}.0 Rating</span>
                       </div>
-                      <p className="text-slate-700 italic">"{c.customerStatement}"</p>
+                      <p className="text-slate-700 italic">&quot;{c.customerStatement}&quot;</p>
                       <p className="text-[11px] text-slate-500 pt-1">
                         <strong>Dispute Note:</strong> {c.disputeReason}
                       </p>
@@ -860,7 +854,7 @@ export default function AdminDashboard() {
                         <span>Worker Member Statement ({c.workerName})</span>
                         <span className="text-emerald-700 text-[11px] font-semibold">Verified Member ✓</span>
                       </div>
-                      <p className="text-slate-700 italic">"{c.workerDefenseStatement}"</p>
+                      <p className="text-slate-700 italic">&quot;{c.workerDefenseStatement}&quot;</p>
                       <div className="text-[11px] text-slate-500 pt-1 flex items-center gap-1.5">
                         <Users className="w-3 h-3 text-blue-600" />
                         <span><strong>Arbitration Council:</strong> {c.arbitrationCouncil.join(', ')}</span>

@@ -10,7 +10,6 @@ import {
   Search, 
   ClipboardList, 
   User, 
-  Wallet, 
   Briefcase, 
   Building2, 
   BarChart3, 
@@ -21,7 +20,7 @@ import {
 export default function BottomNavigation() {
   const pathname = usePathname();
   const { t } = useLanguage();
-  const { role } = useAuth();
+  const { role, isAuthenticated } = useAuth();
 
   // Dynamic portal link and icon based on active role
   const getRolePortalItem = () => {
@@ -87,7 +86,7 @@ export default function BottomNavigation() {
     },
     portalItem,
     {
-      label: t('navSignIn'),
+      label: isAuthenticated ? (t('navProfile') || 'Account') : t('navSignIn'),
       href: '/auth/login',
       icon: LayoutGrid,
       isActive: pathname.startsWith('/auth')
