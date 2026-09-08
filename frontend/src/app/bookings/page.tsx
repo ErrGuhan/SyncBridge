@@ -106,14 +106,14 @@ export default function BookingsPage() {
       {/* 3. ORDER HISTORY & TABS */}
       {/* -------------------------------------------------------------------- */}
       <div className="space-y-4">
-        <div className="flex items-center justify-between border-b border-slate-200 pb-2">
-          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1">
+        <div className="flex items-center justify-between gap-2 border-b border-slate-200 pb-2">
+          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1 min-w-0 flex-1">
             {['ALL', 'CONFIRMED', 'IN_PROGRESS', 'COMPLETED'].map((tab) => (
               <button
                 key={tab}
                 type="button"
                 onClick={() => setFilter(tab)}
-                className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all whitespace-nowrap ${
+                className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all whitespace-nowrap shrink-0 ${
                   filter === tab
                     ? 'bg-slate-900 text-white shadow-xs'
                     : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
@@ -124,7 +124,7 @@ export default function BookingsPage() {
             ))}
           </div>
 
-          <span className="text-xs font-medium text-slate-500">
+          <span className="text-xs font-medium text-slate-500 shrink-0">
             {filteredBookings.length} orders
           </span>
         </div>

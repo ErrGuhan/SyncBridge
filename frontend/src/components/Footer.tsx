@@ -22,7 +22,7 @@ export default function Footer() {
   };
 
   return (
-    <footer className="border-t border-slate-200 bg-white py-8 px-4 sm:px-6 lg:px-8 text-xs text-slate-500 mb-16 md:mb-0">
+    <footer className="border-t border-slate-200 bg-white py-8 px-4 sm:px-6 lg:px-8 text-xs text-slate-500 mb-16 lg:mb-0">
       <div className="max-w-6xl mx-auto space-y-4">
         <div className="flex flex-col md:flex-row items-center justify-between gap-4 border-b border-slate-100 pb-4">
           <div className="flex items-center gap-2 flex-wrap justify-center md:justify-start">

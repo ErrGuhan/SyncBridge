@@ -272,9 +272,11 @@ export default function CooperativeFederationAdminPage() {
                 <div style={{ width: '5%' }} className="bg-blue-600 transition-all" title="5% Primary Society Reserve" />
                 <div style={{ width: '5%' }} className="bg-amber-500 transition-all" title="5% Welfare & Healthcare Fund" />
               </div>
-              <div className="flex items-center justify-between text-xs text-slate-500 px-1 font-mono">
+              <div className="flex flex-wrap items-center justify-between gap-x-2 gap-y-1 text-[11px] sm:text-xs text-slate-600 px-1 font-mono">
                 <span>90% Worker Take-Home (₹{workerTakeHome.toLocaleString()})</span>
+                <span className="text-slate-300 hidden sm:inline">·</span>
                 <span>5% Co-op (₹{societyReserves.toLocaleString()})</span>
+                <span className="text-slate-300 hidden sm:inline">·</span>
                 <span>5% Welfare (₹{welfarePool.toLocaleString()})</span>
               </div>
             </div>
@@ -375,7 +377,7 @@ export default function CooperativeFederationAdminPage() {
                     </p>
                   </div>
 
-                  <div className="flex items-center gap-6 self-start sm:self-auto text-right">
+                  <div className="flex items-center justify-between sm:justify-end gap-3 sm:gap-6 w-full sm:w-auto text-left sm:text-right pt-2 sm:pt-0 border-t sm:border-0 border-slate-100">
                     <div>
                       <span className="text-sm font-bold text-slate-900 block">{soc.registeredWorkers}</span>
                       <span className="text-[10px] text-slate-400">Workers</span>

@@ -537,7 +537,7 @@ export default function ServiceDiscovery() {
           </div>
         )}
 
-        <div className="flex items-center justify-between border-b border-slate-200 pb-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-4 border-b border-slate-200 pb-3">
           <div className="flex items-center gap-2">
             <h3 className="text-base font-bold text-slate-900">
               {isEmergency ? 'Emergency Priority Queue' : 'Verified Cooperative Workers'}
@@ -593,14 +593,14 @@ export default function ServiceDiscovery() {
                           )}
                         </div>
 
-                        <div className="text-xs text-slate-500 flex items-center gap-2 flex-wrap">
+                        <div className="text-xs text-slate-500 flex items-center gap-x-2 flex-wrap">
                           <span className="flex items-center text-amber-600 font-semibold">
                             <Star className="w-3.5 h-3.5 fill-amber-500 text-amber-500 mr-0.5" />
                             {worker.rating}
                           </span>
-                          <span>•</span>
+                          <span className="text-slate-300">·</span>
                           <span>{worker.completedJobs} jobs</span>
-                          <span>•</span>
+                          <span className="text-slate-300">·</span>
                           <span className="flex items-center font-medium text-slate-700">
                             <MapPin className="w-3 h-3 mr-0.5 text-slate-400" />
                             {worker.locationName}
@@ -611,21 +611,23 @@ export default function ServiceDiscovery() {
 
                     {/* e-KYC & Trade Verification Credential Strip (Deliverable #1 & Priority 2.5) */}
                     <div className="p-2.5 rounded-xl bg-slate-50/80 border border-slate-200/80 text-[11px] space-y-1.5">
-                      <div className="flex items-center justify-between text-slate-700 flex-wrap gap-1">
-                        <span className="flex items-center gap-1 font-semibold text-emerald-700">
+                      <div className="flex items-center justify-between gap-x-2 text-slate-700 flex-wrap">
+                        <span className="flex items-center gap-1 font-semibold text-emerald-700 whitespace-nowrap">
                           <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
                           <span>e-KYC: Verified ✓ (Aadhaar-linked)</span>
                         </span>
-                        <span className="font-mono text-[10px] px-1.5 py-0.2 rounded bg-white border border-slate-200 text-slate-600">
+                        <span className="text-slate-300 hidden sm:inline">·</span>
+                        <span className="font-mono text-[10px] px-1.5 py-0.5 rounded bg-white border border-slate-200 text-slate-600 whitespace-nowrap">
                           UAN: {worker.eShramUan ? worker.eShramUan.replace(/(\d{4})-(\d{4})-(\d{4})/, '$1-XXXX-$3') : 'XXXX-XXXX-3821'}
                         </span>
                       </div>
 
-                      <div className="flex items-center justify-between text-[10px] text-slate-500 pt-0.5 border-t border-slate-200/60">
-                        <span className="text-emerald-700 font-medium">
+                      <div className="flex items-center justify-between gap-x-2 text-[10px] text-slate-500 pt-0.5 border-t border-slate-200/60 flex-wrap">
+                        <span className="text-emerald-700 font-medium whitespace-nowrap">
                           Police Verification: Cleared ✓ (Apr 2026)
                         </span>
-                        <span className="truncate ml-1">
+                        <span className="text-slate-300">·</span>
+                        <span className="truncate">
                           Vouched: <strong className="text-slate-700 font-medium">{worker.cooperativeName}</strong>
                         </span>
                       </div>
@@ -633,7 +635,7 @@ export default function ServiceDiscovery() {
                   </div>
 
                   {/* Pricing & Direct Booking Buttons */}
-                  <div className="pt-2.5 border-t border-slate-100 flex items-center justify-between gap-2">
+                  <div className="pt-2.5 border-t border-slate-100 flex items-center justify-between gap-2 flex-wrap sm:flex-nowrap">
                     <div>
                       {isEmergency ? (
                         <div>
@@ -664,7 +666,7 @@ export default function ServiceDiscovery() {
                     <div className="flex items-center gap-2">
                       <a
                         href={`tel:${worker.phone}`}
-                        className="h-9 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold flex items-center gap-1 transition-colors"
+                        className="min-h-[44px] px-3.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold flex items-center gap-1.5 transition-colors"
                         aria-label={`Call ${worker.name}`}
                       >
                         <Phone className="w-3.5 h-3.5" />
@@ -673,7 +675,7 @@ export default function ServiceDiscovery() {
 
                       <button
                         onClick={() => setBookingWorker(worker)}
-                        className={`h-9 px-3.5 rounded-xl text-white text-xs font-semibold flex items-center gap-1.5 shadow-2xs transition-all ${
+                        className={`min-h-[44px] px-4 rounded-xl text-white text-xs font-semibold flex items-center gap-1.5 shadow-2xs transition-all ${
                           isEmergency
                             ? 'bg-rose-600 hover:bg-rose-700 shadow-rose-600/20'
                             : 'bg-blue-600 hover:bg-blue-700'

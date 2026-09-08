@@ -157,7 +157,7 @@ export default function HomePage() {
           </div>
 
           <div className="space-y-3">
-            <h1 className="text-3xl sm:text-5xl font-extrabold text-slate-900 tracking-tight leading-[1.15]">
+            <h1 className="text-3xl sm:text-5xl font-extrabold text-slate-900 tracking-tight leading-[1.15] break-words text-balance">
               {language === 'en' ? (
                 <>
                   90% Payout to Workers. <br className="hidden sm:block" />
@@ -198,7 +198,7 @@ export default function HomePage() {
             <div className="text-xs font-bold uppercase tracking-wider text-slate-400">
               {t('popularServices')}
             </div>
-            <div className="flex sm:grid sm:grid-cols-5 gap-2.5 overflow-x-auto no-scrollbar pb-1 -mx-2 px-2 sm:mx-0 sm:px-0">
+            <div className="flex sm:grid sm:grid-cols-5 gap-2.5 overflow-x-auto no-scrollbar pb-1 -mx-2 px-2 sm:mx-0 sm:px-0 snap-x snap-mandatory">
               {QUICK_CATEGORIES.map((cat) => {
                 const Icon = cat.icon;
                 const catLabel = language === 'hi' ? cat.hindi : language === 'kn' ? cat.kannada : language === 'ta' ? cat.tamil : cat.name;
@@ -206,7 +206,7 @@ export default function HomePage() {
                   <Link
                     key={cat.id}
                     href={`/services?category=${cat.id}`}
-                    className={`min-w-[130px] sm:min-w-0 flex-1 p-3 rounded-2xl border transition-all flex flex-col items-center sm:items-start justify-between gap-2 text-center sm:text-left shrink-0 ${cat.color}`}
+                    className={`min-w-[130px] sm:min-w-0 flex-1 p-3 rounded-2xl border transition-all flex flex-col items-center sm:items-start justify-between gap-2 text-center sm:text-left shrink-0 snap-start ${cat.color}`}
                   >
                     <div className="w-9 h-9 rounded-xl bg-white/80 flex items-center justify-center shadow-2xs">
                       <Icon className="w-4 h-4" />
@@ -228,43 +228,43 @@ export default function HomePage() {
       {/* 1.5 COMPACT 4-STAT COOPERATIVE IMPACT STRIP */}
       {/* -------------------------------------------------------------------- */}
       <section className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
-        <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-2xs flex items-center gap-3.5">
-          <div className="w-11 h-11 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center font-bold shrink-0">
+        <div className="bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200/80 shadow-2xs flex flex-col sm:flex-row items-start sm:items-center gap-2.5 sm:gap-3.5">
+          <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center font-bold shrink-0">
             <Building2 className="w-5 h-5" />
           </div>
-          <div>
+          <div className="min-w-0">
             <div className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">44,859+</div>
-            <div className="text-xs text-slate-500 font-medium">{t('statsCoops')}</div>
+            <div className="text-xs text-slate-500 font-medium truncate">{t('statsCoops')}</div>
           </div>
         </div>
 
-        <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-2xs flex items-center gap-3.5">
-          <div className="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold shrink-0">
+        <div className="bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200/80 shadow-2xs flex flex-col sm:flex-row items-start sm:items-center gap-2.5 sm:gap-3.5">
+          <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold shrink-0">
             <Wallet className="w-5 h-5" />
           </div>
-          <div>
+          <div className="min-w-0">
             <div className="text-xl sm:text-2xl font-black text-emerald-600 tracking-tight">90%</div>
-            <div className="text-xs text-slate-500 font-medium">{t('statsRetention')}</div>
+            <div className="text-xs text-slate-500 font-medium truncate">{t('statsRetention')}</div>
           </div>
         </div>
 
-        <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-2xs flex items-center gap-3.5">
-          <div className="w-11 h-11 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center font-bold shrink-0">
+        <div className="bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200/80 shadow-2xs flex flex-col sm:flex-row items-start sm:items-center gap-2.5 sm:gap-3.5">
+          <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center font-bold shrink-0">
             <HeartHandshake className="w-5 h-5" />
           </div>
-          <div>
+          <div className="min-w-0">
             <div className="text-xl sm:text-2xl font-black text-amber-600 tracking-tight">₹1.45 Cr+</div>
-            <div className="text-xs text-slate-500 font-medium">{t('statsCorpus')}</div>
+            <div className="text-xs text-slate-500 font-medium truncate">{t('statsCorpus')}</div>
           </div>
         </div>
 
-        <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-2xs flex items-center gap-3.5">
-          <div className="w-11 h-11 rounded-xl bg-indigo-50 text-indigo-700 flex items-center justify-center font-bold shrink-0">
+        <div className="bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200/80 shadow-2xs flex flex-col sm:flex-row items-start sm:items-center gap-2.5 sm:gap-3.5">
+          <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-indigo-50 text-indigo-700 flex items-center justify-center font-bold shrink-0">
             <MapPin className="w-5 h-5" />
           </div>
-          <div>
+          <div className="min-w-0">
             <div className="text-xl sm:text-2xl font-black text-indigo-600 tracking-tight">5 km</div>
-            <div className="text-xs text-slate-500 font-medium">{t('statsRadius')}</div>
+            <div className="text-xs text-slate-500 font-medium truncate">{t('statsRadius')}</div>
           </div>
         </div>
       </section>
@@ -503,7 +503,7 @@ export default function HomePage() {
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {topArtisans.map((worker) => (
             <div
               key={worker.id}
@@ -525,31 +525,35 @@ export default function HomePage() {
                 </div>
               </div>
 
-              <div className="flex items-center justify-between text-xs text-slate-500 pt-1 border-t border-slate-100">
+              <div className="flex items-center gap-x-2 flex-wrap text-xs text-slate-500 pt-1 border-t border-slate-100">
                 <span className="flex items-center text-amber-600 font-semibold">
                   <Star className="w-3.5 h-3.5 fill-amber-500 text-amber-500 mr-1" />
                   {worker.rating}
                 </span>
+                <span className="text-slate-300">·</span>
                 <span>{worker.completedJobs} jobs</span>
+                <span className="text-slate-300">·</span>
                 <span className="flex items-center">
                   <MapPin className="w-3 h-3 mr-0.5 text-slate-400" />
                   {worker.locationName}
                 </span>
               </div>
 
-              <div className="p-2 rounded-xl bg-slate-50 border border-slate-200 text-[11px] space-y-1">
-                <div className="flex items-center justify-between text-slate-700">
-                  <span className="flex items-center gap-1 font-semibold text-emerald-700">
+              <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-[11px] space-y-1.5">
+                <div className="flex items-center justify-between gap-x-2 text-slate-700 flex-wrap">
+                  <span className="flex items-center gap-1 font-semibold text-emerald-700 whitespace-nowrap">
                     <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
                     <span>e-KYC: Verified ✓</span>
                   </span>
-                  <span className="font-mono text-[10px] text-slate-500">
+                  <span className="text-slate-300 hidden sm:inline">·</span>
+                  <span className="font-mono text-[10px] text-slate-500 whitespace-nowrap">
                     UAN: {worker.eShramUan ? worker.eShramUan.replace(/(\d{4})-(\d{4})-(\d{4})/, '$1-XXXX-$3') : 'XXXX-XXXX-3821'}
                   </span>
                 </div>
-                <div className="flex items-center justify-between text-[10px] text-slate-500 pt-0.5 border-t border-slate-200/50">
-                  <span className="text-emerald-700 font-medium">Police: Cleared ✓</span>
-                  <span className="truncate ml-1">{worker.cooperativeName}</span>
+                <div className="flex items-center justify-between gap-x-2 text-[10px] text-slate-500 pt-0.5 border-t border-slate-200/50 flex-wrap">
+                  <span className="text-emerald-700 font-medium whitespace-nowrap">Police: Cleared ✓</span>
+                  <span className="text-slate-300">·</span>
+                  <span className="truncate">{worker.cooperativeName}</span>
                 </div>
               </div>
 
@@ -561,10 +565,10 @@ export default function HomePage() {
 
                 <Link
                   href="/services"
-                  className="h-8 px-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold flex items-center gap-1 transition-colors"
+                  className="min-h-[44px] px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors shadow-2xs"
                 >
                   <span>{t('bookNow')}</span>
-                  <ArrowRight className="w-3 h-3" />
+                  <ArrowRight className="w-3.5 h-3.5" />
                 </Link>
               </div>
             </div>

@@ -39,7 +39,7 @@ export default function RootLayout({
               <TopAccessibleHeader />
 
               {/* Main Content Viewport */}
-              <main className="flex-1 w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-24 md:pb-12">
+              <main className="flex-1 w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-24 lg:pb-12">
                 {children}
               </main>
 
