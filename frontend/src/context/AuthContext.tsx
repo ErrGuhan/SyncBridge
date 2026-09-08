@@ -134,6 +134,14 @@ interface AuthContextType {
   isLoading: boolean;
   loginAsDemoUser: (role: UserRole) => void;
   loginWithSupabase: (email: string, password: string, role?: UserRole) => Promise<{ success: boolean; error?: string }>;
+  loginWithPhoneOtp: (
+    phone: string, 
+    otp: string, 
+    targetRole: 'CUSTOMER' | 'WORKER',
+    userDetails?: { name?: string; trade?: string; cooperativeName?: string }
+  ) => Promise<{ success: boolean; error?: string }>;
+  verifyAdminPassword: (identifier: string, password: string) => Promise<{ success: boolean; maskedPhone?: string; error?: string }>;
+  loginAdminWith2FA: (identifier: string, otp: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => void;
   getPortalUrlForRole: (role: UserRole) => string;
 }
@@ -257,6 +265,128 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const loginWithPhoneOtp = async (
+    phone: string,
+    otp: string,
+    targetRole: 'CUSTOMER' | 'WORKER',
+    userDetails?: { name?: string; trade?: string; cooperativeName?: string }
+  ): Promise<{ success: boolean; error?: string }> => {
+    setIsLoading(true);
+    try {
+      const cleanPhone = phone.replace(/\D/g, '');
+      if (cleanPhone.length < 10) {
+        return { success: false, error: 'Please enter a valid 10-digit mobile number.' };
+      }
+
+      const cleanOtp = otp.trim();
+      if (cleanOtp.length !== 6) {
+        return { success: false, error: 'Please enter the 6-digit SMS verification OTP.' };
+      }
+
+      let authenticatedUser: AuthUser;
+
+      if (targetRole === 'CUSTOMER') {
+        if (cleanPhone.endsWith('44552')) {
+          authenticatedUser = DEMO_PERSONAS.CUSTOMER.user;
+        } else {
+          authenticatedUser = {
+            id: `usr-cust-${cleanPhone.slice(-6)}`,
+            email: `customer.${cleanPhone.slice(-4)}@syncbridge.in`,
+            name: userDetails?.name?.trim() || `Customer ${cleanPhone.slice(-4)}`,
+            role: 'CUSTOMER',
+            phone: `+91 ${cleanPhone.slice(-10)}`
+          };
+        }
+      } else {
+        if (cleanPhone.endsWith('11221')) {
+          authenticatedUser = DEMO_PERSONAS.WORKER.user;
+        } else {
+          authenticatedUser = {
+            id: `wrk-${cleanPhone.slice(-6)}`,
+            email: `worker.${cleanPhone.slice(-4)}@coop.in`,
+            name: userDetails?.name?.trim() || `Tradesperson ${cleanPhone.slice(-4)}`,
+            role: 'WORKER',
+            phone: `+91 ${cleanPhone.slice(-10)}`,
+            trade: userDetails?.trade || 'Master Electrician',
+            cooperativeId: 'coop-01',
+            cooperativeName: userDetails?.cooperativeName || 'Vishwa Karma Labour Society'
+          };
+        }
+      }
+
+      const mockToken = `sb_jwt_otp_${targetRole.toLowerCase()}_${Date.now()}`;
+      localStorage.setItem(STORAGE_KEY_USER, JSON.stringify(authenticatedUser));
+      sessionStorage.setItem(STORAGE_KEY_TOKEN, mockToken);
+      document.cookie = `syncbridge_role=${targetRole}; path=/; SameSite=Lax`;
+      document.cookie = `syncbridge_auth=${mockToken}; path=/; SameSite=Lax`;
+      window.dispatchEvent(new Event(AUTH_STORE_EVENT));
+
+      return { success: true };
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'OTP login failed';
+      return { success: false, error: msg };
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const verifyAdminPassword = async (
+    identifier: string,
+    password: string
+  ): Promise<{ success: boolean; maskedPhone?: string; error?: string }> => {
+    setIsLoading(true);
+    try {
+      const id = identifier.trim().toLowerCase();
+      if (!id) {
+        return { success: false, error: 'Please enter your Admin Email or Society ID.' };
+      }
+      if (!password || password.length < 6) {
+        return { success: false, error: 'Password must be at least 6 characters.' };
+      }
+
+      const isKnownAdmin = id.includes('admin') || id.includes('kalyan') || id.includes('patil') || id.includes('secretary');
+      if (!isKnownAdmin && password !== 'Admin@2026') {
+        return { success: false, error: 'Unauthorized administrator credentials.' };
+      }
+
+      return {
+        success: true,
+        maskedPhone: '+91 98201 ••••• (Secretary Anand Patil)'
+      };
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const loginAdminWith2FA = async (
+    identifier: string,
+    otp: string
+  ): Promise<{ success: boolean; error?: string }> => {
+    setIsLoading(true);
+    try {
+      const cleanOtp = otp.trim();
+      if (cleanOtp.length !== 6) {
+        return { success: false, error: 'Please enter the 6-digit 2FA confirmation code.' };
+      }
+
+      const adminUser: AuthUser = DEMO_PERSONAS.SOCIETY_SECRETARY.user;
+      const adminToken = `sb_jwt_admin_2fa_${Date.now()}`;
+
+      localStorage.setItem(STORAGE_KEY_USER, JSON.stringify(adminUser));
+      sessionStorage.setItem(STORAGE_KEY_TOKEN, adminToken);
+      document.cookie = `syncbridge_role=SOCIETY_SECRETARY; path=/; SameSite=Lax`;
+      document.cookie = `syncbridge_auth=${adminToken}; path=/; SameSite=Lax`;
+      window.dispatchEvent(new Event(AUTH_STORE_EVENT));
+
+      return { success: true };
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : '2FA verification failed';
+      return { success: false, error: msg };
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const logout = () => {
     try {
       supabase.auth.signOut();
@@ -287,6 +417,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         isLoading,
         loginAsDemoUser,
         loginWithSupabase,
+        loginWithPhoneOtp,
+        verifyAdminPassword,
+        loginAdminWith2FA,
         logout,
         getPortalUrlForRole
       }}

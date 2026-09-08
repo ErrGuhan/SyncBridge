@@ -59,20 +59,19 @@ export function middleware(req: NextRequest) {
   const roleCookie = req.cookies.get('syncbridge_role')?.value;
   const tokenCookie = req.cookies.get('syncbridge_auth')?.value;
 
-  // If no auth signal at all: redirect to login
+  // If no auth signal at all: redirect to role-specific login
   if (!roleCookie && !tokenCookie) {
-    // In demo mode, portals are accessible for judge walkthroughs.
-    // To enforce hard blocking, uncomment the redirect below:
-    // const loginUrl = req.nextUrl.clone();
-    // loginUrl.pathname = '/auth/login';
-    // loginUrl.searchParams.set('redirect', pathname);
-    // return NextResponse.redirect(loginUrl);
-
-    // For now: allow unauthenticated access (demo mode) but set a header
-    // so server components can detect demo mode
-    const response = NextResponse.next();
-    response.headers.set('x-syncbridge-demo-mode', 'true');
-    return response;
+    const loginUrl = req.nextUrl.clone();
+    loginUrl.pathname = '/auth/login';
+    if (pathname.startsWith('/portal/worker')) {
+      loginUrl.searchParams.set('role', 'worker');
+    } else if (pathname.startsWith('/portal/admin')) {
+      loginUrl.searchParams.set('role', 'admin');
+    } else if (pathname.startsWith('/portal/customer')) {
+      loginUrl.searchParams.set('role', 'customer');
+    }
+    loginUrl.searchParams.set('redirect', pathname);
+    return NextResponse.redirect(loginUrl);
   }
 
   const userRole = roleCookie?.toUpperCase();

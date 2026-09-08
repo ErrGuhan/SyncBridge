@@ -65,7 +65,34 @@ export default function BottomNavigation() {
 
   const portalItem = getRolePortalItem();
 
-  const navItems = [
+  const publicNavItems = [
+    {
+      label: t('navHome'),
+      href: '/',
+      icon: Home,
+      isActive: pathname === '/'
+    },
+    {
+      label: t('navServices'),
+      href: '/services',
+      icon: Search,
+      isActive: pathname.startsWith('/services')
+    },
+    {
+      label: t('navOrders'),
+      href: '/bookings',
+      icon: ClipboardList,
+      isActive: pathname.startsWith('/bookings')
+    },
+    {
+      label: t('navSignIn'),
+      href: '/auth/login',
+      icon: User,
+      isActive: pathname.startsWith('/auth')
+    }
+  ];
+
+  const authenticatedNavItems = [
     {
       label: t('navHome'),
       href: '/',
@@ -86,12 +113,14 @@ export default function BottomNavigation() {
     },
     portalItem,
     {
-      label: isAuthenticated ? (t('navProfile') || 'Account') : t('navSignIn'),
+      label: t('navProfile') || 'Account',
       href: '/auth/login',
       icon: LayoutGrid,
       isActive: pathname.startsWith('/auth')
     }
   ];
+
+  const navItems = isAuthenticated ? authenticatedNavItems : publicNavItems;
 
   return (
     <nav
