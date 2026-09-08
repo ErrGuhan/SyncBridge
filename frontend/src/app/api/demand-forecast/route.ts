@@ -3,7 +3,27 @@ import { forecastNextWeekDemand, generateSampleHistoricalBookings, HistoricalBoo
 import { supabaseServer } from '@/lib/supabaseServer';
 import { GoogleGenAI } from '@google/genai';
 
+interface CachedForecastData {
+  payload: any;
+  timestamp: number;
+}
+
+const FORECAST_CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+let forecastCache: CachedForecastData | null = null;
+
 export async function GET() {
+  const now = Date.now();
+
+  // Return cached forecast if fresh
+  if (forecastCache && now - forecastCache.timestamp < FORECAST_CACHE_TTL_MS) {
+    return NextResponse.json(forecastCache.payload, {
+      headers: {
+        'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600',
+        'X-Cache': 'HIT'
+      }
+    });
+  }
+
   try {
     let historicalData: HistoricalBookingInput[] = [];
     let isLiveDb = false;
@@ -74,7 +94,7 @@ ${JSON.stringify(topSurges.map(s => ({
       }
     }
 
-    return NextResponse.json({
+    const responsePayload = {
       success: true,
       data: forecast,
       aiNarrative,
@@ -85,6 +105,19 @@ ${JSON.stringify(topSurges.map(s => ({
         generatedAt: new Date().toISOString(),
         isAiEnhanced: !!aiNarrative,
         runtime: 'Vercel Serverless / Edge Function'
+      }
+    };
+
+    // Store in memory cache
+    forecastCache = {
+      payload: responsePayload,
+      timestamp: now
+    };
+
+    return NextResponse.json(responsePayload, {
+      headers: {
+        'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600',
+        'X-Cache': 'MISS'
       }
     });
   } catch (error: unknown) {

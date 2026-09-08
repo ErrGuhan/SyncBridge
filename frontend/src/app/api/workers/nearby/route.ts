@@ -28,6 +28,19 @@ function haversineKm(lat1: number, lng1: number, lat2: number, lng2: number): nu
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
+// In-memory cache for nearby workers
+interface CachedNearbyData {
+  payload: any;
+  timestamp: number;
+}
+const NEARBY_CACHE_TTL_MS = 30 * 1000; // 30 seconds
+const nearbyCache = new Map<string, CachedNearbyData>();
+
+// PostGIS RPC probe status memoization (avoid 300ms error penalty on every call)
+let postGisCheckTime = 0;
+let postGisAvailable = false;
+const POSTGIS_CHECK_INTERVAL_MS = 5 * 60 * 1000; // Recheck every 5 mins
+
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
 
@@ -43,33 +56,52 @@ export async function GET(req: NextRequest) {
     );
   }
 
+  // Check in-memory cache (coordinate rounded to ~1km resolution for instant neighborhood hits)
+  const cacheKey = `${lat.toFixed(2)}_${lng.toFixed(2)}_${category}_${radiusKm}`;
+  const now = Date.now();
+  const cached = nearbyCache.get(cacheKey);
+
+  if (cached && now - cached.timestamp < NEARBY_CACHE_TTL_MS) {
+    return NextResponse.json(cached.payload, {
+      headers: {
+        'Cache-Control': 'public, s-maxage=30, stale-while-revalidate=60',
+        'X-Cache': 'HIT'
+      }
+    });
+  }
+
   try {
     // -----------------------------------------------------------------------
     // Strategy 1: PostGIS ST_DWithin query
-    // Requires PostGIS extension + geography column on WorkerProfile.
-    // See seed-syncbridge.sql Step 8 for the column setup.
     // -----------------------------------------------------------------------
     let workers: WorkerRow[] | null = null;
     let usePostGIS = false;
 
-    try {
-      const radiusMeters = radiusKm * 1000;
-      const { data: gisData, error: gisError } = await supabaseServer.rpc(
-        'get_nearby_workers',
-        {
-          customer_lat: lat,
-          customer_lng: lng,
-          radius_meters: radiusMeters,
-          category_slug: category || null
-        }
-      );
+    // Only attempt PostGIS if known available or check interval expired
+    if (postGisAvailable || now - postGisCheckTime > POSTGIS_CHECK_INTERVAL_MS) {
+      try {
+        postGisCheckTime = now;
+        const radiusMeters = radiusKm * 1000;
+        const { data: gisData, error: gisError } = await supabaseServer.rpc(
+          'get_nearby_workers',
+          {
+            customer_lat: lat,
+            customer_lng: lng,
+            radius_meters: radiusMeters,
+            category_slug: category || null
+          }
+        );
 
-      if (!gisError && Array.isArray(gisData) && gisData.length >= 0) {
-        workers = gisData as WorkerRow[];
-        usePostGIS = true;
+        if (!gisError && Array.isArray(gisData) && gisData.length >= 0) {
+          workers = gisData as WorkerRow[];
+          usePostGIS = true;
+          postGisAvailable = true;
+        } else {
+          postGisAvailable = false;
+        }
+      } catch {
+        postGisAvailable = false;
       }
-    } catch {
-      // PostGIS function not yet deployed — fall through to Haversine fallback
     }
 
     // -----------------------------------------------------------------------
@@ -117,14 +149,15 @@ export async function GET(req: NextRequest) {
 
       const { data: rawWorkers, error: dbError } = await query.limit(100);
 
-      if (dbError) {
-        console.warn('[nearby workers] Supabase query error, using mock fallback:', dbError.message);
-        return NextResponse.json(getMockFallback(lat, lng, category), { status: 200 });
-      }
-
-      if (!rawWorkers || rawWorkers.length === 0) {
-        // DB empty — return seeded mock data so UI is never blank during demo
-        return NextResponse.json(getMockFallback(lat, lng, category), { status: 200 });
+      if (dbError || !rawWorkers || rawWorkers.length === 0) {
+        const fallbackPayload = getMockFallback(lat, lng, category);
+        nearbyCache.set(cacheKey, { payload: fallbackPayload, timestamp: now });
+        return NextResponse.json(fallbackPayload, {
+          headers: {
+            'Cache-Control': 'public, s-maxage=30, stale-while-revalidate=60',
+            'X-Cache': 'MISS'
+          }
+        });
       }
 
       // Compute Haversine distance and filter by worker's service radius
@@ -143,19 +176,35 @@ export async function GET(req: NextRequest) {
     // Format response
     const formatted = (workers ?? []).map(formatWorker);
 
-    return NextResponse.json({
+    const responsePayload = {
       success: true,
       count: formatted.length,
       radiusKm,
       customerLocation: { lat, lng },
       geoMethod: usePostGIS ? 'POSTGIS_ST_DWITHIN' : 'HAVERSINE_JS',
       data: formatted
+    };
+
+    // Store in memory cache
+    nearbyCache.set(cacheKey, { payload: responsePayload, timestamp: now });
+
+    return NextResponse.json(responsePayload, {
+      headers: {
+        'Cache-Control': 'public, s-maxage=30, stale-while-revalidate=60',
+        'X-Cache': 'MISS'
+      }
     });
 
   } catch (err: unknown) {
     console.error('[nearby workers] Unexpected error:', err);
-    // Always return something usable — never a blank screen during demo
-    return NextResponse.json(getMockFallback(lat, lng, category), { status: 200 });
+    const fallbackPayload = getMockFallback(lat, lng, category);
+    nearbyCache.set(cacheKey, { payload: fallbackPayload, timestamp: now });
+    return NextResponse.json(fallbackPayload, {
+      headers: {
+        'Cache-Control': 'public, s-maxage=30, stale-while-revalidate=60',
+        'X-Cache': 'FALLBACK'
+      }
+    });
   }
 }
 

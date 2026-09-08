@@ -407,23 +407,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return DEMO_PERSONAS[r]?.targetPath || '/portal/customer';
   };
 
+  const contextValue = React.useMemo(() => ({
+    user,
+    role: user?.role || 'CUSTOMER',
+    token: rawToken,
+    isAuthenticated: Boolean(user),
+    isLoading,
+    loginAsDemoUser,
+    loginWithSupabase,
+    loginWithPhoneOtp,
+    verifyAdminPassword,
+    loginAdminWith2FA,
+    logout,
+    getPortalUrlForRole
+  }), [user, rawToken, isLoading]);
+
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        role: user?.role || 'CUSTOMER',
-        token: rawToken,
-        isAuthenticated: Boolean(user),
-        isLoading,
-        loginAsDemoUser,
-        loginWithSupabase,
-        loginWithPhoneOtp,
-        verifyAdminPassword,
-        loginAdminWith2FA,
-        logout,
-        getPortalUrlForRole
-      }}
-    >
+    <AuthContext.Provider value={contextValue}>
       {children}
     </AuthContext.Provider>
   );

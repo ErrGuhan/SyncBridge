@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
 import { 
   BookingItem, 
   WorkerProfile, 
@@ -541,31 +541,41 @@ export function CoopDataProvider({ children }: { children: React.ReactNode }) {
     }));
   };
 
+  const contextValue = useMemo(() => ({
+    orders,
+    workers,
+    verificationQueue,
+    toolInventory,
+    arbitrationCases,
+    workerWallets,
+    societyTreasury,
+    welfareFund,
+    latestCreatedOrder,
+    createOrder,
+    acceptOrder,
+    completeOrder,
+    withdrawWorkerWallet,
+    submitWorkerApplication,
+    approveWorker,
+    rejectWorker,
+    checkOutTool,
+    returnTool,
+    fileDispute,
+    voteArbitration
+  }), [
+    orders,
+    workers,
+    verificationQueue,
+    toolInventory,
+    arbitrationCases,
+    workerWallets,
+    societyTreasury,
+    welfareFund,
+    latestCreatedOrder
+  ]);
+
   return (
-    <CoopDataContext.Provider
-      value={{
-        orders,
-        workers,
-        verificationQueue,
-        toolInventory,
-        arbitrationCases,
-        workerWallets,
-        societyTreasury,
-        welfareFund,
-        latestCreatedOrder,
-        createOrder,
-        acceptOrder,
-        completeOrder,
-        withdrawWorkerWallet,
-        submitWorkerApplication,
-        approveWorker,
-        rejectWorker,
-        checkOutTool,
-        returnTool,
-        fileDispute,
-        voteArbitration
-      }}
-    >
+    <CoopDataContext.Provider value={contextValue}>
       {children}
     </CoopDataContext.Provider>
   );

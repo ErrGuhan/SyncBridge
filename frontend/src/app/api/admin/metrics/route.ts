@@ -1,12 +1,33 @@
 /**
  * /api/admin/metrics
  * GET: Aggregated cooperative metrics computed from Supabase Payment & Booking tables
+ * Performance Optimized: In-memory TTL cache + concurrent Promise.all queries + HTTP Cache-Control
  */
 
 import { NextResponse } from 'next/server';
 import { supabaseServer } from '@/lib/supabaseServer';
 
+interface CachedMetricsData {
+  payload: any;
+  timestamp: number;
+}
+
+const CACHE_TTL_MS = 60 * 1000; // 60 seconds
+let memoryCache: CachedMetricsData | null = null;
+
 export async function GET() {
+  const now = Date.now();
+
+  // Return cached result if fresh
+  if (memoryCache && now - memoryCache.timestamp < CACHE_TTL_MS) {
+    return NextResponse.json(memoryCache.payload, {
+      headers: {
+        'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=120',
+        'X-Cache': 'HIT'
+      }
+    });
+  }
+
   try {
     let totalWorkers = 48;
     let activeWorkers = 42;
@@ -17,26 +38,35 @@ export async function GET() {
     let isDbConnected = false;
 
     try {
-      // 1. Worker Profile counts
-      const { count: wCount } = await supabaseServer
-        .from('WorkerProfile')
-        .select('*', { count: 'exact', head: true });
+      // Execute all 4 queries concurrently with 1.2s timeout to prevent slow network stalls
+      const dbPromise = Promise.all([
+        supabaseServer
+          .from('WorkerProfile')
+          .select('*', { count: 'exact', head: true }),
+        supabaseServer
+          .from('WorkerProfile')
+          .select('*', { count: 'exact', head: true })
+          .eq('isAvailable', true),
+        supabaseServer
+          .from('WorkerProfile')
+          .select('*', { count: 'exact', head: true })
+          .eq('verificationStatus', 'PENDING'),
+        supabaseServer
+          .from('Payment')
+          .select('workerAmount, coopAmount, welfareAmount, totalAmount, status')
+          .eq('status', 'PAID_OUT')
+      ]);
 
-      const { count: aCount } = await supabaseServer
-        .from('WorkerProfile')
-        .select('*', { count: 'exact', head: true })
-        .eq('isAvailable', true);
+      const timeoutPromise = new Promise<never>((_, reject) => 
+        setTimeout(() => reject(new Error('Supabase query timeout')), 1200)
+      );
 
-      const { count: pCount } = await supabaseServer
-        .from('WorkerProfile')
-        .select('*', { count: 'exact', head: true })
-        .eq('verificationStatus', 'PENDING');
+      const [wRes, aRes, pRes, payRes] = await Promise.race([dbPromise, timeoutPromise]);
 
-      // 2. Payments aggregation
-      const { data: payments } = await supabaseServer
-        .from('Payment')
-        .select('workerAmount, coopAmount, welfareAmount, totalAmount, status')
-        .eq('status', 'PAID_OUT');
+      const wCount = wRes.count;
+      const aCount = aRes.count;
+      const pCount = pRes.count;
+      const payments = payRes.data;
 
       if (wCount !== null && wCount > 0) {
         totalWorkers = wCount;
@@ -64,7 +94,7 @@ export async function GET() {
       { month: 'Mar 2026', gross: 1120000, workerPayout: 1008000, coopFee: 56000, welfare: 56000 }
     ];
 
-    return NextResponse.json({
+    const responsePayload = {
       success: true,
       source: isDbConnected ? 'SUPABASE_DB' : 'MOCK_SEEDED',
       metrics: {
@@ -78,6 +108,19 @@ export async function GET() {
         totalPatronageRaw: workerPayoutSum,
         completedBookings: completedBookingsCount,
         monthlyBreakdown
+      }
+    };
+
+    // Update memory cache
+    memoryCache = {
+      payload: responsePayload,
+      timestamp: now
+    };
+
+    return NextResponse.json(responsePayload, {
+      headers: {
+        'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=120',
+        'X-Cache': 'MISS'
       }
     });
 

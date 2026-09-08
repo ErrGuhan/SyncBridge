@@ -268,23 +268,25 @@ function getServerLangSnapshot(): Language {
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const language = React.useSyncExternalStore<Language>(subscribeToLang, getStoredLangSnapshot, getServerLangSnapshot);
 
-  const setLanguage = (lang: Language) => {
+  const setLanguage = React.useCallback((lang: Language) => {
     try {
       localStorage.setItem('syncbridge_lang', lang);
       window.dispatchEvent(new Event(LANG_STORE_EVENT));
     } catch {
       // ignore
     }
-  };
+  }, []);
 
-  const t = (key: string): string => {
+  const t = React.useCallback((key: string): string => {
     const item = translations[key];
     if (!item) return key;
     return item[language] || item.en || key;
-  };
+  }, [language]);
+
+  const value = React.useMemo(() => ({ language, setLanguage, t }), [language, setLanguage, t]);
 
   return (
-    <LanguageContext.Provider value={{ language, setLanguage, t }}>
+    <LanguageContext.Provider value={value}>
       {children}
     </LanguageContext.Provider>
   );
