@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useLanguage } from '../context/LanguageContext';
@@ -14,8 +14,6 @@ import {
   Phone, 
   ShieldCheck, 
   ArrowRight, 
-  ChevronLeft, 
-  ChevronRight, 
   Droplets, 
   Zap, 
   Sparkles, 
@@ -120,15 +118,6 @@ export default function ServiceDiscovery() {
 
   const setSelectedCategory = (cat: string) => setCustomCategory(cat);
   const setSearchQuery = (q: string) => setCustomQuery(q);
-
-  const carouselRef = useRef<HTMLDivElement>(null);
-
-  const scrollCarousel = (direction: 'left' | 'right') => {
-    if (carouselRef.current) {
-      const scrollAmount = direction === 'left' ? -280 : 280;
-      carouselRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-    }
-  };
 
   // Trigger browser Geolocation
   const requestLiveGps = () => {
@@ -329,10 +318,10 @@ export default function ServiceDiscovery() {
       )}
 
       {/* -------------------------------------------------------------------- */}
-      {/* 1. SEARCH & HEADING */}
+      {/* 1. SEARCH & CONTROLS (UNIFIED, CLEAN TOP BAR) */}
       {/* -------------------------------------------------------------------- */}
       <div className="space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
               {t('servicesTitle')}
@@ -342,264 +331,178 @@ export default function ServiceDiscovery() {
             </p>
           </div>
 
-          <div className="text-xs font-semibold text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-full border border-emerald-200 self-start sm:self-auto flex items-center gap-1.5">
+          <div className="text-xs font-semibold text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-full border border-emerald-200 self-start sm:self-auto flex items-center gap-1.5 shrink-0">
             <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-            <span>90% of fee paid directly to artisan</span>
+            <span>90% paid directly to artisan</span>
           </div>
         </div>
 
-        {/* GPS Geofenced Location Strip */}
-        <div className="flex items-center justify-between bg-blue-50/80 border border-blue-200/80 rounded-xl px-3.5 py-2 text-xs text-blue-950">
-          <div className="flex items-center gap-2">
-            <span className={`w-2.5 h-2.5 rounded-full ${userLocation.isGpsActive ? 'bg-emerald-500 animate-pulse' : 'bg-blue-500'}`} />
-            <span className="font-semibold text-blue-900">
-              📍 {userLocation.label}
-            </span>
-            {isLoadingApi && (
-              <span className="text-[10px] text-blue-600 animate-pulse font-medium">
-                (GIS calculating nearby artisans...)
-              </span>
+        {/* Unified Search & GPS Bar */}
+        <div className="bg-white border border-slate-200/90 rounded-2xl shadow-xs p-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 focus-within:border-blue-600 focus-within:ring-2 focus-within:ring-blue-100 transition-all">
+          <div className="relative flex-1 flex items-center">
+            <Search className="w-5 h-5 ml-3 text-slate-400 stroke-[2] shrink-0" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search trade, artisan, or locality (e.g. Plumber, Ramesh, Indiranagar)..."
+              className="w-full py-2.5 px-3 text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 outline-none bg-transparent"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                className="px-2 py-1 text-slate-400 hover:text-slate-600 rounded-md text-xs font-semibold mr-2"
+              >
+                Clear
+              </button>
             )}
           </div>
-          <button
-            onClick={requestLiveGps}
-            disabled={isLocating}
-            className="flex items-center gap-1.5 px-2.5 py-1 bg-white hover:bg-blue-100 text-blue-700 rounded-lg font-semibold text-xs border border-blue-200 transition-colors shadow-2xs cursor-pointer"
-          >
-            <MapPin className="w-3.5 h-3.5 text-blue-600" />
-            <span>{isLocating ? 'Locating...' : 'Use My GPS'}</span>
-          </button>
-        </div>
 
-        {/* Professional Search Input Bar */}
-        <div className="relative flex items-center bg-white border border-slate-300/80 rounded-2xl shadow-xs focus-within:border-blue-600 focus-within:ring-2 focus-within:ring-blue-100 transition-all p-1.5">
-          <Search className="w-5 h-5 ml-3 text-slate-400 stroke-[2] shrink-0" />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search by trade, skill or location (e.g. Plumber, Electrician, Indiranagar, Koramangala)..."
-            className="flex-1 py-2.5 px-3 text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 outline-none bg-transparent"
-          />
-          {searchQuery && (
+          <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-700 sm:max-w-xs shrink-0">
+            <span className={`w-2 h-2 rounded-full shrink-0 ${userLocation.isGpsActive ? 'bg-emerald-500 animate-pulse' : 'bg-blue-500'}`} />
+            <span className="truncate font-medium flex-1 text-slate-800" title={userLocation.label}>
+              {userLocation.label}
+            </span>
             <button
-              onClick={() => setSearchQuery('')}
-              className="px-2 py-1 text-slate-400 hover:text-slate-600 rounded-md text-xs font-semibold mr-1"
+              onClick={requestLiveGps}
+              disabled={isLocating}
+              className="text-xs font-semibold text-blue-600 hover:text-blue-800 shrink-0 ml-1 cursor-pointer disabled:opacity-50"
             >
-              Clear
+              {isLocating ? 'Locating...' : 'GPS'}
             </button>
-          )}
+          </div>
         </div>
 
-        {/* Quick Filter Badges (Horizontal Scroll on Mobile) */}
-        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1 text-xs -mx-1 px-1">
-          <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mr-1 shrink-0">
-            Filter:
-          </span>
+        {/* Clean Trade Category Filter Chips */}
+        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1 text-xs">
           <button
             onClick={() => setSelectedCategory('all')}
-            className={`px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap shrink-0 transition-colors ${
+            className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap shrink-0 transition-all ${
               selectedCategory === 'all'
-                ? 'bg-blue-600 text-white shadow-2xs'
-                : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+                ? 'bg-slate-900 text-white shadow-xs'
+                : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-slate-900'
             }`}
           >
             All Trades ({workers.length})
           </button>
-          {professionalCategories.map((c) => (
-            <button
-              key={c.id}
-              onClick={() => setSelectedCategory(c.id)}
-              className={`px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap shrink-0 flex items-center gap-1.5 transition-colors ${
-                selectedCategory === c.id
-                  ? 'bg-blue-600 text-white shadow-2xs'
-                  : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
-              }`}
-            >
-              <span>{t(c.translationKey)}</span>
-              {isEmergency && c.isEmergencyEligible && (
-                <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse" />
-              )}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* -------------------------------------------------------------------- */}
-      {/* 2. REFINED HORIZONTAL CAROUSEL OF SERVICE CATEGORIES */}
-      {/* -------------------------------------------------------------------- */}
-      <div className="space-y-3">
-        <div className="flex items-center justify-between">
-          <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
-            Service Categories
-          </span>
-          <div className="flex items-center gap-1">
-            <button
-              onClick={() => scrollCarousel('left')}
-              className="w-8 h-8 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 flex items-center justify-center text-slate-600 shadow-2xs transition-colors"
-              aria-label="Scroll left"
-            >
-              <ChevronLeft className="w-4 h-4" />
-            </button>
-            <button
-              onClick={() => scrollCarousel('right')}
-              className="w-8 h-8 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 flex items-center justify-center text-slate-600 shadow-2xs transition-colors"
-              aria-label="Scroll right"
-            >
-              <ChevronRight className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-
-        {/* Carousel Container */}
-        <div
-          ref={carouselRef}
-          className="smooth-carousel pb-2 select-none"
-        >
-          {professionalCategories.map((cat) => {
-            const Icon = cat.icon;
-            const isSelected = selectedCategory === cat.id;
-
+          {professionalCategories.map((c) => {
+            const Icon = c.icon;
+            const isSelected = selectedCategory === c.id;
             return (
-              <div
-                key={cat.id}
-                onClick={() => setSelectedCategory(cat.id)}
-                className={`smooth-carousel-item p-4 rounded-xl border transition-all cursor-pointer group ${
+              <button
+                key={c.id}
+                onClick={() => setSelectedCategory(c.id)}
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap shrink-0 flex items-center gap-1.5 transition-all ${
                   isSelected
-                    ? 'bg-blue-50/40 border-blue-500 shadow-sm ring-1 ring-blue-500/20'
-                    : 'bg-white border-slate-200/80 hover:border-slate-300 hover:shadow-sm'
+                    ? 'bg-blue-600 text-white shadow-xs'
+                    : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-slate-900'
                 }`}
               >
-                <div className="flex items-start justify-between gap-2">
-                  <div className={`w-11 h-11 rounded-xl flex items-center justify-center border transition-all ${
-                    isSelected
-                      ? 'bg-blue-600 text-white border-blue-600 shadow-xs'
-                      : cat.colorClass
-                  }`}>
-                    <Icon className="w-5 h-5 stroke-[2]" />
-                  </div>
-                  
-                  <div className="flex flex-col items-end gap-1">
-                    <span className="text-xs font-semibold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full">
-                      {cat.startingRate}
-                    </span>
-                    {cat.isEmergencyEligible ? (
-                      <span className="text-[10px] font-bold px-1.5 py-0.2 rounded bg-rose-50 text-rose-700 border border-rose-200">
-                        ⚡ SOS Ready
-                      </span>
-                    ) : (
-                      <span className="text-[10px] text-slate-400">
-                        Standard
-                      </span>
-                    )}
-                  </div>
-                </div>
-
-                <div className="mt-3.5 space-y-0.5">
-                  <h3 className="font-bold text-slate-900 text-base leading-tight">
-                    {t(cat.translationKey)}
-                  </h3>
-                  <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed">
-                    {t(cat.descKey)}
-                  </p>
-                </div>
-
-                <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-xs">
-                  <span className="text-slate-400 font-medium">
-                    {cat.activeWorkers} verified workers
-                  </span>
-                  <span className={`font-semibold ${isSelected ? 'text-blue-600' : 'text-slate-600 group-hover:text-slate-900'}`}>
-                    {isSelected ? 'Active' : 'Select'} →
-                  </span>
-                </div>
-              </div>
+                <Icon className={`w-3.5 h-3.5 ${isSelected ? 'text-white' : 'text-slate-500'}`} />
+                <span>{t(c.translationKey)}</span>
+                {isEmergency && c.isEmergencyEligible && (
+                  <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse" />
+                )}
+              </button>
             );
           })}
         </div>
       </div>
 
       {/* -------------------------------------------------------------------- */}
-      {/* 3. VERIFIED WORKER LIST FOR SELECTED CATEGORY */}
+      {/* 2. VERIFIED WORKER LIST */}
       {/* -------------------------------------------------------------------- */}
       <div className="space-y-4">
         {isAiDirected && aiProblem && (
-          <div className="p-4 rounded-2xl bg-indigo-50 border border-indigo-200 text-indigo-900 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 animate-in fade-in">
+          <div className="p-4 rounded-2xl bg-indigo-50/80 border border-indigo-200 text-indigo-950 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 animate-in fade-in">
             <div className="flex items-center gap-2.5">
               <Sparkles className="w-5 h-5 text-indigo-600 shrink-0" />
               <div>
-                <span className="font-bold text-slate-900">AI Diagnostic Requirement: </span>
+                <span className="font-bold text-slate-900">AI Diagnostic Query: </span>
                 <span className="text-slate-700 font-medium">&quot;{aiProblem}&quot;</span>
               </div>
             </div>
-            <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-white text-indigo-700 border border-indigo-200 shrink-0 self-start sm:self-auto">
+            <span className="text-xs font-semibold px-3 py-1 rounded-full bg-white text-indigo-700 border border-indigo-200 shrink-0 self-start sm:self-auto">
               Pre-filled Diagnosis Active
             </span>
           </div>
         )}
 
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-4 border-b border-slate-200 pb-3">
+        <div className="flex items-center justify-between border-b border-slate-200/80 pb-3">
           <div className="flex items-center gap-2">
             <h3 className="text-base font-bold text-slate-900">
-              {isEmergency ? 'Emergency Priority Queue' : 'Verified Cooperative Workers'}
+              {isEmergency ? 'Emergency Priority Queue' : 'Available Artisans'}
             </h3>
-            <span className="text-xs font-semibold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full">
-              {filteredWorkers.length} available
+            <span className="text-xs font-semibold text-slate-600 bg-slate-100 px-2.5 py-0.5 rounded-full">
+              {filteredWorkers.length} near you
             </span>
           </div>
 
-          <span className="text-xs font-medium text-slate-500">
+          <span className="text-xs text-slate-500 hidden sm:inline font-medium">
             Within 5 km geofenced radius
           </span>
         </div>
 
         {filteredWorkers.length === 0 ? (
-          <div className="p-8 text-center bg-white border border-slate-200 rounded-xl">
-            <p className="font-semibold text-slate-700 text-sm">No workers found in this category.</p>
-            <p className="text-xs text-slate-400 mt-1">Try selecting another trade or clearing search filters.</p>
+          <div className="p-10 text-center bg-white border border-slate-200 rounded-2xl space-y-2">
+            <p className="font-bold text-slate-800 text-base">No artisans found matching this criteria.</p>
+            <p className="text-xs text-slate-500 max-w-sm mx-auto">
+              Try selecting another trade, expanding your search term, or switching back to &apos;All Trades&apos;.
+            </p>
+            <button
+              onClick={() => { setSelectedCategory('all'); setSearchQuery(''); }}
+              className="mt-3 px-4 py-2 rounded-xl bg-slate-900 text-white text-xs font-semibold hover:bg-slate-800 transition-colors"
+            >
+              Reset Filters
+            </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {filteredWorkers.map((worker) => {
               const isResponder = isEmergency && worker.isAvailable;
               return (
                 <div
                   key={worker.id}
-                  className={`bg-white border rounded-2xl p-4.5 shadow-xs hover:shadow-md transition-all flex flex-col justify-between gap-3.5 ${
+                  className={`bg-white border rounded-2xl p-5 shadow-xs hover:shadow-md transition-all flex flex-col justify-between gap-4 ${
                     isResponder
                       ? 'border-rose-300 ring-1 ring-rose-300/40 bg-gradient-to-b from-rose-50/20 to-white'
                       : 'border-slate-200/80 hover:border-slate-300'
                   }`}
                 >
-                  {/* Worker Identity & Trust Badges */}
+                  {/* Worker Identity & Credential Summary */}
                   <div className="space-y-3">
                     <div className="flex items-start gap-3.5">
-                      <div className="w-12 h-12 rounded-xl bg-blue-50 border border-blue-200 overflow-hidden flex-shrink-0 flex items-center justify-center text-blue-700 font-bold text-base shadow-2xs">
-                        {worker.name.charAt(0)}
+                      <div className="relative">
+                        <div className="w-13 h-13 rounded-2xl bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-800 font-bold text-lg shadow-2xs">
+                          {worker.name.charAt(0)}
+                        </div>
+                        <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-emerald-500 border-2 border-white" title="Online" />
                       </div>
 
-                      <div className="flex-1 min-w-0 space-y-0.5">
-                        <div className="flex items-center gap-1.5 flex-wrap">
-                          <span className="font-bold text-slate-900 text-sm sm:text-base truncate">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <h4 className="font-bold text-slate-900 text-base truncate">
                             {worker.name}
-                          </span>
-                          <span className="inline-flex items-center text-[10px] font-semibold bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded border border-blue-200">
-                            ✓ Co-op Member
-                          </span>
+                          </h4>
                           {isResponder && (
-                            <span className="inline-flex items-center gap-1 text-[10px] font-bold bg-rose-100 text-rose-800 border border-rose-300 px-2 py-0.5 rounded-full">
-                              <Zap className="w-2.5 h-2.5 fill-rose-600 text-rose-600" />
-                              SOS Priority Queue
+                            <span className="inline-flex items-center gap-1 text-xs font-bold bg-rose-100 text-rose-800 border border-rose-200 px-2 py-0.5 rounded-full">
+                              <Zap className="w-3 h-3 fill-rose-600 text-rose-600" />
+                              SOS Responder
                             </span>
                           )}
                         </div>
 
-                        <div className="text-xs text-slate-500 flex items-center gap-x-2 flex-wrap">
-                          <span className="flex items-center text-amber-600 font-semibold">
-                            <Star className="w-3.5 h-3.5 fill-amber-500 text-amber-500 mr-0.5" />
+                        <p className="text-xs font-semibold text-slate-600 mt-0.5">
+                          {worker.trade} • {worker.cooperativeName}
+                        </p>
+
+                        <div className="text-xs text-slate-500 flex items-center gap-x-2 mt-1.5 flex-wrap">
+                          <span className="flex items-center text-amber-600 font-bold">
+                            <Star className="w-3.5 h-3.5 fill-amber-500 text-amber-500 mr-1" />
                             {worker.rating}
                           </span>
                           <span className="text-slate-300">·</span>
-                          <span>{worker.completedJobs} jobs</span>
+                          <span>{worker.completedJobs} jobs done</span>
                           <span className="text-slate-300">·</span>
                           <span className="flex items-center font-medium text-slate-700">
                             <MapPin className="w-3 h-3 mr-0.5 text-slate-400" />
@@ -609,54 +512,41 @@ export default function ServiceDiscovery() {
                       </div>
                     </div>
 
-                    {/* e-KYC & Trade Verification Credential Strip (Deliverable #1 & Priority 2.5) */}
-                    <div className="p-2.5 rounded-xl bg-slate-50/80 border border-slate-200/80 text-[11px] space-y-1.5">
-                      <div className="flex items-center justify-between gap-x-2 text-slate-700 flex-wrap">
-                        <span className="flex items-center gap-1 font-semibold text-emerald-700 whitespace-nowrap">
-                          <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                          <span>e-KYC: Verified ✓ (Aadhaar-linked)</span>
-                        </span>
-                        <span className="text-slate-300 hidden sm:inline">·</span>
-                        <span className="font-mono text-[10px] px-1.5 py-0.5 rounded bg-white border border-slate-200 text-slate-600 whitespace-nowrap">
-                          UAN: {worker.eShramUan ? worker.eShramUan.replace(/(\d{4})-(\d{4})-(\d{4})/, '$1-XXXX-$3') : 'XXXX-XXXX-3821'}
-                        </span>
+                    {/* Consolidated Sleek Verification Badge */}
+                    <div className="px-3 py-2 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center justify-between text-xs text-slate-700">
+                      <div className="flex items-center gap-1.5 font-medium text-emerald-800">
+                        <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
+                        <span>e-Shram Verified Member · Police Cleared</span>
                       </div>
-
-                      <div className="flex items-center justify-between gap-x-2 text-[10px] text-slate-500 pt-0.5 border-t border-slate-200/60 flex-wrap">
-                        <span className="text-emerald-700 font-medium whitespace-nowrap">
-                          Police Verification: Cleared ✓ (Apr 2026)
-                        </span>
-                        <span className="text-slate-300">·</span>
-                        <span className="truncate">
-                          Vouched: <strong className="text-slate-700 font-medium">{worker.cooperativeName}</strong>
-                        </span>
-                      </div>
+                      <span className="font-mono text-[11px] text-slate-500 hidden sm:inline">
+                        UAN: {worker.eShramUan ? worker.eShramUan.replace(/(\d{4})-(\d{4})-(\d{4})/, '$1-XXXX-$3') : 'XXXX-XXXX-3821'}
+                      </span>
                     </div>
                   </div>
 
-                  {/* Pricing & Direct Booking Buttons */}
-                  <div className="pt-2.5 border-t border-slate-100 flex items-center justify-between gap-2 flex-wrap sm:flex-nowrap">
+                  {/* Pricing & Booking Actions */}
+                  <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-3 flex-wrap sm:flex-nowrap">
                     <div>
                       {isEmergency ? (
                         <div>
-                          <div className="flex items-baseline gap-1.5 flex-wrap">
-                            <span className="text-base font-bold text-rose-700">₹{worker.hourlyRate + 250}</span>
-                            <span className="text-[11px] text-slate-400 line-through">₹{worker.hourlyRate}</span>
-                            <span className="text-[10px] font-bold text-rose-700 bg-rose-100 px-1.5 py-0.2 rounded border border-rose-200">
-                              {t('emergencySurgeBadge')}
+                          <div className="flex items-baseline gap-1.5">
+                            <span className="text-lg font-bold text-rose-700">₹{worker.hourlyRate + 250}</span>
+                            <span className="text-xs text-slate-400 line-through">₹{worker.hourlyRate}</span>
+                            <span className="text-[11px] font-bold text-rose-700 bg-rose-100 px-1.5 py-0.2 rounded border border-rose-200">
+                              SOS Rate
                             </span>
                           </div>
-                          <span className="text-[10px] text-emerald-700 font-bold block">
-                            100% surge (+₹250) + 90% base = ₹{Math.round(worker.hourlyRate * 0.90) + 250} to worker
+                          <span className="text-[11px] text-emerald-700 font-semibold block">
+                            100% surge passes to worker (₹{Math.round(worker.hourlyRate * 0.90) + 250})
                           </span>
                         </div>
                       ) : (
                         <div>
                           <div className="flex items-baseline gap-1">
-                            <span className="text-base font-bold text-slate-900">₹{worker.hourlyRate}</span>
+                            <span className="text-lg font-bold text-slate-900">₹{worker.hourlyRate}</span>
                             <span className="text-xs text-slate-500">{t('perHour')}</span>
                           </div>
-                          <span className="text-[10px] text-emerald-700 font-semibold block">
+                          <span className="text-[11px] text-emerald-700 font-semibold block">
                             90% direct to worker (₹{Math.round(worker.hourlyRate * 0.90)})
                           </span>
                         </div>
@@ -666,7 +556,7 @@ export default function ServiceDiscovery() {
                     <div className="flex items-center gap-2">
                       <a
                         href={`tel:${worker.phone}`}
-                        className="min-h-[44px] px-3.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold flex items-center gap-1.5 transition-colors"
+                        className="h-10 px-3.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold flex items-center gap-1.5 transition-colors"
                         aria-label={`Call ${worker.name}`}
                       >
                         <Phone className="w-3.5 h-3.5" />
@@ -675,9 +565,9 @@ export default function ServiceDiscovery() {
 
                       <button
                         onClick={() => setBookingWorker(worker)}
-                        className={`min-h-[44px] px-4 rounded-xl text-white text-xs font-semibold flex items-center gap-1.5 shadow-2xs transition-all ${
+                        className={`h-10 px-4 rounded-xl text-white text-xs font-semibold flex items-center gap-1.5 shadow-xs transition-all ${
                           isEmergency
-                            ? 'bg-rose-600 hover:bg-rose-700 shadow-rose-600/20'
+                            ? 'bg-rose-600 hover:bg-rose-700'
                             : 'bg-blue-600 hover:bg-blue-700'
                         }`}
                       >

@@ -6,7 +6,6 @@ import { useRouter } from 'next/navigation';
 import { 
   ShieldCheck, 
   Wallet, 
-  Users, 
   HeartHandshake, 
   ArrowRight, 
   Search, 
@@ -19,61 +18,54 @@ import {
   MapPin, 
   AlertTriangle, 
   Wrench, 
-  Building2 
+  CheckCircle2,
+  Paintbrush
 } from 'lucide-react';
 import { MOCK_WORKERS } from '@/data/mockData';
 import { useLanguage } from '@/context/LanguageContext';
 
-const QUICK_CATEGORIES = [
+const QUICK_SERVICES = [
   {
     id: 'plumbing',
     name: 'Plumbing',
-    hindi: 'नलसाज़ (प्लंबर)',
-    kannada: 'ಪ್ಲಂಬರ್ (ಕೊಳವೆ ಕೆಲಸ)',
-    tamil: 'குழாய் பணி',
-    rate: '₹450/hr',
+    rate: 'From ₹450/hr',
     icon: Droplets,
-    color: 'text-blue-600 bg-blue-50 hover:bg-blue-100 border-blue-200'
+    desc: 'Leaks, fittings, pipes & heaters'
   },
   {
     id: 'electrical',
     name: 'Electrical',
-    hindi: 'इलेक्ट्रीशियन (बिजली)',
-    kannada: 'ಎಲೆಕ್ಟ್ರಿಷಿಯನ್',
-    tamil: 'மின்சார பணி',
-    rate: '₹500/hr',
+    rate: 'From ₹500/hr',
     icon: Zap,
-    color: 'text-amber-600 bg-amber-50 hover:bg-amber-100 border-amber-200'
+    desc: 'Wiring, switches, fans & fuse'
   },
   {
     id: 'cleaning',
-    name: 'Cleaning',
-    hindi: 'सफ़ाई सेवा',
-    kannada: 'ಸ್ವಚ್ಛತೆ',
-    tamil: 'சுத்தம்',
-    rate: '₹420/hr',
+    name: 'Home Cleaning',
+    rate: 'From ₹420/hr',
     icon: Sparkles,
-    color: 'text-emerald-600 bg-emerald-50 hover:bg-emerald-100 border-emerald-200'
+    desc: 'Deep cleaning, tanks & sanitization'
   },
   {
     id: 'appliance-repair',
     name: 'Appliances',
-    hindi: 'उपकरण मरम्मत',
-    kannada: 'ಉಪಕರಣ ರಿಪೇರಿ',
-    tamil: 'உபகரண பழுது',
-    rate: '₹550/hr',
+    rate: 'From ₹550/hr',
     icon: Wind,
-    color: 'text-cyan-600 bg-cyan-50 hover:bg-cyan-100 border-cyan-200'
+    desc: 'AC servicing, fridge & washing machine'
   },
   {
     id: 'carpentry',
     name: 'Carpentry',
-    hindi: 'बढ़ई (लकड़ी काम)',
-    kannada: 'ಬಡಗಿ (ಮರದ ಕೆಲಸ)',
-    tamil: 'மர வேலை',
-    rate: '₹520/hr',
+    rate: 'From ₹520/hr',
     icon: Hammer,
-    color: 'text-orange-700 bg-orange-50 hover:bg-orange-100 border-orange-200'
+    desc: 'Furniture repair, locks & doors'
+  },
+  {
+    id: 'painting',
+    name: 'Painting',
+    rate: 'From ₹480/hr',
+    icon: Paintbrush,
+    desc: 'Wall touch-ups, waterproofing'
   }
 ];
 
@@ -85,12 +77,11 @@ interface AiDiagnosticResponse {
   suggestedTools?: string[];
   diagnosisSummary: string;
   safetyCaution?: string;
-  isAiGenerated?: boolean;
 }
 
 export default function HomePage() {
   const router = useRouter();
-  const { language, t } = useLanguage();
+  const { t } = useLanguage();
   const [searchQuery, setSearchQuery] = useState('');
   
   // AI Diagnostic Quick Assistant state
@@ -133,146 +124,134 @@ export default function HomePage() {
   const topArtisans = MOCK_WORKERS.slice(0, 3);
 
   return (
-    <div className="space-y-10 animate-in fade-in duration-300">
+    <div className="space-y-12 sm:space-y-16 animate-in fade-in duration-300">
       
       {/* -------------------------------------------------------------------- */}
-      {/* 1. HERO BANNER & QUICK TRADE LAUNCHER */}
+      {/* 1. CLEAN CONSUMER HERO & SEARCH */}
       {/* -------------------------------------------------------------------- */}
-      <section className="bg-white border border-slate-200/80 rounded-3xl p-6 sm:p-10 shadow-xs relative overflow-hidden">
-        {/* Subtle ambient lighting */}
-        <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-bl from-blue-50/70 via-indigo-50/30 to-transparent rounded-full blur-3xl pointer-events-none" />
+      <section className="bg-white border border-slate-200/80 rounded-3xl p-6 sm:p-12 shadow-xs text-center max-w-5xl mx-auto space-y-6">
+        
+        {/* Cooperative Trust Pill */}
+        <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200">
+          <ShieldCheck className="w-4 h-4 text-blue-600" />
+          <span>100% Worker-Member Owned Cooperative • Zero Corporate Middlemen</span>
+        </div>
 
-        <div className="relative z-10 space-y-6 max-w-4xl mx-auto text-center sm:text-left">
-          
-          <div className="flex flex-col sm:flex-row items-center sm:items-start justify-between gap-3">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span>Democratic Worker-Member Cooperative</span>
-            </div>
+        {/* Clear, Human-Centered Heading */}
+        <div className="space-y-3 max-w-3xl mx-auto">
+          <h1 className="text-3xl sm:text-5xl font-extrabold text-slate-900 tracking-tight leading-[1.15]">
+            Trusted Home Services by <span className="text-blue-600">Certified Artisans</span>
+          </h1>
+          <p className="text-sm sm:text-base text-slate-600 max-w-2xl mx-auto leading-relaxed">
+            Book background-verified electricians, plumbers, technicians, and carpenters in minutes. Fair transparent pricing for you, 90% direct earnings for skilled workers.
+          </p>
+        </div>
 
-            <div className="hidden sm:flex items-center gap-2 text-xs font-semibold text-slate-500">
-              <ShieldCheck className="w-4 h-4 text-emerald-600" />
-              <span>100% e-Shram & Trade Verified</span>
-            </div>
+        {/* Single Modern Search Bar */}
+        <form onSubmit={handleSearchSubmit} className="max-w-2xl mx-auto">
+          <div className="flex items-center bg-slate-50 border border-slate-300 rounded-2xl p-1.5 shadow-xs focus-within:border-blue-600 focus-within:bg-white focus-within:ring-2 focus-within:ring-blue-100 transition-all">
+            <Search className="w-5 h-5 ml-3 text-slate-400 shrink-0" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search service, trade, or area (e.g. Electrician, Water leak, AC repair)..."
+              className="w-full px-3 py-2.5 bg-transparent text-sm text-slate-900 placeholder-slate-400 focus:outline-none"
+            />
+            <button
+              type="submit"
+              className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs sm:text-sm flex items-center gap-1.5 shadow-2xs transition-colors shrink-0"
+            >
+              <span>Find Artisan</span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
           </div>
+        </form>
 
-          <div className="space-y-3">
-            <h1 className="text-3xl sm:text-5xl font-extrabold text-slate-900 tracking-tight leading-[1.15] break-words text-balance">
-              {language === 'en' ? (
-                <>
-                  90% Payout to Workers. <br className="hidden sm:block" />
-                  <span className="text-blue-600">Zero Corporate Cut.</span>
-                </>
-              ) : (
-                <span>{t('heroHeadline')}</span>
-              )}
-            </h1>
-            <p className="text-sm sm:text-base text-slate-600 max-w-2xl leading-relaxed">
-              {t('heroSub')}
+        {/* Clean Service Category Cards (Unified Styling, No Rainbow Clutter) */}
+        <div className="pt-4">
+          <div className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">
+            Popular Services
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+            {QUICK_SERVICES.map((cat) => {
+              const Icon = cat.icon;
+              return (
+                <Link
+                  key={cat.id}
+                  href={`/services?category=${cat.id}`}
+                  className="p-3.5 rounded-2xl bg-slate-50 hover:bg-white border border-slate-200/80 hover:border-blue-300 hover:shadow-sm transition-all flex flex-col items-center text-center gap-2 group"
+                >
+                  <div className="w-10 h-10 rounded-xl bg-white group-hover:bg-blue-50 text-slate-700 group-hover:text-blue-600 flex items-center justify-center border border-slate-200/60 transition-colors shadow-2xs">
+                    <Icon className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <div className="font-bold text-slate-900 text-xs sm:text-sm group-hover:text-blue-600 transition-colors">
+                      {cat.name}
+                    </div>
+                    <div className="text-[11px] text-slate-500 font-medium">{cat.rate}</div>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+
+      </section>
+
+      {/* -------------------------------------------------------------------- */}
+      {/* 2. THE 3 COOPERATIVE ADVANTAGES (CLEAN BENEFIT CARDS) */}
+      {/* -------------------------------------------------------------------- */}
+      <section className="space-y-4">
+        <div className="text-center space-y-1">
+          <h2 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+            Why Choose a Cooperative Platform?
+          </h2>
+          <p className="text-xs sm:text-sm text-slate-500">
+            A sustainable, equitable alternative to predatory aggregator platforms.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          {/* Pillar 1: Fair Pricing */}
+          <div className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-xs space-y-3">
+            <div className="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold">
+              <Wallet className="w-5 h-5" />
+            </div>
+            <h3 className="text-base font-bold text-slate-900">Direct 90% Worker Pay</h3>
+            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+              Every artisan keeps 90% of what you pay. No hidden surge charges, no 30% aggregator commissions, and no arbitrary clawbacks.
             </p>
           </div>
 
-          {/* Quick Search Bar */}
-          <form onSubmit={handleSearchSubmit} className="max-w-2xl">
-            <div className="relative flex items-center bg-slate-50 border border-slate-300/80 rounded-2xl shadow-xs focus-within:border-blue-600 focus-within:ring-2 focus-within:ring-blue-100 focus-within:bg-white transition-all p-1.5">
-              <Search className="w-5 h-5 ml-2.5 sm:ml-3 text-slate-400 shrink-0" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder={t('searchPlaceholder')}
-                className="flex-1 py-2.5 px-2.5 sm:px-3 text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 outline-none bg-transparent min-w-0"
-              />
-              <button
-                type="submit"
-                className="h-10 px-3.5 sm:px-5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs sm:text-sm flex items-center gap-1.5 shadow-2xs transition-colors shrink-0"
-              >
-                <span>{t('findArtisanBtn')}</span>
-                <ArrowRight className="w-4 h-4 shrink-0" />
-              </button>
+          {/* Pillar 2: Background Verified */}
+          <div className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-xs space-y-3">
+            <div className="w-11 h-11 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center font-bold">
+              <ShieldCheck className="w-5 h-5" />
             </div>
-          </form>
+            <h3 className="text-base font-bold text-slate-900">100% Certified & Verified</h3>
+            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+              Every worker is verified via Ministry of Labour e-Shram, background-checked, and sponsored by a registered primary labour society.
+            </p>
+          </div>
 
-          {/* Quick Category Launcher Pills (Swipeable on Mobile) */}
-          <div className="space-y-2 pt-2">
-            <div className="text-xs font-bold uppercase tracking-wider text-slate-400">
-              {t('popularServices')}
+          {/* Pillar 3: Fast Local Dispatch */}
+          <div className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-xs space-y-3">
+            <div className="w-11 h-11 rounded-xl bg-indigo-50 text-indigo-700 flex items-center justify-center font-bold">
+              <MapPin className="w-5 h-5" />
             </div>
-            <div className="flex sm:grid sm:grid-cols-5 gap-2.5 overflow-x-auto no-scrollbar pb-1 -mx-2 px-2 sm:mx-0 sm:px-0 snap-x snap-mandatory">
-              {QUICK_CATEGORIES.map((cat) => {
-                const Icon = cat.icon;
-                const catLabel = language === 'hi' ? cat.hindi : language === 'kn' ? cat.kannada : language === 'ta' ? cat.tamil : cat.name;
-                return (
-                  <Link
-                    key={cat.id}
-                    href={`/services?category=${cat.id}`}
-                    className={`min-w-[130px] sm:min-w-0 flex-1 p-3 rounded-2xl border transition-all flex flex-col items-center sm:items-start justify-between gap-2 text-center sm:text-left shrink-0 snap-start ${cat.color}`}
-                  >
-                    <div className="w-9 h-9 rounded-xl bg-white/80 flex items-center justify-center shadow-2xs">
-                      <Icon className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <div className="font-bold text-slate-900 text-xs sm:text-sm">{catLabel}</div>
-                      <div className="text-[10px] text-slate-500">{cat.rate}</div>
-                    </div>
-                  </Link>
-                );
-              })}
-            </div>
-          </div>
-
-        </div>
-      </section>
-
-      {/* -------------------------------------------------------------------- */}
-      {/* 1.5 COMPACT 4-STAT COOPERATIVE IMPACT STRIP */}
-      {/* -------------------------------------------------------------------- */}
-      <section className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
-        <div className="bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200/80 shadow-2xs flex flex-col sm:flex-row items-start sm:items-center gap-2.5 sm:gap-3.5">
-          <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center font-bold shrink-0">
-            <Building2 className="w-5 h-5" />
-          </div>
-          <div className="min-w-0">
-            <div className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">44,859+</div>
-            <div className="text-xs text-slate-500 font-medium truncate">{t('statsCoops')}</div>
-          </div>
-        </div>
-
-        <div className="bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200/80 shadow-2xs flex flex-col sm:flex-row items-start sm:items-center gap-2.5 sm:gap-3.5">
-          <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold shrink-0">
-            <Wallet className="w-5 h-5" />
-          </div>
-          <div className="min-w-0">
-            <div className="text-xl sm:text-2xl font-black text-emerald-600 tracking-tight">90%</div>
-            <div className="text-xs text-slate-500 font-medium truncate">{t('statsRetention')}</div>
-          </div>
-        </div>
-
-        <div className="bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200/80 shadow-2xs flex flex-col sm:flex-row items-start sm:items-center gap-2.5 sm:gap-3.5">
-          <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center font-bold shrink-0">
-            <HeartHandshake className="w-5 h-5" />
-          </div>
-          <div className="min-w-0">
-            <div className="text-xl sm:text-2xl font-black text-amber-600 tracking-tight">₹1.45 Cr+</div>
-            <div className="text-xs text-slate-500 font-medium truncate">{t('statsCorpus')}</div>
-          </div>
-        </div>
-
-        <div className="bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200/80 shadow-2xs flex flex-col sm:flex-row items-start sm:items-center gap-2.5 sm:gap-3.5">
-          <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-indigo-50 text-indigo-700 flex items-center justify-center font-bold shrink-0">
-            <MapPin className="w-5 h-5" />
-          </div>
-          <div className="min-w-0">
-            <div className="text-xl sm:text-2xl font-black text-indigo-600 tracking-tight">5 km</div>
-            <div className="text-xs text-slate-500 font-medium truncate">{t('statsRadius')}</div>
+            <h3 className="text-base font-bold text-slate-900">5 km Local Geofencing</h3>
+            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+              Get matched instantly with qualified artisans in your immediate neighborhood for faster arrival and verified local accountability.
+            </p>
           </div>
         </div>
       </section>
 
       {/* -------------------------------------------------------------------- */}
-      {/* 2. GEMINI AI INSTANT HOME ISSUE DIAGNOSTIC BOX */}
+      {/* 3. GEMINI AI INSTANT HOME DIAGNOSTIC ASSISTANT */}
       {/* -------------------------------------------------------------------- */}
-      <section className="bg-white border border-slate-200/80 rounded-3xl p-6 sm:p-8 shadow-xs space-y-4 relative overflow-hidden">
+      <section className="bg-white border border-slate-200/80 rounded-3xl p-6 sm:p-8 shadow-xs space-y-5">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold">
@@ -280,35 +259,35 @@ export default function HomePage() {
             </div>
             <div>
               <h2 className="text-base sm:text-lg font-bold text-slate-900">
-                AI Home Diagnostic Assistant
+                Not sure what trade you need? Ask AI Assistant
               </h2>
               <p className="text-xs text-slate-500">
-                Not sure what trade you need? Describe the problem to instantly get the trade category, required tools, and fair quote estimate.
+                Describe your home maintenance issue to instantly determine the required trade, tools, and fair quote range.
               </p>
             </div>
           </div>
 
-          <span className="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200 self-start sm:self-auto">
+          <span className="text-[11px] font-semibold px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200 self-start sm:self-auto">
             Powered by Gemini AI
           </span>
         </div>
 
         {/* Input & Quick Try Chips */}
-        <div className="space-y-2.5">
+        <div className="space-y-3">
           <div className="flex flex-col sm:flex-row gap-2">
             <input
               type="text"
               value={aiPrompt}
               onChange={(e) => setAiPrompt(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleRunAiDiagnosis()}
-              placeholder="Describe your maintenance issue (e.g. Water dripping from bathroom ceiling)..."
+              placeholder="Describe your issue (e.g. Water dripping from bathroom ceiling, circuit breaker tripping)..."
               className="flex-1 px-4 py-3 rounded-xl border border-slate-300 text-slate-900 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-indigo-600 bg-slate-50/50"
             />
             <button
               type="button"
               disabled={isDiagnosing || !aiPrompt.trim()}
               onClick={() => handleRunAiDiagnosis()}
-              className="px-5 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-2xs transition-all disabled:opacity-50"
+              className="px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-2xs transition-all disabled:opacity-50"
             >
               {isDiagnosing ? (
                 <span>Analyzing Issue...</span>
@@ -322,11 +301,11 @@ export default function HomePage() {
           </div>
 
           {/* Quick Sample Prompts */}
-          <div className="flex items-center gap-1.5 flex-wrap text-xs">
-            <span className="text-[11px] text-slate-400 font-medium mr-1">Quick Try:</span>
+          <div className="flex items-center gap-2 flex-wrap text-xs">
+            <span className="text-xs text-slate-400 font-medium">Try asking:</span>
             {[
-              'Water tap leaking under sink',
-              'Circuit breaker trips when geyser starts',
+              'Water tap leaking under kitchen sink',
+              'Circuit breaker trips when water heater starts',
               'Air conditioner blowing warm air'
             ].map((p, idx) => (
               <button
@@ -336,7 +315,7 @@ export default function HomePage() {
                   setAiPrompt(p);
                   handleRunAiDiagnosis(p);
                 }}
-                className="text-[11px] px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors"
+                className="text-xs px-3 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors"
               >
                 {p}
               </button>
@@ -369,7 +348,7 @@ export default function HomePage() {
                 <strong className="text-slate-900 font-bold text-sm">
                   ₹{aiResult.fairPriceRange?.min} – ₹{aiResult.fairPriceRange?.max}
                 </strong>
-                <span className="text-slate-500 text-[11px] ml-1">({aiResult.estimatedHours} hrs standard)</span>
+                <span className="text-slate-500 text-xs ml-1">({aiResult.estimatedHours} hrs standard)</span>
               </div>
             </div>
 
@@ -387,12 +366,12 @@ export default function HomePage() {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2">
               <div className="text-xs text-slate-500 flex items-center gap-1.5 flex-wrap">
                 <Wrench className="w-3.5 h-3.5 text-indigo-600" />
-                <span>Artisan Tools: {aiResult.suggestedTools?.join(', ')}</span>
+                <span>Suggested Tools: {aiResult.suggestedTools?.join(', ')}</span>
               </div>
 
               <Link
                 href={`/services?category=${encodeURIComponent(aiResult.tradeCategory.toLowerCase())}&ai=true&desc=${encodeURIComponent(aiPrompt || aiResult.diagnosisSummary)}${aiResult.urgencyLevel === 'EMERGENCY' ? '&emergency=true' : ''}`}
-                className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs flex items-center justify-center gap-1.5 shadow-xs transition-all"
+                className="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs flex items-center justify-center gap-1.5 shadow-xs transition-all"
               >
                 <span>Book Certified {aiResult.tradeCategory}</span>
                 <ArrowRight className="w-3.5 h-3.5" />
@@ -403,94 +382,16 @@ export default function HomePage() {
       </section>
 
       {/* -------------------------------------------------------------------- */}
-      {/* 3. 90/5/5 COOPERATIVE CHARTER METRICS */}
-      {/* -------------------------------------------------------------------- */}
-      <section className="space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 pb-3">
-          <div>
-            <h2 className="text-lg sm:text-xl font-bold text-slate-900">
-              {t('coopDiffTitle')}
-            </h2>
-            <p className="text-xs text-slate-500">
-              {t('coopDiffDesc')}
-            </p>
-          </div>
-          <div className="text-xs font-semibold text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200 self-start sm:self-auto">
-            Audited Transparency Model
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {/* 90% Worker Take-Home */}
-          <div className="p-5 rounded-2xl bg-white border border-slate-200/80 hover:border-emerald-300 transition-all space-y-3 shadow-xs">
-            <div className="flex items-center justify-between">
-              <span className="text-3xl font-extrabold text-emerald-700 tracking-tight">90%</span>
-              <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center">
-                <Wallet className="w-5 h-5" />
-              </div>
-            </div>
-            <div>
-              <h3 className="text-sm font-bold text-slate-900">{t('directCompTitle')}</h3>
-              <p className="text-xs text-slate-600 mt-1 leading-relaxed">
-                {t('directCompDesc')}
-              </p>
-            </div>
-            <div className="w-full bg-emerald-100 h-2 rounded-full overflow-hidden">
-              <div className="bg-emerald-600 h-full rounded-full w-[90%]" />
-            </div>
-          </div>
-
-          {/* 5% Primary Society Reserve */}
-          <div className="p-5 rounded-2xl bg-white border border-slate-200/80 hover:border-blue-300 transition-all space-y-3 shadow-xs">
-            <div className="flex items-center justify-between">
-              <span className="text-3xl font-extrabold text-blue-700 tracking-tight">5%</span>
-              <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center">
-                <Users className="w-5 h-5" />
-              </div>
-            </div>
-            <div>
-              <h3 className="text-sm font-bold text-slate-900">{t('societyTreasuryTitle')}</h3>
-              <p className="text-xs text-slate-600 mt-1 leading-relaxed">
-                {t('societyTreasuryDesc')}
-              </p>
-            </div>
-            <div className="w-full bg-blue-100 h-2 rounded-full overflow-hidden">
-              <div className="bg-blue-600 h-full rounded-full w-[5%]" />
-            </div>
-          </div>
-
-          {/* 5% Welfare Fund */}
-          <div className="p-5 rounded-2xl bg-white border border-slate-200/80 hover:border-amber-300 transition-all space-y-3 shadow-xs">
-            <div className="flex items-center justify-between">
-              <span className="text-3xl font-extrabold text-amber-700 tracking-tight">5%</span>
-              <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center">
-                <HeartHandshake className="w-5 h-5" />
-              </div>
-            </div>
-            <div>
-              <h3 className="text-sm font-bold text-slate-900">{t('welfareShieldTitle')}</h3>
-              <p className="text-xs text-slate-600 mt-1 leading-relaxed">
-                {t('welfareShieldDesc')}
-              </p>
-            </div>
-            <div className="w-full bg-amber-100 h-2 rounded-full overflow-hidden">
-              <div className="bg-amber-600 h-full rounded-full w-[5%]" />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* -------------------------------------------------------------------- */}
-      {/* 4. FEATURED VERIFIED ARTISANS HIGHLIGHT */}
+      {/* 4. FEATURED TOP ARTISANS (CLEAN CARDS) */}
       {/* -------------------------------------------------------------------- */}
       <section className="space-y-4">
         <div className="flex items-center justify-between border-b border-slate-200 pb-3">
           <div>
             <h2 className="text-lg sm:text-xl font-bold text-slate-900">
-              {t('verifiedArtisansTitle')}
+              Top-Rated Local Artisans
             </h2>
             <p className="text-xs text-slate-500">
-              {t('verifiedArtisansSub')}
+              Verified members available within 5 km for immediate or scheduled booking.
             </p>
           </div>
 
@@ -498,76 +399,70 @@ export default function HomePage() {
             href="/services"
             className="text-xs font-semibold text-blue-600 hover:text-blue-800 flex items-center gap-1"
           >
-            <span>{t('viewAllArtisans')}</span>
+            <span>View All Tradespeople</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {topArtisans.map((worker) => (
             <div
               key={worker.id}
-              className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-xs hover:shadow-sm hover:border-slate-300 transition-all flex flex-col justify-between gap-4"
+              className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-xs hover:shadow-md hover:border-slate-300 transition-all flex flex-col justify-between gap-4"
             >
+              {/* Top Row: Avatar & Details */}
               <div className="flex items-start gap-3.5">
-                <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-700 flex items-center justify-center font-bold text-base border border-blue-100 shrink-0">
-                  {worker.name.charAt(0)}
+                <div className="relative">
+                  <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-700 flex items-center justify-center font-bold text-lg border border-blue-100 shrink-0">
+                    {worker.name.charAt(0)}
+                  </div>
+                  <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-emerald-500 border-2 border-white rounded-full" />
                 </div>
+                
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1.5 flex-wrap">
                     <h3 className="font-bold text-slate-900 text-sm truncate">{worker.name}</h3>
-                    <span className="text-[10px] font-semibold bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded border border-blue-200">
-                      ✓ Co-op
-                    </span>
                   </div>
-                  <p className="text-xs text-slate-600 font-medium">{worker.trade}</p>
-                  <p className="text-[11px] text-slate-400 truncate">{worker.cooperativeName}</p>
+                  <p className="text-xs text-slate-600 font-semibold">{worker.trade}</p>
+                  <p className="text-xs text-slate-400 truncate">{worker.cooperativeName}</p>
                 </div>
               </div>
 
-              <div className="flex items-center gap-x-2 flex-wrap text-xs text-slate-500 pt-1 border-t border-slate-100">
-                <span className="flex items-center text-amber-600 font-semibold">
+              {/* Rating & Location Row */}
+              <div className="flex items-center gap-x-2.5 flex-wrap text-xs text-slate-500 pt-2 border-t border-slate-100">
+                <span className="flex items-center text-amber-600 font-bold">
                   <Star className="w-3.5 h-3.5 fill-amber-500 text-amber-500 mr-1" />
                   {worker.rating}
                 </span>
                 <span className="text-slate-300">·</span>
-                <span>{worker.completedJobs} jobs</span>
+                <span>{worker.completedJobs} jobs completed</span>
                 <span className="text-slate-300">·</span>
-                <span className="flex items-center">
+                <span className="flex items-center text-slate-500">
                   <MapPin className="w-3 h-3 mr-0.5 text-slate-400" />
                   {worker.locationName}
                 </span>
               </div>
 
-              <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-[11px] space-y-1.5">
-                <div className="flex items-center justify-between gap-x-2 text-slate-700 flex-wrap">
-                  <span className="flex items-center gap-1 font-semibold text-emerald-700 whitespace-nowrap">
-                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                    <span>e-KYC: Verified ✓</span>
-                  </span>
-                  <span className="text-slate-300 hidden sm:inline">·</span>
-                  <span className="font-mono text-[10px] text-slate-500 whitespace-nowrap">
-                    UAN: {worker.eShramUan ? worker.eShramUan.replace(/(\d{4})-(\d{4})-(\d{4})/, '$1-XXXX-$3') : 'XXXX-XXXX-3821'}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between gap-x-2 text-[10px] text-slate-500 pt-0.5 border-t border-slate-200/50 flex-wrap">
-                  <span className="text-emerald-700 font-medium whitespace-nowrap">Police: Cleared ✓</span>
-                  <span className="text-slate-300">·</span>
-                  <span className="truncate">{worker.cooperativeName}</span>
-                </div>
+              {/* Single Clean Verification Badge */}
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-200/80 text-xs text-slate-700">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                <span className="font-medium text-slate-700">e-Shram Verified Member</span>
+                <span className="text-slate-300">·</span>
+                <span className="text-slate-500">Police Cleared</span>
               </div>
 
+              {/* Price & Action Button */}
               <div className="flex items-center justify-between pt-2 border-t border-slate-100">
                 <div>
-                  <span className="text-sm font-bold text-slate-900">₹{worker.hourlyRate}</span>
+                  <span className="text-base font-bold text-slate-900">₹{worker.hourlyRate}</span>
                   <span className="text-xs text-slate-500">/hr</span>
                 </div>
 
                 <Link
                   href="/services"
-                  className="min-h-[44px] px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors shadow-2xs"
+                  className="min-h-[44px] px-5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors shadow-2xs"
                 >
-                  <span>{t('bookNow')}</span>
+                  <span>Book Now</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </Link>
               </div>
@@ -577,15 +472,15 @@ export default function HomePage() {
       </section>
 
       {/* -------------------------------------------------------------------- */}
-      {/* 5. WORKER ONBOARDING CALLOUT */}
+      {/* 5. WORKER RECRUITMENT CALLOUT */}
       {/* -------------------------------------------------------------------- */}
-      <section className="bg-gradient-to-r from-slate-900 to-blue-950 rounded-3xl p-6 sm:p-8 text-white flex flex-col sm:flex-row items-center justify-between gap-6 shadow-sm">
+      <section className="bg-gradient-to-r from-slate-900 to-blue-950 rounded-3xl p-6 sm:p-10 text-white flex flex-col sm:flex-row items-center justify-between gap-6 shadow-sm">
         <div className="space-y-2 text-center sm:text-left">
           <h2 className="text-xl sm:text-2xl font-bold tracking-tight">
-            {t('joinAsWorkerTitle')}
+            Are You a Skilled Trade Professional?
           </h2>
           <p className="text-xs sm:text-sm text-slate-300 max-w-xl leading-relaxed">
-            {t('joinAsWorkerDesc')}
+            Join your local primary labour cooperative society. Keep 90% of every rupee earned, receive instant daily payouts, and access group welfare benefits.
           </p>
         </div>
 
@@ -594,7 +489,7 @@ export default function HomePage() {
             href="/register/worker"
             className="h-11 px-5 rounded-xl bg-blue-500 hover:bg-blue-400 text-white font-semibold text-xs sm:text-sm flex items-center gap-2 transition-colors shadow-sm"
           >
-            <span>{t('registerAsWorkerBtn')}</span>
+            <span>Register as an Artisan</span>
             <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
