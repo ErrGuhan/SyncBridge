@@ -3,7 +3,14 @@
 import React, { createContext, useContext, useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 
-export type UserRole = 'CUSTOMER' | 'WORKER' | 'COOP_ADMIN' | 'MANAGEMENT' | 'DEVELOPER';
+export type UserRole =
+  | 'CUSTOMER'
+  | 'WORKER'
+  | 'SOCIETY_SECRETARY'  // Primary Labour Cooperative Secretary
+  | 'FEDERATION_ADMIN'   // State / National Federation Admin
+  | 'COOP_ADMIN'         // Legacy alias (maps to SOCIETY_SECRETARY)
+  | 'MANAGEMENT'
+  | 'DEVELOPER';
 
 export interface AuthUser {
   id: string;
@@ -54,7 +61,7 @@ export const DEMO_PERSONAS: Record<UserRole, DemoPersona> = {
   },
   COOP_ADMIN: {
     role: 'COOP_ADMIN',
-    label: 'Primary Society Secretary',
+    label: 'Primary Society Secretary (Legacy)',
     targetPath: '/portal/admin',
     user: {
       id: 'adm-sec-201',
@@ -62,8 +69,35 @@ export const DEMO_PERSONAS: Record<UserRole, DemoPersona> = {
       name: 'Anand Patil',
       role: 'COOP_ADMIN',
       phone: '+91 98201 88990',
-      cooperativeId: 'coop-02',
+      cooperativeId: 'soc-blr-002',
       cooperativeName: 'Kalyan Labour Workers Society'
+    }
+  },
+  SOCIETY_SECRETARY: {
+    role: 'SOCIETY_SECRETARY',
+    label: 'Primary Society Secretary',
+    targetPath: '/portal/admin',
+    user: {
+      id: 'usr-sec-201',
+      email: 'anand.patil@kalyan.coop.in',
+      name: 'Anand Patil',
+      role: 'SOCIETY_SECRETARY',
+      phone: '+91 98201 88990',
+      cooperativeId: 'soc-blr-002',
+      cooperativeName: 'Kalyan Labour Workers Society'
+    }
+  },
+  FEDERATION_ADMIN: {
+    role: 'FEDERATION_ADMIN',
+    label: 'Federation Administrator',
+    targetPath: '/portal/management',
+    user: {
+      id: 'usr-adm-301',
+      email: 'vikram.rao@klcf.coop.in',
+      name: 'Vikram Rao',
+      role: 'FEDERATION_ADMIN',
+      phone: '+91 98201 00011',
+      cooperativeName: 'Karnataka Labour Cooperative Federation'
     }
   },
   MANAGEMENT: {
@@ -165,6 +199,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       localStorage.setItem(STORAGE_KEY_USER, JSON.stringify(persona.user));
       sessionStorage.setItem(STORAGE_KEY_TOKEN, mockToken);
+      // Set role cookie for server-side middleware route protection
+      document.cookie = `syncbridge_role=${targetRole}; path=/; SameSite=Lax`;
+      document.cookie = `syncbridge_auth=${mockToken}; path=/; SameSite=Lax`;
       window.dispatchEvent(new Event(AUTH_STORE_EVENT));
     } catch (e) {
       console.warn('Storage unavailable', e);
@@ -206,6 +243,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const tokenVal = data.session?.access_token || `sb_jwt_sess_${Date.now()}`;
       localStorage.setItem(STORAGE_KEY_USER, JSON.stringify(verifiedUser));
       sessionStorage.setItem(STORAGE_KEY_TOKEN, tokenVal);
+      // Set role cookie for server-side middleware route protection
+      document.cookie = `syncbridge_role=${role}; path=/; SameSite=Lax`;
+      document.cookie = `syncbridge_auth=${tokenVal}; path=/; SameSite=Lax`;
       window.dispatchEvent(new Event(AUTH_STORE_EVENT));
 
       return { success: true };
@@ -222,6 +262,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       supabase.auth.signOut();
       localStorage.removeItem(STORAGE_KEY_USER);
       sessionStorage.removeItem(STORAGE_KEY_TOKEN);
+      // Clear role cookies
+      document.cookie = 'syncbridge_role=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+      document.cookie = 'syncbridge_auth=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
       window.dispatchEvent(new Event(AUTH_STORE_EVENT));
     } catch {
       // Ignore
@@ -229,6 +272,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const getPortalUrlForRole = (r: UserRole): string => {
+    if (r === 'SOCIETY_SECRETARY' || r === 'COOP_ADMIN') return '/portal/admin';
+    if (r === 'FEDERATION_ADMIN') return '/portal/management';
     return DEMO_PERSONAS[r]?.targetPath || '/portal/customer';
   };
 

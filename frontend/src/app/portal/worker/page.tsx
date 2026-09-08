@@ -19,7 +19,8 @@ import {
   Radio, 
   Check, 
   X, 
-  Wrench 
+  Wrench,
+  Volume2
 } from 'lucide-react';
 
 import { useLanguage } from '@/context/LanguageContext';
@@ -35,7 +36,7 @@ interface VaultDocument {
 
 export default function WorkerPortalPage() {
   const { user } = useAuth();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const { 
     orders, 
     acceptOrder, 
@@ -53,6 +54,46 @@ export default function WorkerPortalPage() {
   const [sosActive, setSosActive] = useState(false);
   const [withdrawResult, setWithdrawResult] = useState<{ success: boolean; utr: string; amount: number } | null>(null);
   const [actionSuccessMsg, setActionSuccessMsg] = useState<string | null>(null);
+  const [isSpeaking, setIsSpeaking] = useState(false);
+
+  const handleReadAloud = (lead: any) => {
+    if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
+      alert('Text-to-speech is not supported in your browser.');
+      return;
+    }
+    window.speechSynthesis.cancel();
+
+    if (isSpeaking) {
+      setIsSpeaking(false);
+      return;
+    }
+
+    let textToSpeak = '';
+    let voiceLang = 'en-IN';
+
+    if (language === 'hi') {
+      voiceLang = 'hi-IN';
+      textToSpeak = `नया काम उपलब्ध है। सेवा: ${lead.serviceCategory}। स्थान: ${lead.location}। ग्राहक: ${lead.customerName}। आपकी नब्बे प्रतिशत कमाई है ${lead.workerPayout} रुपये।`;
+    } else if (language === 'kn') {
+      voiceLang = 'kn-IN';
+      textToSpeak = `ಹೊಸ ಕೆಲಸ ಬಂದಿದೆ. ಸೇವೆ: ${lead.serviceCategory}. ಸ್ಥಳ: ${lead.location}. ಗ್ರಾಹಕರು: ${lead.customerName}. ನಿಮ್ಮ ಗಳಿಕೆ: ${lead.workerPayout} ರೂಪಾಯಿಗಳು.`;
+    } else if (language === 'ta') {
+      voiceLang = 'ta-IN';
+      textToSpeak = `புதிய வேலை வாய்ப்பு. சேவை: ${lead.serviceCategory}. இடம்: ${lead.location}. வாடிக்கையாளர்: ${lead.customerName}. உங்கள் பங்கு: ${lead.workerPayout} ரூபாய்.`;
+    } else {
+      voiceLang = 'en-IN';
+      textToSpeak = `Incoming job dispatch. Service: ${lead.serviceCategory}. Location: ${lead.location}. Customer: ${lead.customerName}. Your 90 percent payout is ${lead.workerPayout} rupees.`;
+    }
+
+    const utterance = new SpeechSynthesisUtterance(textToSpeak);
+    utterance.lang = voiceLang;
+    utterance.rate = 0.95;
+    utterance.onstart = () => setIsSpeaking(true);
+    utterance.onend = () => setIsSpeaking(false);
+    utterance.onerror = () => setIsSpeaking(false);
+
+    window.speechSynthesis.speak(utterance);
+  };
 
   // Incoming and active orders
   const [declinedOrderIds, setDeclinedOrderIds] = useState<string[]>([]);
@@ -471,11 +512,24 @@ export default function WorkerPortalPage() {
       {incomingLead && (
         <section className="bg-white border-2 border-blue-600/70 rounded-2xl p-6 shadow-md space-y-4 relative overflow-hidden">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2.5 flex-wrap">
               <span className="px-3 py-1 rounded-full text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200 flex items-center gap-1.5 animate-pulse">
                 <Radio className="w-3.5 h-3.5 text-rose-600" />
                 <span>INCOMING LIVE DISPATCH</span>
               </span>
+              <button
+                type="button"
+                onClick={() => handleReadAloud(incomingLead)}
+                className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border transition-colors ${
+                  isSpeaking
+                    ? 'bg-indigo-600 text-white border-indigo-600 animate-pulse'
+                    : 'bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border-indigo-200'
+                }`}
+                title="Listen to dispatch details in your language"
+              >
+                <Volume2 className="w-3.5 h-3.5" />
+                <span>{isSpeaking ? 'Speaking...' : '🔊 Read Aloud'}</span>
+              </button>
               <span className="text-xs text-slate-500">• 100% Surge Pass-Through</span>
             </div>
 

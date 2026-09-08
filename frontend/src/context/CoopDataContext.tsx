@@ -342,6 +342,15 @@ export function CoopDataProvider({ children }: { children: React.ReactNode }) {
 
   // ACTION 3: Complete Order (Worker marks done -> 90/5/5 split)
   const completeOrder = (orderId: string) => {
+    // Asynchronously invoke payments process endpoint
+    fetch('/api/payments/process', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ bookingId: orderId, paymentMethod: 'UPI' })
+    }).catch(err => {
+      console.warn('[completeOrder] Payment process API dispatch warning:', err);
+    });
+
     setOrders(prev => prev.map(o => {
       if (o.id === orderId && o.status !== 'COMPLETED') {
         const workerAmt = o.workerPayout;

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Users, 
   Clock, 
@@ -47,12 +47,38 @@ export default function AdminDashboard() {
   } = useCoopData();
 
   const [activeTab, setActiveTab] = useState<'VERIFICATION' | 'PEER_ARBITRATION' | 'AI_FORECAST' | 'WELFARE_FUND'>('VERIFICATION');
-  const [forecasts] = useState<DemandForecastItem[]>(MOCK_DEMAND_FORECASTS);
+  const [metrics, setMetrics] = useState(MOCK_ADMIN_METRICS);
+  const [forecasts, setForecasts] = useState<DemandForecastItem[]>(MOCK_DEMAND_FORECASTS);
+  const [aiNarrative, setAiNarrative] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState<string>('ALL');
   const [selectedDocWorker, setSelectedDocWorker] = useState<WorkerVerificationItem | null>(null);
   const [toastMessage, setToastMessage] = useState<{ text: string; type: 'success' | 'error' | 'info' } | null>(null);
   const [alertDispatchedMap, setAlertDispatchedMap] = useState<Record<string, boolean>>({});
+
+  // Fetch real database-backed metrics and forecasting
+  useEffect(() => {
+    fetch('/api/admin/metrics')
+      .then(res => res.json())
+      .then(json => {
+        if (json.metrics) {
+          setMetrics(prev => ({ ...prev, ...json.metrics }));
+        }
+      })
+      .catch(err => console.warn('[AdminDashboard] metrics fetch error:', err));
+
+    fetch('/api/demand-forecast')
+      .then(res => res.json())
+      .then(json => {
+        if (json.data && Array.isArray(json.data) && json.data.length > 0) {
+          setForecasts(json.data);
+        }
+        if (json.aiNarrative) {
+          setAiNarrative(json.aiNarrative);
+        }
+      })
+      .catch(err => console.warn('[AdminDashboard] forecast fetch error:', err));
+  }, []);
 
   const showToast = (text: string, type: 'success' | 'error' | 'info') => {
     setToastMessage({ text, type });
@@ -61,11 +87,25 @@ export default function AdminDashboard() {
 
   const handleRestoreRating = (caseId: string, workerName: string) => {
     voteArbitration(caseId, 'RESTORED', 'Council Chair');
+    // Dispatch to server-side peer vote endpoint
+    fetch(`/api/disputes/${caseId}/vote`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ decision: 'OVERTURNED', voterId: 'council-chair-01' })
+    }).catch(err => console.warn('Vote API error:', err));
+
     showToast(`Peer Council restored standing for ${workerName}. Zero algorithmic deactivation applied.`, 'success');
   };
 
   const handleGuaranteeRemedy = (caseId: string, amount: number, customerName: string) => {
     voteArbitration(caseId, 'MEDIATED_REFUND', 'Guarantee Trustee');
+    // Dispatch to server-side peer vote endpoint
+    fetch(`/api/disputes/${caseId}/vote`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ decision: 'UPHELD', voterId: 'trustee-01' })
+    }).catch(err => console.warn('Vote API error:', err));
+
     showToast(`Disbursed ₹${amount} from 1% Cooperative Guarantee Fund to remediate ${customerName}.`, 'info');
   };
 
@@ -162,13 +202,13 @@ export default function AdminDashboard() {
 
           <div className="mt-4">
             <div className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
-              {MOCK_ADMIN_METRICS.totalWorkers.toLocaleString()}
+              {metrics.totalWorkers.toLocaleString()}
             </div>
             <div className="flex items-center gap-1.5 text-xs text-emerald-600 font-medium mt-1">
               <ArrowUpRight className="w-3.5 h-3.5" />
               <span>+12.4% this quarter</span>
               <span className="text-slate-300">•</span>
-              <span className="text-slate-500">{MOCK_ADMIN_METRICS.activeWorkers} active</span>
+              <span className="text-slate-500">{metrics.activeWorkers} active</span>
             </div>
           </div>
         </div>
@@ -208,10 +248,10 @@ export default function AdminDashboard() {
 
           <div className="mt-4">
             <div className="text-2xl sm:text-3xl font-bold text-emerald-600 tracking-tight">
-              {MOCK_ADMIN_METRICS.welfareFundBalance}
+              {metrics.welfareFundBalance}
             </div>
             <div className="flex items-center gap-1.5 text-xs text-emerald-600 font-medium mt-1">
-              <span className="font-semibold">{MOCK_ADMIN_METRICS.welfareGrowth}</span>
+              <span className="font-semibold">{metrics.welfareGrowth}</span>
               <span className="text-slate-500">from 5% booking split</span>
             </div>
           </div>
@@ -230,10 +270,10 @@ export default function AdminDashboard() {
 
           <div className="mt-4">
             <div className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
-              {MOCK_ADMIN_METRICS.totalPatronage}
+              {metrics.totalPatronage}
             </div>
             <div className="flex items-center gap-1.5 text-xs text-slate-500 mt-1">
-              <span className="text-indigo-600 font-semibold">{MOCK_ADMIN_METRICS.completedBookings.toLocaleString()}</span>
+              <span className="text-indigo-600 font-semibold">{metrics.completedBookings.toLocaleString()}</span>
               <span>completed bookings</span>
             </div>
           </div>
@@ -600,6 +640,26 @@ export default function AdminDashboard() {
               </div>
             </div>
           </div>
+
+          {/* Gemini AI Demand Insights Card */}
+          {aiNarrative && (
+            <div className="p-4.5 rounded-2xl bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 border border-indigo-200 shadow-sm flex items-start gap-3.5 animate-in fade-in">
+              <div className="p-2 rounded-xl bg-indigo-600 text-white shrink-0 mt-0.5 shadow-xs">
+                <Sparkles className="w-5 h-5" />
+              </div>
+              <div className="space-y-1 text-xs">
+                <div className="flex items-center gap-2">
+                  <span className="font-bold text-indigo-950 text-sm">Gemini 2.5 Flash • Operations Directive</span>
+                  <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-800 border border-indigo-200">
+                    Live AI Inference
+                  </span>
+                </div>
+                <p className="text-slate-700 leading-relaxed text-xs sm:text-sm">
+                  {aiNarrative}
+                </p>
+              </div>
+            </div>
+          )}
 
           {/* Hotspot Cards Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
