@@ -18,15 +18,26 @@ import {
   KeyRound,
   RotateCcw
 } from 'lucide-react';
+import VoiceReadButton from '@/components/VoiceReadButton';
 
 type PersonaTab = 'CUSTOMER' | 'WORKER' | 'ADMIN';
 
-function RoleQuerySync({ onTabChange }: { onTabChange: (tab: PersonaTab) => void }) {
+function RoleQuerySync({ 
+  onTabChange, 
+  onRedirectChange 
+}: { 
+  onTabChange: (tab: PersonaTab) => void;
+  onRedirectChange: (url: string | null) => void;
+}) {
   const searchParams = useSearchParams();
   const roleParam = searchParams?.get('role')?.toUpperCase();
+  const redirectParam = searchParams?.get('redirect');
   const syncedRef = React.useRef<string | null>(null);
 
   React.useEffect(() => {
+    if (redirectParam) {
+      onRedirectChange(redirectParam);
+    }
     if (roleParam && roleParam !== syncedRef.current) {
       syncedRef.current = roleParam;
       if (roleParam === 'WORKER') {
@@ -37,7 +48,7 @@ function RoleQuerySync({ onTabChange }: { onTabChange: (tab: PersonaTab) => void
         onTabChange('CUSTOMER');
       }
     }
-  }, [roleParam, onTabChange]);
+  }, [roleParam, redirectParam, onTabChange, onRedirectChange]);
 
   return null;
 }
@@ -52,6 +63,7 @@ export default function LoginPage() {
   } = useAuth();
 
   const [activeTab, setActiveTab] = useState<PersonaTab>('CUSTOMER');
+  const [redirectTarget, setRedirectTarget] = useState<string | null>(null);
   
   // Customer & Worker State
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -136,7 +148,11 @@ export default function LoginPage() {
     setIsSubmitting(false);
 
     if (res.success) {
-      router.push(targetRole === 'WORKER' ? '/portal/worker' : '/portal/customer');
+      if (redirectTarget && (redirectTarget.startsWith('/') || redirectTarget.startsWith('/bookings') || redirectTarget.startsWith('/portal'))) {
+        router.push(redirectTarget);
+      } else {
+        router.push(targetRole === 'WORKER' ? '/portal/worker' : '/portal/customer');
+      }
     } else {
       setErrorMessage(res.error || 'Verification failed. Please check OTP code.');
     }
@@ -183,7 +199,11 @@ export default function LoginPage() {
     setIsSubmitting(false);
 
     if (res.success) {
-      router.push('/portal/admin');
+      if (redirectTarget && (redirectTarget.startsWith('/portal/admin') || redirectTarget.startsWith('/portal/management'))) {
+        router.push(redirectTarget);
+      } else {
+        router.push('/portal/admin');
+      }
     } else {
       setErrorMessage(res.error || '2FA confirmation failed.');
     }
@@ -193,7 +213,7 @@ export default function LoginPage() {
     <div className="max-w-2xl mx-auto py-8 sm:py-12 px-4 space-y-6 animate-in fade-in duration-300">
       
       <Suspense fallback={null}>
-        <RoleQuerySync onTabChange={handleTabSwitch} />
+        <RoleQuerySync onTabChange={handleTabSwitch} onRedirectChange={setRedirectTarget} />
       </Suspense>
 
       {/* Header */}
@@ -208,6 +228,20 @@ export default function LoginPage() {
         <p className="text-xs sm:text-sm text-slate-600 max-w-md mx-auto">
           {t('authGatewaySubtitle')}
         </p>
+
+        <div className="flex items-center justify-center pt-1">
+          <VoiceReadButton
+            text={
+              activeTab === 'ADMIN'
+                ? 'Cooperative Administrator login. Step 1 requires Administrator ID and password. Step 2 requires 6 digit two factor OTP.'
+                : activeTab === 'WORKER'
+                ? 'Tradesperson cooperative field login. Enter your 10-digit registered mobile number to receive your 6-digit field OTP.'
+                : 'Customer login. Enter your 10-digit mobile number to receive your login verification OTP.'
+            }
+            variant="badge"
+            label="Listen"
+          />
+        </div>
       </div>
 
       {/* Persona Tab Switcher */}

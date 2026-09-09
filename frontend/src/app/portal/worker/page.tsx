@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 
 import { useLanguage } from '@/context/LanguageContext';
+import AuthGuard from '@/components/AuthGuard';
 
 interface VaultDocument {
   id: string;
@@ -207,7 +208,8 @@ export default function WorkerPortalPage() {
   const inTransitEscrow = activeOngoingOrders.reduce((acc, curr) => acc + curr.workerPayout, 0);
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-300">
+    <AuthGuard allowedRoles={['WORKER', 'SUPER_ADMIN']} redirectRole="worker">
+      <div className="space-y-8 animate-in fade-in duration-300">
       
       {/* Toast Notification */}
       {actionSuccessMsg && (
@@ -340,7 +342,7 @@ export default function WorkerPortalPage() {
             </div>
             <p className="text-3xl font-bold text-indigo-600">₹42,800</p>
             <p className="text-xs text-slate-500">
-              Part of ₹1.45 Cr collective trust with 50% cooperative matching grant.
+              Part of ₹4.82 Cr collective trust with 50% cooperative matching grant and ₹48.25 Lakhs guarantee reserve.
             </p>
           </div>
 
@@ -726,6 +728,7 @@ export default function WorkerPortalPage() {
         </div>
       </div>
 
-    </div>
+      </div>
+    </AuthGuard>
   );
 }

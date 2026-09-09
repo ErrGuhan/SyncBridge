@@ -17,6 +17,8 @@ import {
 } from 'lucide-react';
 import { BookingItem } from '@/data/mockData';
 import { calculateCoopSplit } from '@/lib/splitUtils';
+import AuthGuard from '@/components/AuthGuard';
+import VoiceReadButton from '@/components/VoiceReadButton';
 
 export default function BookingsPage() {
   const { t } = useLanguage();
@@ -52,7 +54,11 @@ export default function BookingsPage() {
   };
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-300">
+    <AuthGuard
+      allowedRoles={['CUSTOMER', 'WORKER', 'SOCIETY_SECRETARY', 'FEDERATION_ADMIN', 'SUPER_ADMIN', 'COOP_ADMIN', 'MANAGEMENT', 'DEVELOPER']}
+      redirectRole="customer"
+    >
+      <div className="space-y-8 animate-in fade-in duration-300">
       
       {/* -------------------------------------------------------------------- */}
       {/* 1. PAGE HEADER */}
@@ -85,9 +91,15 @@ export default function BookingsPage() {
             <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
               {t('activeTrackingHeader')}
             </span>
-            <span className="text-xs text-slate-500 font-mono">
-              Ref #{activeOrder.id}
-            </span>
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-slate-500 font-mono">
+                Ref #{activeOrder.id}
+              </span>
+              <VoiceReadButton
+                text={`Active booking reference ${activeOrder.id}. Artisan ${activeOrder.workerName}, ${activeOrder.workerTrade}, arrival status: ${activeOrder.status}.`}
+                size="xs"
+              />
+            </div>
           </div>
 
           <JobStatusTracker
@@ -196,9 +208,13 @@ export default function BookingsPage() {
                     <span>{t('shareWorker')}</span>
                     <span>₹{split.workerPayout}</span>
                   </div>
-                  <div className="flex justify-between text-slate-500 text-[11px]">
-                    <span>{t('shareSociety')} + {t('shareWelfare')}</span>
-                    <span>₹{split.coopFee + split.welfareFund}</span>
+                  <div className="flex justify-between text-slate-600 text-[11px]">
+                    <span>{t('shareSociety')}</span>
+                    <span className="font-semibold text-slate-800">₹{split.coopFee.toLocaleString('en-IN')}</span>
+                  </div>
+                  <div className="flex justify-between text-slate-600 text-[11px]">
+                    <span>{t('shareWelfare')}</span>
+                    <span className="font-semibold text-slate-800">₹{split.welfareFund.toLocaleString('en-IN')}</span>
                   </div>
                 </div>
 
@@ -434,6 +450,7 @@ export default function BookingsPage() {
         </div>
       )}
 
-    </div>
+      </div>
+    </AuthGuard>
   );
 }

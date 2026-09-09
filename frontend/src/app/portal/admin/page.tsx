@@ -23,6 +23,7 @@ import {
   DemandForecastItem
 } from '@/data/mockData';
 import { useLanguage } from '@/context/LanguageContext';
+import AuthGuard from '@/components/AuthGuard';
 
 export default function CooperativeFederationAdminPage() {
   const { user } = useAuth();
@@ -126,6 +127,17 @@ export default function CooperativeFederationAdminPage() {
       treasuryPool: 41900,
       establishedYear: 2019,
       status: 'QUORUM_ACTIVE'
+    },
+    {
+      id: 'soc-05',
+      name: 'Karnataka Union Labour Federation',
+      ncdCode: 'NCD-KA-MYS-0193',
+      zone: 'Bengaluru & Mysuru Regional',
+      registeredWorkers: 360,
+      activeJobs: 48,
+      treasuryPool: 62400,
+      establishedYear: 2017,
+      status: 'QUORUM_ACTIVE'
     }
   ];
 
@@ -147,7 +159,8 @@ export default function CooperativeFederationAdminPage() {
   const guaranteeReserve = Math.round(totalGmv * 0.01);
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-300">
+    <AuthGuard allowedRoles={['SOCIETY_SECRETARY', 'FEDERATION_ADMIN', 'SUPER_ADMIN', 'COOP_ADMIN']} redirectRole="admin">
+      <div className="space-y-8 animate-in fade-in duration-300">
       
       {/* Toast Notification */}
       {toastMessage && (
@@ -169,7 +182,7 @@ export default function CooperativeFederationAdminPage() {
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 max-w-2xl leading-relaxed">
             Presiding Administrator: <strong className="text-slate-800">{user?.name || 'Anand Patil (Society Secretary)'}</strong> • 
-            4 Member Societies • 1,025 Verified Trade Artisans • 100% Democratic Multi-Stakeholder Governance.
+            5 Member Societies • 1,385 Verified Trade Artisans • 100% Democratic Multi-Stakeholder Governance.
           </p>
         </div>
 
@@ -755,6 +768,7 @@ export default function CooperativeFederationAdminPage() {
         </div>
       )}
 
-    </div>
+      </div>
+    </AuthGuard>
   );
 }

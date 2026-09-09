@@ -10,7 +10,8 @@ export type UserRole =
   | 'FEDERATION_ADMIN'   // State / National Federation Admin
   | 'COOP_ADMIN'         // Legacy alias (maps to SOCIETY_SECRETARY)
   | 'MANAGEMENT'
-  | 'DEVELOPER';
+  | 'DEVELOPER'
+  | 'SUPER_ADMIN';
 
 export interface AuthUser {
   id: string;
@@ -122,6 +123,18 @@ export const DEMO_PERSONAS: Record<UserRole, DemoPersona> = {
       name: 'Lead Architect',
       role: 'DEVELOPER',
       phone: '+91 98201 99999'
+    }
+  },
+  SUPER_ADMIN: {
+    role: 'SUPER_ADMIN',
+    label: 'Platform Super Administrator',
+    targetPath: '/portal/management',
+    user: {
+      id: 'usr-super-001',
+      email: 'superadmin@syncbridge.network',
+      name: 'Platform Super Administrator',
+      role: 'SUPER_ADMIN',
+      phone: '+91 98201 00000'
     }
   }
 };
@@ -235,6 +248,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const demoToken = `sb_jwt_local_${Date.now()}`;
         localStorage.setItem(STORAGE_KEY_USER, JSON.stringify(fallbackUser));
         sessionStorage.setItem(STORAGE_KEY_TOKEN, demoToken);
+        document.cookie = `syncbridge_role=${requestedRole}; path=/; SameSite=Lax`;
+        document.cookie = `syncbridge_auth=${demoToken}; path=/; SameSite=Lax`;
         window.dispatchEvent(new Event(AUTH_STORE_EVENT));
         return { success: true };
       }
@@ -403,7 +418,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const getPortalUrlForRole = (r: UserRole): string => {
     if (r === 'SOCIETY_SECRETARY' || r === 'COOP_ADMIN') return '/portal/admin';
-    if (r === 'FEDERATION_ADMIN') return '/portal/management';
+    if (r === 'FEDERATION_ADMIN' || r === 'SUPER_ADMIN') return '/portal/management';
     return DEMO_PERSONAS[r]?.targetPath || '/portal/customer';
   };
 

@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import { MOCK_WORKERS } from '@/data/mockData';
 import { useLanguage } from '@/context/LanguageContext';
+import WorkerCard from '@/components/WorkerCard';
 
 interface AiDiagnosticResponse {
   tradeCategory: string;
@@ -408,65 +409,12 @@ export default function HomePage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {topArtisans.map((worker) => (
-            <div
+            <WorkerCard
               key={worker.id}
-              className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-xs hover:shadow-md hover:border-slate-300 transition-all flex flex-col justify-between gap-4"
-            >
-              {/* Top Row: Avatar & Details */}
-              <div className="flex items-start gap-3.5">
-                <div className="relative">
-                  <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-700 flex items-center justify-center font-bold text-lg border border-blue-100 shrink-0">
-                    {worker.name.charAt(0)}
-                  </div>
-                  <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-emerald-500 border-2 border-white rounded-full" />
-                </div>
-                
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-1.5 flex-wrap">
-                    <h3 className="font-bold text-slate-900 text-sm truncate">{worker.name}</h3>
-                  </div>
-                  <p className="text-xs text-slate-600 font-semibold">{worker.trade}</p>
-                  <p className="text-xs text-slate-400 truncate">{worker.cooperativeName}</p>
-                </div>
-              </div>
-
-              {/* Rating & Location Row */}
-              <div className="flex items-center gap-x-2.5 flex-wrap text-xs text-slate-500 pt-2 border-t border-slate-100">
-                <span className="flex items-center text-amber-600 font-bold">
-                  <Star className="w-3.5 h-3.5 fill-amber-500 text-amber-500 mr-1" />
-                  {worker.rating}
-                </span>
-                <span className="text-slate-300">·</span>
-                <span>{t('jobsDone', { count: worker.completedJobs })}</span>
-                <span className="text-slate-300">·</span>
-                <span className="flex items-center text-slate-500">
-                  <MapPin className="w-3 h-3 mr-0.5 text-slate-400" />
-                  {worker.locationName}
-                </span>
-              </div>
-
-              {/* Single Clean Verification Badge */}
-              <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-200/80 text-xs text-slate-700">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                <span className="font-medium text-slate-700">{t('verifiedBadge')}</span>
-              </div>
-
-              {/* Price & Action Button */}
-              <div className="flex items-center justify-between pt-2 border-t border-slate-100">
-                <div>
-                  <span className="text-base font-bold text-slate-900">₹{worker.hourlyRate}</span>
-                  <span className="text-xs text-slate-500">{t('perHour')}</span>
-                </div>
-
-                <Link
-                  href="/services"
-                  className="min-h-[44px] px-5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors shadow-2xs"
-                >
-                  <span>{t('bookNow')}</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </Link>
-              </div>
-            </div>
+              worker={worker}
+              variant="compact"
+              bookingHref="/services"
+            />
           ))}
         </div>
       </section>

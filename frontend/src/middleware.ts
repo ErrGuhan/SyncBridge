@@ -24,14 +24,15 @@ const ROUTE_ROLE_MAP: Record<string, string[]> = {
   '/portal/management': ['FEDERATION_ADMIN', 'SUPER_ADMIN'],
   '/portal/customer': ['CUSTOMER', 'SUPER_ADMIN'],
   '/portal/developer': ['WORKER', 'SOCIETY_SECRETARY', 'FEDERATION_ADMIN', 'CUSTOMER', 'SUPER_ADMIN', 'MANAGEMENT', 'DEVELOPER'],
+  '/bookings': ['CUSTOMER', 'WORKER', 'SOCIETY_SECRETARY', 'FEDERATION_ADMIN', 'SUPER_ADMIN', 'MANAGEMENT', 'DEVELOPER'],
 };
 
 // ---------------------------------------------------------------------------
-// Middleware config — only run on portal routes
+// Middleware config — run on portal and bookings routes
 // ---------------------------------------------------------------------------
 
 export const config = {
-  matcher: ['/portal/:path*'],
+  matcher: ['/portal/:path*', '/bookings', '/bookings/:path*'],
 };
 
 export function middleware(req: NextRequest) {
@@ -65,9 +66,9 @@ export function middleware(req: NextRequest) {
     loginUrl.pathname = '/auth/login';
     if (pathname.startsWith('/portal/worker')) {
       loginUrl.searchParams.set('role', 'worker');
-    } else if (pathname.startsWith('/portal/admin')) {
+    } else if (pathname.startsWith('/portal/admin') || pathname.startsWith('/portal/management')) {
       loginUrl.searchParams.set('role', 'admin');
-    } else if (pathname.startsWith('/portal/customer')) {
+    } else if (pathname.startsWith('/portal/customer') || pathname.startsWith('/bookings')) {
       loginUrl.searchParams.set('role', 'customer');
     }
     loginUrl.searchParams.set('redirect', pathname);

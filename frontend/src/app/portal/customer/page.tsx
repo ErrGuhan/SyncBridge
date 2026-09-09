@@ -18,6 +18,7 @@ import {
 import { useCoopData } from '@/context/CoopDataContext';
 import { calculateCoopSplit } from '@/lib/splitUtils';
 import { useLanguage } from '@/context/LanguageContext';
+import AuthGuard from '@/components/AuthGuard';
 
 interface AiDiagnosticResponse {
   tradeCategory: string;
@@ -71,7 +72,8 @@ export default function CustomerPortalPage() {
   };
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-300">
+    <AuthGuard allowedRoles={['CUSTOMER', 'SUPER_ADMIN']} redirectRole="customer">
+      <div className="space-y-8 animate-in fade-in duration-300">
       
       {/* Customer Header Banner */}
       <div className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -337,6 +339,7 @@ export default function CustomerPortalPage() {
         </div>
       </section>
 
-    </div>
+      </div>
+    </AuthGuard>
   );
 }
