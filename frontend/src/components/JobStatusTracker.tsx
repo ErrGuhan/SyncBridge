@@ -8,6 +8,7 @@ import {
   Navigation,
   Check
 } from 'lucide-react';
+import { useLanguage } from '@/context/LanguageContext';
 
 export type JobTrafficState = 'RED' | 'YELLOW' | 'GREEN';
 
@@ -30,6 +31,7 @@ export default function JobStatusTracker({
   workerEtaMinutes = 12,
   totalAmount = 1200
 }: JobStatusTrackerProps) {
+  const { t } = useLanguage();
   const [trafficState, setTrafficState] = useState<JobTrafficState>(initialState);
 
   const workerPayout = Math.round(totalAmount * 0.9);
@@ -46,12 +48,12 @@ export default function JobStatusTracker({
             <span className="text-xs font-mono font-semibold text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">
               #{bookingNumber}
             </span>
-            <span className="text-xs font-medium text-slate-500">Live Cooperative Dispatch</span>
+            <span className="text-xs font-medium text-slate-500">{t('activeTrackingHeader')}</span>
           </div>
           <h3 className="text-base font-bold text-slate-900">
-            {trafficState === 'RED' && 'Locating Available Member-Worker...'}
-            {trafficState === 'YELLOW' && 'Member-Worker is En Route'}
-            {trafficState === 'GREEN' && 'Service Completed & Settled'}
+            {trafficState === 'RED' && t('trackerStatusRed')}
+            {trafficState === 'YELLOW' && t('trackerStatusYellow')}
+            {trafficState === 'GREEN' && t('trackerStatusGreen')}
           </h3>
         </div>
 
@@ -65,7 +67,7 @@ export default function JobStatusTracker({
                 : 'text-slate-600 hover:text-slate-900'
             }`}
           >
-            Searching
+            {t('search')}
           </button>
           <button
             onClick={() => setTrafficState('YELLOW')}
@@ -75,7 +77,7 @@ export default function JobStatusTracker({
                 : 'text-slate-600 hover:text-slate-900'
             }`}
           >
-            En Route
+            {t('workerOnWay')}
           </button>
           <button
             onClick={() => setTrafficState('GREEN')}
@@ -85,7 +87,7 @@ export default function JobStatusTracker({
                 : 'text-slate-600 hover:text-slate-900'
             }`}
           >
-            Completed
+            {t('jobCompleted')}
           </button>
         </div>
       </div>
@@ -103,9 +105,9 @@ export default function JobStatusTracker({
           </div>
 
           <div className="space-y-1">
-            <h4 className="font-bold text-slate-900 text-base">Alerting Local Cooperative Hub</h4>
+            <h4 className="font-bold text-slate-900 text-base">{t('trackerStatusRed')}</h4>
             <p className="text-xs text-slate-500 max-w-sm mx-auto">
-              Broadcasting your request to verified trade members within a 5 km perimeter. Average acceptance: 45 seconds.
+              {t('trackerSearchingSub')}
             </p>
           </div>
         </div>
@@ -121,10 +123,10 @@ export default function JobStatusTracker({
             <div className="flex items-center justify-between text-xs font-semibold">
               <span className="text-slate-600 flex items-center gap-1.5">
                 <Navigation className="w-3.5 h-3.5 text-blue-600" />
-                <span>Worker Dispatched from Hub</span>
+                <span>{t('trackerStatusYellow')}</span>
               </span>
               <span className="text-amber-800 bg-amber-100 px-2.5 py-0.5 rounded-full text-[11px] font-bold">
-                ETA: ~{workerEtaMinutes} mins
+                {t('trackerEtaArrival', { mins: workerEtaMinutes })}
               </span>
             </div>
 
@@ -134,8 +136,8 @@ export default function JobStatusTracker({
             </div>
 
             <div className="flex justify-between text-[11px] text-slate-400">
-              <span>Cooperative Hub (Dadar)</span>
-              <span>Your Address</span>
+              <span>{t('societyLabel')}</span>
+              <span>{t('serviceLocationLabel')}</span>
             </div>
           </div>
 
@@ -143,13 +145,13 @@ export default function JobStatusTracker({
           <div className="p-4 bg-white border border-slate-200 rounded-xl flex items-center justify-between gap-3 shadow-xs">
             <div className="flex items-center gap-3">
               <div className="w-11 h-11 rounded-xl bg-blue-50 border border-blue-200 text-blue-700 font-bold flex items-center justify-center text-sm">
-                RC
+                {workerName.charAt(0)}
               </div>
               <div>
                 <p className="font-bold text-slate-900 text-sm">{workerName}</p>
                 <p className="text-xs text-slate-500">{workerTrade}</p>
                 <span className="text-[10px] text-emerald-700 font-semibold flex items-center gap-1 mt-0.5">
-                  <ShieldCheck className="w-3 h-3 inline" /> NCCT Certified Member
+                  <ShieldCheck className="w-3 h-3 inline" /> {t('verifiedBadge')}
                 </span>
               </div>
             </div>
@@ -159,7 +161,7 @@ export default function JobStatusTracker({
               className="h-10 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs flex items-center gap-1.5 shadow-xs transition-colors"
             >
               <Phone className="w-3.5 h-3.5" />
-              <span>Call</span>
+              <span>{t('callWorker')}</span>
             </a>
           </div>
         </div>
@@ -175,9 +177,9 @@ export default function JobStatusTracker({
               <Check className="w-5 h-5 stroke-[2.5]" />
             </div>
             <div>
-              <h4 className="font-bold text-slate-900 text-sm">Job Completed & Verified</h4>
+              <h4 className="font-bold text-slate-900 text-sm">{t('trackerStatusGreen')}</h4>
               <p className="text-xs text-slate-600">
-                Payment settled under the 90/5/5 cooperative patronage model with 0% venture commission.
+                {t('trackerSettledNote')}
               </p>
             </div>
           </div>
@@ -185,19 +187,19 @@ export default function JobStatusTracker({
           {/* Clean Receipt Breakdown */}
           <div className="p-4 bg-slate-50/70 border border-slate-200 rounded-xl space-y-2 text-xs">
             <div className="flex justify-between text-slate-500 pb-1 border-b border-slate-200">
-              <span>Total Service Cost</span>
+              <span>{t('grossTotalPayable')}</span>
               <span className="font-bold text-slate-900 text-sm">₹{totalAmount}</span>
             </div>
             <div className="flex justify-between text-emerald-800 font-semibold">
-              <span>• 90% Direct Worker Member Payout:</span>
+              <span>{t('shareWorker')}</span>
               <span>₹{workerPayout}</span>
             </div>
             <div className="flex justify-between text-slate-500">
-              <span>• 5% Primary Society Capital Fund:</span>
+              <span>{t('shareSociety')}</span>
               <span>₹{coopTreasury}</span>
             </div>
             <div className="flex justify-between text-slate-500">
-              <span>• 5% Healthcare & Social Security Pool:</span>
+              <span>{t('shareWelfare')}</span>
               <span>₹{welfareFund}</span>
             </div>
           </div>

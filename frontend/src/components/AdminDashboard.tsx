@@ -36,8 +36,10 @@ import {
   DemandForecastItem
 } from '@/data/mockData';
 import { useCoopData } from '@/context/CoopDataContext';
+import { useLanguage } from '@/context/LanguageContext';
 
 export default function AdminDashboard() {
+  const { t } = useLanguage();
   const { 
     verificationQueue, 
     approveWorker, 
@@ -167,10 +169,10 @@ export default function AdminDashboard() {
         <div>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 text-xs font-semibold text-blue-700 border border-blue-200 mb-2">
             <Building2 className="w-3.5 h-3.5 text-blue-600" />
-            <span>National Cooperative Federation • Democratic Governance Network</span>
+            <span>{t('adminFederationTag')}</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
-            Cooperative Federation Central Command
+            {t('adminFederationTitle')}
           </h1>
           <p className="text-xs sm:text-sm text-slate-600 mt-1 max-w-2xl leading-relaxed">
             Credential audits, Peer Restorative Justice (anti-algorithmic deactivation), 
@@ -181,7 +183,7 @@ export default function AdminDashboard() {
         <div className="flex items-center gap-2 text-xs">
           <span className="px-3.5 py-2 rounded-xl bg-white border border-slate-200 text-slate-700 font-medium flex items-center gap-2 shadow-sm">
             <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-            <span>Database & Services: Active</span>
+            <span>{t('quorumActive')}</span>
           </span>
         </div>
       </div>
@@ -193,7 +195,7 @@ export default function AdminDashboard() {
         <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm relative overflow-hidden group hover:shadow-md transition-all">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-              Total Worker Members
+              {t('metricActiveArtisans')}
             </span>
             <div className="p-2 rounded-xl bg-blue-50 text-blue-600 border border-blue-100">
               <Users className="w-5 h-5" />
@@ -217,7 +219,7 @@ export default function AdminDashboard() {
         <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm relative overflow-hidden group hover:shadow-md transition-all">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-amber-700 uppercase tracking-wider">
-              Pending Verifications
+              {t('tabVerifications')}
             </span>
             <div className="p-2 rounded-xl bg-amber-50 text-amber-600 border border-amber-100">
               <Clock className="w-5 h-5" />
@@ -239,7 +241,7 @@ export default function AdminDashboard() {
         <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm relative overflow-hidden group hover:shadow-md transition-all">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-              Welfare & Mutual Aid (5%)
+              {t('metricWelfareCorpus')}
             </span>
             <div className="p-2 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100">
               <HeartHandshake className="w-5 h-5" />
@@ -261,7 +263,7 @@ export default function AdminDashboard() {
         <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm relative overflow-hidden group hover:shadow-md transition-all">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-              Worker Direct Payout (90%)
+              {t('workerTakeHome')}
             </span>
             <div className="p-2 rounded-xl bg-indigo-50 text-indigo-600 border border-indigo-100">
               <TrendingUp className="w-5 h-5" />
@@ -293,7 +295,7 @@ export default function AdminDashboard() {
           }`}
         >
           <FileCheck className="w-4 h-4" />
-          <span>Worker Verification Queue</span>
+          <span>{t('tabVerifications')}</span>
           <span className={`text-[10px] px-2 py-0.5 rounded-full font-semibold ${
             activeTab === 'VERIFICATION' ? 'bg-blue-700 text-white' : 'bg-amber-100 text-amber-800'
           }`}>
@@ -311,7 +313,7 @@ export default function AdminDashboard() {
           }`}
         >
           <Scale className="w-4 h-4" />
-          <span>Peer Arbitration & Justice</span>
+          <span>{t('tabDisputes')}</span>
           <span className={`text-[10px] px-2 py-0.5 rounded-full font-semibold ${
             activeTab === 'PEER_ARBITRATION' ? 'bg-blue-700 text-white' : 'bg-amber-100 text-amber-800'
           }`}>
@@ -329,7 +331,7 @@ export default function AdminDashboard() {
           }`}
         >
           <Sparkles className="w-4 h-4" />
-          <span>AI Demand Forecasting</span>
+          <span>{t('tabForecasting')}</span>
           <span className="text-[10px] px-2 py-0.5 rounded-full bg-rose-50 text-rose-700 border border-rose-200 font-semibold">
             {criticalSurgeCount} Surges
           </span>
@@ -345,7 +347,7 @@ export default function AdminDashboard() {
           }`}
         >
           <HeartHandshake className="w-4 h-4" />
-          <span>Welfare & Mutual Aid</span>
+          <span>{t('mutualAidShare')}</span>
           <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-semibold">
             ₹4.82 Cr
           </span>

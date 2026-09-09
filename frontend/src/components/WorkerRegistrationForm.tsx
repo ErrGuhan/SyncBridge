@@ -23,8 +23,10 @@ import {
   Wind,
   Hammer
 } from 'lucide-react';
+import { useLanguage } from '@/context/LanguageContext';
 
 export default function WorkerRegistrationForm() {
+  const { t, language } = useLanguage();
   const { submitWorkerApplication } = useCoopData();
   const [step, setStep] = useState<number>(1);
   const totalSteps = 5;
@@ -49,12 +51,19 @@ export default function WorkerRegistrationForm() {
   const [termsAccepted, setTermsAccepted] = useState<boolean>(true);
   const [hasExistingCoop, setHasExistingCoop] = useState<boolean>(true);
 
-  const playVoicePrompt = (text: string, lang = 'hi-IN') => {
+  const getVoiceLang = () => {
+    if (language === 'hi') return 'hi-IN';
+    if (language === 'kn') return 'kn-IN';
+    if (language === 'ta') return 'ta-IN';
+    return 'en-IN';
+  };
+
+  const playVoicePrompt = (text: string, lang?: string) => {
     if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
       window.speechSynthesis.cancel();
       setSpeakingText(text);
       const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = lang;
+      utterance.lang = lang || getVoiceLang();
       utterance.rate = 0.95;
       utterance.onend = () => setSpeakingText(null);
       utterance.onerror = () => setSpeakingText(null);
@@ -184,10 +193,10 @@ export default function WorkerRegistrationForm() {
 
         <div className="space-y-1.5">
           <h2 className="text-2xl font-bold text-slate-900">
-            Membership Application Submitted
+            {t('successHeading')}
           </h2>
           <p className="text-sm text-slate-600">
-            Your profile has been queued for verification with your local cooperative chapter.
+            {t('successSub')}
           </p>
         </div>
 
@@ -227,16 +236,16 @@ export default function WorkerRegistrationForm() {
 
         <div className="pt-2 flex flex-col gap-2.5">
           <Link
-            href="/services"
+            href="/portal/worker"
             className="h-11 w-full rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-semibold text-sm flex items-center justify-center shadow-xs transition-colors"
           >
-            Explore Client Services
+            {t('openWorkspaceBtn')}
           </Link>
           <Link
-            href="/dashboard"
+            href="/services"
             className="h-11 w-full rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-semibold text-sm flex items-center justify-center transition-colors"
           >
-            Cooperative Governance Dashboard
+            Explore Client Services
           </Link>
         </div>
       </div>
@@ -257,7 +266,7 @@ export default function WorkerRegistrationForm() {
       {/* Stepper Header */}
       <div className="space-y-2">
         <div className="flex items-center justify-between text-xs font-semibold text-slate-500">
-          <span>Step {step} of {totalSteps}</span>
+          <span>{t('stepIndicator', { current: step, total: totalSteps })}</span>
           <span>{Math.round((step / totalSteps) * 100)}% Complete</span>
         </div>
 
@@ -646,7 +655,7 @@ export default function WorkerRegistrationForm() {
 
           <div className="space-y-4">
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-slate-700">National e-Shram UAN Number</label>
+              <label className="text-xs font-semibold text-slate-700">{t('uanLabel')}</label>
               <input
                 type="text"
                 value={formData.uanNumber}
@@ -654,6 +663,7 @@ export default function WorkerRegistrationForm() {
                 placeholder="1009-XXXX-XXXX"
                 className="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl text-sm font-semibold text-slate-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
               />
+              <p className="text-[11px] text-slate-400">{t('uanHelp')}</p>
             </div>
 
             <div
@@ -668,7 +678,7 @@ export default function WorkerRegistrationForm() {
                 <Camera className="w-5 h-5" />
               </div>
               <p className="font-semibold text-xs text-slate-800">
-                {formData.documentUploaded ? '✓ Document Uploaded' : 'Tap to Upload Trade Certificate or Aadhaar'}
+                {formData.documentUploaded ? `✓ ${t('docUploadedBadge')}` : t('uploadDocLabel')}
               </p>
               <p className="text-[11px] text-slate-400 mt-0.5">Supports JPG, PNG or PDF formats</p>
             </div>
@@ -683,10 +693,10 @@ export default function WorkerRegistrationForm() {
             {/* Color-Coded Iconographic Yes/No Acceptance (Accessibility Requirement) */}
             <div className="space-y-2 pt-2 border-t border-slate-100">
               <label className="text-xs font-bold text-slate-800 block">
-                Cooperative Bylaws & Mutual Aid Membership (सहकारी नियम व सहमति)
+                {t('societyChoiceLabel')}
               </label>
               <p className="text-[11px] text-slate-500">
-                I agree to the transparent 90/5/5 cooperative dividend model and mutual aid charter.
+                {t('coopPledge')}
               </p>
               <div className="grid grid-cols-2 gap-3 pt-1">
                 <button
@@ -742,7 +752,7 @@ export default function WorkerRegistrationForm() {
           onClick={handleNext}
           className="flex-1 h-11 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold flex items-center justify-center gap-1.5 shadow-xs transition-colors"
         >
-          <span>{step === totalSteps ? 'Submit Membership Application' : 'Next'}</span>
+          <span>{step === totalSteps ? t('submitAppBtn') : 'Next'}</span>
           <ArrowRight className="w-4 h-4" />
         </button>
       </div>

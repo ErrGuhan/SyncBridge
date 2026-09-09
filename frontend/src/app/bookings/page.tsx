@@ -83,7 +83,7 @@ export default function BookingsPage() {
         <section className="space-y-3">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
-              Active Order Live Tracking
+              {t('activeTrackingHeader')}
             </span>
             <span className="text-xs text-slate-500 font-mono">
               Ref #{activeOrder.id}
@@ -119,13 +119,19 @@ export default function BookingsPage() {
                     : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
                 }`}
               >
-                {tab.replace('_', ' ')}
+                {tab === 'ALL'
+                  ? t('filterAll')
+                  : tab === 'IN_PROGRESS'
+                  ? t('filterActive')
+                  : tab === 'COMPLETED'
+                  ? t('filterCompleted')
+                  : t('statusAvailable')}
               </button>
             ))}
           </div>
 
           <span className="text-xs font-medium text-slate-500 shrink-0">
-            {filteredBookings.length} orders
+            {filteredBookings.length} {t('navOrders')}
           </span>
         </div>
 
@@ -147,7 +153,7 @@ export default function BookingsPage() {
                       {booking.id}
                     </span>
                     <h4 className="text-base font-bold text-slate-900">
-                      {booking.serviceCategory} Service
+                      {booking.serviceCategory}
                     </h4>
                   </div>
 
@@ -160,14 +166,14 @@ export default function BookingsPage() {
                         : 'bg-blue-50 text-blue-700 border-blue-200'
                     }`}
                   >
-                    {isCompleted ? '✓ Completed' : isInProgress ? 'En Route' : 'Confirmed'}
+                    {isCompleted ? `✓ ${t('filterCompleted')}` : isInProgress ? t('trackerStatusYellow') : t('confirm')}
                   </span>
                 </div>
 
                 {/* Details */}
                 <div className="space-y-1.5 text-xs text-slate-600">
                   <div className="flex items-center gap-1.5">
-                    <span className="font-semibold text-slate-900">Artisan:</span>
+                    <span className="font-semibold text-slate-900">{t('artisanLabel')}</span>
                     <span>{booking.workerName} ({booking.workerTrade})</span>
                   </div>
                   <div className="flex items-start gap-1.5">
@@ -183,15 +189,15 @@ export default function BookingsPage() {
                 {/* Split Breakdown */}
                 <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/80 text-xs space-y-1">
                   <div className="flex justify-between font-bold text-slate-900">
-                    <span>Total Bill:</span>
+                    <span>{t('grossTotalPayable')}</span>
                     <span>₹{booking.totalAmount}</span>
                   </div>
                   <div className="flex justify-between text-emerald-800 font-semibold">
-                    <span>90% Direct Artisan Take-Home:</span>
+                    <span>{t('shareWorker')}</span>
                     <span>₹{split.workerPayout}</span>
                   </div>
                   <div className="flex justify-between text-slate-500 text-[11px]">
-                    <span>5% Society Reserve + 5% Welfare Fund:</span>
+                    <span>{t('shareSociety')} + {t('shareWelfare')}</span>
                     <span>₹{split.coopFee + split.welfareFund}</span>
                   </div>
                 </div>
@@ -214,7 +220,7 @@ export default function BookingsPage() {
                         className="h-9 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold flex items-center gap-1.5 transition-colors"
                       >
                         <Receipt className="w-3.5 h-3.5 text-slate-600" />
-                        <span>Invoice</span>
+                        <span>{t('btnViewReceipt')}</span>
                       </button>
                     )}
                   </div>
@@ -258,7 +264,7 @@ export default function BookingsPage() {
                   <Receipt className="w-4 h-4" />
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-slate-900">Official Cooperative Receipt</h3>
+                  <h3 className="text-base font-bold text-slate-900">{t('receiptTitle')}</h3>
                   <span className="text-[10px] font-mono text-slate-400">Order #{viewingReceipt.id}</span>
                 </div>
               </div>
@@ -273,19 +279,19 @@ export default function BookingsPage() {
 
             <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2 text-xs text-slate-700">
               <div className="flex justify-between font-semibold text-slate-900">
-                <span>Customer:</span>
+                <span>{t('receiptCustomer')}</span>
                 <span>{viewingReceipt.customerName}</span>
               </div>
               <div className="flex justify-between">
-                <span>Assigned Artisan:</span>
+                <span>{t('receiptWorker')}</span>
                 <span>{viewingReceipt.workerName}</span>
               </div>
               <div className="flex justify-between">
-                <span>Cooperative Chapter:</span>
+                <span>{t('societyLabel')}</span>
                 <span>{viewingReceipt.cooperativeName}</span>
               </div>
               <div className="flex justify-between">
-                <span>Completed Date:</span>
+                <span>{t('receiptDate')}</span>
                 <span>{viewingReceipt.scheduledDate}</span>
               </div>
             </div>
@@ -296,28 +302,23 @@ export default function BookingsPage() {
               return (
                 <div className="space-y-2 border-t border-slate-100 pt-3 text-xs">
                   <div className="flex justify-between font-bold text-sm text-slate-900 pb-1 border-b border-slate-100">
-                    <span>Gross Service Charge</span>
+                    <span>{t('grossTotalPayable')}</span>
                     <span>₹{viewingReceipt.totalAmount}.00</span>
                   </div>
 
                   <div className="flex justify-between text-emerald-800 font-semibold pt-1">
-                    <span>• 90% Direct Artisan Take-Home (UPI Settled)</span>
+                    <span>{t('shareWorker')}</span>
                     <span>₹{rSplit.workerPayout}.00</span>
                   </div>
 
                   <div className="flex justify-between text-blue-700">
-                    <span>• 5% Primary Society Operational Reserve</span>
+                    <span>{t('shareSociety')}</span>
                     <span>₹{rSplit.coopFee}.00</span>
                   </div>
 
                   <div className="flex justify-between text-amber-700">
-                    <span>• 5% Mutual Aid & Health Hospitalization Pool</span>
+                    <span>{t('shareWelfare')}</span>
                     <span>₹{rSplit.welfareFund}.00</span>
-                  </div>
-
-                  <div className="flex justify-between text-slate-400 text-[11px] pt-1">
-                    <span>• 1% Central Guarantee Escrow Protection</span>
-                    <span>₹{rSplit.guaranteeFund}.00</span>
                   </div>
                 </div>
               );
@@ -340,14 +341,14 @@ export default function BookingsPage() {
                 className="flex-1 h-11 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold shadow-xs transition-colors flex items-center justify-center gap-1.5"
               >
                 <Printer className="w-3.5 h-3.5" />
-                <span>Print / Save PDF</span>
+                <span>{t('receiptDownloadBtn')}</span>
               </button>
               <button
                 type="button"
                 onClick={() => setViewingReceipt(null)}
                 className="h-11 px-4 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-semibold transition-colors"
               >
-                Close
+                {t('close')}
               </button>
             </div>
           </div>
@@ -363,7 +364,7 @@ export default function BookingsPage() {
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <div className="flex items-center gap-2">
                 <AlertTriangle className="w-5 h-5 text-amber-600" />
-                <h3 className="text-base font-bold text-slate-900">Restorative Arbitration Claim</h3>
+                <h3 className="text-base font-bold text-slate-900">{t('disputeModalTitle')}</h3>
               </div>
               <button
                 onClick={() => setDisputeBooking(null)}
@@ -374,37 +375,36 @@ export default function BookingsPage() {
             </div>
 
             <p className="text-xs text-slate-600 leading-relaxed">
-              SyncBridge uses a 3-member restorative peer arbitration council (1 chapter secretary, 1 peer artisan, 1 consumer advocate) to resolve disputes fairly without corporate penalties.
+              {t('disputeModalSub')}
             </p>
 
             {disputeSubmitted ? (
               <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-2xl text-center space-y-1 text-emerald-800 text-xs font-semibold">
-                ✓ Claim Registered! Scheduled for hearing by the Regional Restorative Council.
+                ✓ {t('disputeSuccessMsg')}
               </div>
             ) : (
               <form onSubmit={handleDisputeSubmit} className="space-y-3 text-xs">
                 <div>
-                  <label className="font-semibold text-slate-700 block mb-1">Dispute Category</label>
+                  <label className="font-semibold text-slate-700 block mb-1">{t('disputeReasonLabel')}</label>
                   <select
                     value={disputeReason}
                     onChange={(e) => setDisputeReason(e.target.value)}
                     className="w-full px-3 py-2 border border-slate-300 rounded-xl outline-none text-slate-900 bg-white font-medium"
                   >
-                    <option>Quality of work did not match cooperative standard</option>
-                    <option>Artisan arrived significantly later than scheduled</option>
-                    <option>Additional unscheduled material charges requested</option>
-                    <option>Incomplete service execution</option>
+                    <option>{t('disputeReasonQuality')}</option>
+                    <option>{t('disputeReasonDamage')}</option>
+                    <option>{t('disputeReasonPricing')}</option>
                   </select>
                 </div>
 
                 <div>
-                  <label className="font-semibold text-slate-700 block mb-1">Your Statement</label>
+                  <label className="font-semibold text-slate-700 block mb-1">{t('disputeStatementLabel')}</label>
                   <textarea
                     rows={3}
                     required
                     value={disputeStatement}
                     onChange={(e) => setDisputeStatement(e.target.value)}
-                    placeholder="Provide specific details of what was unsatisfactory..."
+                    placeholder={t('disputeStatementPlaceholder')}
                     className="w-full p-3 border border-slate-300 rounded-xl outline-none text-slate-900 bg-white"
                   />
                 </div>
@@ -419,13 +419,13 @@ export default function BookingsPage() {
                     onClick={() => setDisputeBooking(null)}
                     className="flex-1 h-10 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 font-semibold"
                   >
-                    Cancel
+                    {t('cancel')}
                   </button>
                   <button
                     type="submit"
                     className="flex-1 h-10 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-semibold shadow-xs"
                   >
-                    Submit to Council
+                    {t('disputeSubmitBtn')}
                   </button>
                 </div>
               </form>

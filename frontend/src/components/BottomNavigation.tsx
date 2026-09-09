@@ -27,35 +27,35 @@ export default function BottomNavigation() {
     switch (role) {
       case 'WORKER':
         return {
-          label: 'Workspace',
+          label: t('navWorker'),
           href: '/portal/worker',
           icon: Briefcase,
           isActive: pathname.startsWith('/portal/worker')
         };
       case 'COOP_ADMIN':
         return {
-          label: 'Society',
+          label: t('navAdmin'),
           href: '/portal/admin',
           icon: Building2,
           isActive: pathname.startsWith('/portal/admin')
         };
       case 'MANAGEMENT':
         return {
-          label: 'Operations',
+          label: t('navManagement'),
           href: '/portal/management',
           icon: BarChart3,
           isActive: pathname.startsWith('/portal/management')
         };
       case 'DEVELOPER':
         return {
-          label: 'Console',
+          label: t('navDeveloper'),
           href: '/portal/developer',
           icon: Terminal,
           isActive: pathname.startsWith('/portal/developer')
         };
       default:
         return {
-          label: 'Customer',
+          label: t('navCustomer'),
           href: '/portal/customer',
           icon: User,
           isActive: pathname.startsWith('/portal/customer')

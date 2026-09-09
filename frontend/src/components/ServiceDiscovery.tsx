@@ -333,7 +333,7 @@ export default function ServiceDiscovery() {
 
           <div className="text-xs font-semibold text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-full border border-emerald-200 self-start sm:self-auto flex items-center gap-1.5 shrink-0">
             <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-            <span>90% paid directly to artisan</span>
+            <span>{t('payoutBannerBadge')}</span>
           </div>
         </div>
 
@@ -345,7 +345,7 @@ export default function ServiceDiscovery() {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search trade, artisan, or locality (e.g. Plumber, Ramesh, Indiranagar)..."
+              placeholder={t('searchPlaceholderServices')}
               className="w-full py-2.5 px-3 text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 outline-none bg-transparent"
             />
             {searchQuery && (
@@ -353,7 +353,7 @@ export default function ServiceDiscovery() {
                 onClick={() => setSearchQuery('')}
                 className="px-2 py-1 text-slate-400 hover:text-slate-600 rounded-md text-xs font-semibold mr-2"
               >
-                Clear
+                {t('cancel')}
               </button>
             )}
           </div>
@@ -368,7 +368,7 @@ export default function ServiceDiscovery() {
               disabled={isLocating}
               className="text-xs font-semibold text-blue-600 hover:text-blue-800 shrink-0 ml-1 cursor-pointer disabled:opacity-50"
             >
-              {isLocating ? 'Locating...' : 'GPS'}
+              {isLocating ? t('detectingLocation') : t('useGpsBtn')}
             </button>
           </div>
         </div>
@@ -383,7 +383,7 @@ export default function ServiceDiscovery() {
                 : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-slate-900'
             }`}
           >
-            All Trades ({workers.length})
+            {t('catAllServices')} ({workers.length})
           </button>
           {professionalCategories.map((c) => {
             const Icon = c.icon;
@@ -431,7 +431,7 @@ export default function ServiceDiscovery() {
         <div className="flex items-center justify-between border-b border-slate-200/80 pb-3">
           <div className="flex items-center gap-2">
             <h3 className="text-base font-bold text-slate-900">
-              {isEmergency ? 'Emergency Priority Queue' : 'Available Artisans'}
+              {isEmergency ? t('emergencyBannerTitle') : t('statusAvailable')}
             </h3>
             <span className="text-xs font-semibold text-slate-600 bg-slate-100 px-2.5 py-0.5 rounded-full">
               {filteredWorkers.length} near you
@@ -439,13 +439,13 @@ export default function ServiceDiscovery() {
           </div>
 
           <span className="text-xs text-slate-500 hidden sm:inline font-medium">
-            Within 5 km geofenced radius
+            {t('activePerimeterLabel')}
           </span>
         </div>
 
         {filteredWorkers.length === 0 ? (
           <div className="p-10 text-center bg-white border border-slate-200 rounded-2xl space-y-2">
-            <p className="font-bold text-slate-800 text-base">No artisans found matching this criteria.</p>
+            <p className="font-bold text-slate-800 text-base">{t('noArtisansFound')}</p>
             <p className="text-xs text-slate-500 max-w-sm mx-auto">
               Try selecting another trade, expanding your search term, or switching back to &apos;All Trades&apos;.
             </p>
@@ -453,7 +453,7 @@ export default function ServiceDiscovery() {
               onClick={() => { setSelectedCategory('all'); setSearchQuery(''); }}
               className="mt-3 px-4 py-2 rounded-xl bg-slate-900 text-white text-xs font-semibold hover:bg-slate-800 transition-colors"
             >
-              Reset Filters
+              {t('clearFiltersBtn')}
             </button>
           </div>
         ) : (
@@ -516,7 +516,7 @@ export default function ServiceDiscovery() {
                     <div className="px-3 py-2 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center justify-between text-xs text-slate-700">
                       <div className="flex items-center gap-1.5 font-medium text-emerald-800">
                         <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
-                        <span>e-Shram Verified Member · Police Cleared</span>
+                        <span>{t('verifiedBadge')}</span>
                       </div>
                       <span className="font-mono text-[11px] text-slate-500 hidden sm:inline">
                         UAN: {worker.eShramUan ? worker.eShramUan.replace(/(\d{4})-(\d{4})-(\d{4})/, '$1-XXXX-$3') : 'XXXX-XXXX-3821'}
@@ -537,7 +537,7 @@ export default function ServiceDiscovery() {
                             </span>
                           </div>
                           <span className="text-[11px] text-emerald-700 font-semibold block">
-                            100% surge passes to worker (₹{Math.round(worker.hourlyRate * 0.90) + 250})
+                            {t('emergencySurgePremium')} ₹250
                           </span>
                         </div>
                       ) : (
@@ -547,7 +547,7 @@ export default function ServiceDiscovery() {
                             <span className="text-xs text-slate-500">{t('perHour')}</span>
                           </div>
                           <span className="text-[11px] text-emerald-700 font-semibold block">
-                            90% direct to worker (₹{Math.round(worker.hourlyRate * 0.90)})
+                            {t('shareWorker')} ₹{Math.round(worker.hourlyRate * 0.90)}
                           </span>
                         </div>
                       )}
@@ -592,7 +592,7 @@ export default function ServiceDiscovery() {
           <div className="bg-white border border-slate-200 rounded-3xl p-5 sm:p-6 w-full max-w-md shadow-2xl space-y-4 animate-in zoom-in-95 duration-150 max-h-[88vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <h3 className="text-lg font-bold text-slate-900">
-                {isEmergency ? '🚨 Confirm Emergency Dispatch' : 'Confirm Service Booking'}
+                {isEmergency ? `🚨 ${t('confirmModalTitle')}` : t('confirmModalTitle')}
               </h3>
               <button
                 onClick={() => setBookingWorker(null)}
@@ -617,10 +617,10 @@ export default function ServiceDiscovery() {
               <div className="p-3 bg-rose-50 rounded-xl border border-rose-200 text-xs text-rose-900 space-y-1">
                 <div className="font-bold flex items-center gap-1.5">
                   <Zap className="w-3.5 h-3.5 text-rose-600 fill-rose-600" />
-                  <span>Emergency Surge Premium: ₹250</span>
+                  <span>{t('emergencySurgePremium')} ₹250</span>
                 </div>
                 <p className="text-[11px] text-rose-700">
-                  <strong>100% of this surge goes directly to {bookingWorker.name}.</strong> The cooperative takes 0% clawback on emergency services.
+                  <strong>{t('emergencySurgeClaim')}</strong>
                 </p>
               </div>
             )}
@@ -633,19 +633,19 @@ export default function ServiceDiscovery() {
               return (
                 <div className="p-3.5 bg-slate-50/70 border border-slate-200/80 rounded-2xl space-y-1.5 text-xs">
                   <div className="flex justify-between font-bold text-slate-900 pb-1 border-b border-slate-200">
-                    <span>Total Service Bill:</span>
+                    <span>{t('grossTotalPayable')}</span>
                     <span>₹{gross}.00</span>
                   </div>
                   <div className="flex justify-between text-emerald-800 font-semibold">
-                    <span>90% Direct Worker Take-Home:</span>
+                    <span>{t('shareWorker')}</span>
                     <span>₹{split.workerPayout}.00</span>
                   </div>
                   <div className="flex justify-between text-slate-500">
-                    <span>5% Primary Cooperative Society:</span>
+                    <span>{t('shareSociety')}</span>
                     <span>₹{split.coopFee}.00</span>
                   </div>
                   <div className="flex justify-between text-slate-500">
-                    <span>5% Mutual Aid & Welfare Insurance:</span>
+                    <span>{t('shareWelfare')}</span>
                     <span>₹{split.welfareFund}.00</span>
                   </div>
                 </div>
@@ -657,13 +657,13 @@ export default function ServiceDiscovery() {
                 <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-2xl text-left space-y-1.5">
                   <div className="flex items-center gap-2 text-emerald-800 font-bold text-sm">
                     <CheckCircle2 className="w-5 h-5 text-emerald-600" />
-                    <span>Booking Dispatched to Worker!</span>
+                    <span>{t('confirmedHeading')}</span>
                   </div>
                   <p className="text-xs text-emerald-700">
                     Order Reference: <strong className="font-mono">{confirmedOrder.id}</strong>
                   </p>
                   <p className="text-xs text-slate-600 leading-relaxed">
-                    {confirmedOrder.workerName} has received this broadcast in their cooperative workspace with atomic mutex lock.
+                    {t('confirmedSubtitle')}
                   </p>
                 </div>
 
@@ -675,13 +675,13 @@ export default function ServiceDiscovery() {
                     }}
                     className="flex-1 py-2.5 px-4 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors"
                   >
-                    Close
+                    {t('close')}
                   </button>
                   <Link
                     href="/bookings"
                     className="flex-1 py-2.5 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-xs font-semibold text-white text-center shadow-xs transition-colors"
                   >
-                    View in Orders →
+                    {t('trackLiveBtn')} →
                   </Link>
                 </div>
               </div>
@@ -697,7 +697,7 @@ export default function ServiceDiscovery() {
                     : 'bg-blue-600 hover:bg-blue-700 shadow-blue-500/10'
                 }`}
               >
-                <span>{isSubmitting ? 'Dispatching...' : (isEmergency ? 'Confirm Emergency Dispatch' : 'Confirm & Request Worker')}</span>
+                <span>{isSubmitting ? t('submittingDispatch') : t('confirmAndDispatchBtn')}</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
             )}

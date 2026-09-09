@@ -475,13 +475,13 @@ export default function WorkerPortalPage() {
                     <span>{order.location}</span>
                   </p>
                   <p className="text-xs text-slate-500">
-                    Client: <strong className="text-slate-700">{order.customerName}</strong>
+                    {t('customerLabel')} <strong className="text-slate-700">{order.customerName}</strong>
                   </p>
                 </div>
 
                 <div className="flex flex-col sm:flex-row sm:items-center gap-3">
                   <div className="text-right sm:pr-4">
-                    <span className="text-xs text-slate-400 block">Your 90% Take-Home:</span>
+                    <span className="text-xs text-slate-400 block">{t('workerTakeHome')}:</span>
                     <span className="text-xl font-bold text-emerald-600">₹{order.workerPayout}</span>
                   </div>
 
@@ -515,7 +515,7 @@ export default function WorkerPortalPage() {
             <div className="flex items-center gap-2.5 flex-wrap">
               <span className="px-3 py-1 rounded-full text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200 flex items-center gap-1.5 animate-pulse">
                 <Radio className="w-3.5 h-3.5 text-rose-600" />
-                <span>INCOMING LIVE DISPATCH</span>
+                <span>{t('incomingLeadTitle')}</span>
               </span>
               <button
                 type="button"
@@ -528,13 +528,13 @@ export default function WorkerPortalPage() {
                 title="Listen to dispatch details in your language"
               >
                 <Volume2 className="w-3.5 h-3.5" />
-                <span>{isSpeaking ? 'Speaking...' : '🔊 Read Aloud'}</span>
+                <span>{isSpeaking ? t('pauseAudioBtn') : `🔊 ${t('listenAudioBtn')}`}</span>
               </button>
               <span className="text-xs text-slate-500">• 100% Surge Pass-Through</span>
             </div>
 
             <div className="text-right">
-              <span className="text-xs text-slate-500 block font-medium">Your 90% Take-Home Payout:</span>
+              <span className="text-xs text-slate-500 block font-medium">{t('workerTakeHome')}:</span>
               <span className="text-2xl font-black text-emerald-600">₹{incomingLead.workerPayout}</span>
             </div>
           </div>
@@ -554,9 +554,9 @@ export default function WorkerPortalPage() {
             </p>
 
             <div className="flex items-center gap-x-3 gap-y-1 text-xs text-slate-500 pt-1 flex-wrap">
-              <span>Location: <strong className="text-slate-800">{incomingLead.location}</strong></span>
+              <span>{t('locationLabel')} <strong className="text-slate-800">{incomingLead.location}</strong></span>
               <span className="text-slate-300">·</span>
-              <span>Customer: <strong className="text-slate-800">{incomingLead.customerName}</strong></span>
+              <span>{t('customerLabel')} <strong className="text-slate-800">{incomingLead.customerName}</strong></span>
               <span className="text-slate-300">·</span>
               <span>Scheduled: <strong className="text-slate-800">{incomingLead.scheduledTime}</strong></span>
             </div>
@@ -590,11 +590,11 @@ export default function WorkerPortalPage() {
             <div className="flex items-center gap-2">
               <Wrench className="w-4 h-4 text-blue-600" />
               <h3 className="text-base font-bold text-slate-900">
-                My Checked-Out Cooperative Power Tools
+                {t('toolInventoryTitle')}
               </h3>
             </div>
             <p className="text-xs text-slate-500 mt-0.5">
-              Democratically shared equipment funded via the 5% Society Operational Treasury.
+              {t('toolInventorySub')}
             </p>
           </div>
 
@@ -639,14 +639,14 @@ export default function WorkerPortalPage() {
           <div>
             <div className="flex items-center gap-2">
               <h2 className="text-lg font-bold text-slate-900">
-                Cloud Storage Document & Verification Vault
+                {t('vaultTitle')}
               </h2>
               <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200">
                 GCS / Supabase Storage
               </span>
             </div>
             <p className="text-xs text-slate-500 mt-0.5">
-              Encrypted credentials audited by Primary Society Secretary to preserve platform discovery status.
+              {t('vaultSub')}
             </p>
           </div>
 
@@ -663,7 +663,7 @@ export default function WorkerPortalPage() {
               className="cursor-pointer h-10 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs flex items-center gap-2 shadow-sm transition-colors"
             >
               <UploadCloud className="w-4 h-4" />
-              <span>{isUploading ? 'Uploading to Bucket...' : 'Upload New Certificate'}</span>
+              <span>{isUploading ? 'Uploading to Bucket...' : t('uploadDocBtn')}</span>
             </label>
           </div>
         </div>

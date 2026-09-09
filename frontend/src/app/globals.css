@@ -198,3 +198,24 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
 }
+
+/* Indic Script Typography & Rendering Optimizations */
+html[lang="hi"],
+html[lang="kn"],
+html[lang="ta"] {
+  line-height: 1.6;
+}
+
+html[lang="hi"] body,
+html[lang="kn"] body,
+html[lang="ta"] body {
+  letter-spacing: 0.01em;
+}
+
+/* Ensure complex conjuncts and diacritics are not clipped */
+html[lang="hi"] h1, html[lang="hi"] h2, html[lang="hi"] h3,
+html[lang="kn"] h1, html[lang="kn"] h2, html[lang="kn"] h3,
+html[lang="ta"] h1, html[lang="ta"] h2, html[lang="ta"] h3 {
+  line-height: 1.35;
+  padding-bottom: 0.1em;
+}

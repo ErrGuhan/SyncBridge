@@ -42,27 +42,27 @@ export default function WelfarePortalPage() {
       {/* Corpus Overview Metrics */}
       <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm space-y-1.5">
-          <span className="text-[11px] text-slate-500 uppercase font-semibold">Total Collective Corpus</span>
+          <span className="text-[11px] text-slate-500 uppercase font-semibold">{t('metricTotalCorpus')}</span>
           <p className="text-3xl font-bold text-slate-900">{MOCK_WELFARE_FUND_SNAPSHOT.totalCorpus}</p>
-          <span className="text-xs text-emerald-600 font-medium">Audited & Verified Reserves</span>
+          <span className="text-xs text-emerald-600 font-medium">{t('metricAuditedReserve')}</span>
         </div>
 
         <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm space-y-1.5">
-          <span className="text-[11px] text-slate-500 uppercase font-semibold">Medical Claims Settled</span>
+          <span className="text-[11px] text-slate-500 uppercase font-semibold">{t('metricMedicalClaims')}</span>
           <p className="text-3xl font-bold text-emerald-600">{MOCK_WELFARE_FUND_SNAPSHOT.medicalClaimsSettled}</p>
-          <span className="text-xs text-slate-500">{MOCK_WELFARE_FUND_SNAPSHOT.totalMedicalPaid} disbursed cashless</span>
+          <span className="text-xs text-slate-500">{t('metricCashlessDisbursed', { amount: MOCK_WELFARE_FUND_SNAPSHOT.totalMedicalPaid })}</span>
         </div>
 
         <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm space-y-1.5">
-          <span className="text-[11px] text-slate-500 uppercase font-semibold">Micro-Pension Members</span>
+          <span className="text-[11px] text-slate-500 uppercase font-semibold">{t('metricMicroPension')}</span>
           <p className="text-3xl font-bold text-blue-600">{MOCK_WELFARE_FUND_SNAPSHOT.microPensionAccounts.toLocaleString()}</p>
-          <span className="text-xs text-slate-500">With 50% cooperative match</span>
+          <span className="text-xs text-slate-500">{t('metricCoopMatch')}</span>
         </div>
 
         <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm space-y-1.5">
-          <span className="text-[11px] text-slate-500 uppercase font-semibold">1% Customer Guarantee Fund</span>
+          <span className="text-[11px] text-slate-500 uppercase font-semibold">{t('metricGuaranteeFund')}</span>
           <p className="text-3xl font-bold text-amber-600">{MOCK_WELFARE_FUND_SNAPSHOT.guaranteeFundReserve}</p>
-          <span className="text-xs text-slate-500">Instant customer damage recourse</span>
+          <span className="text-xs text-slate-500">{t('metricDamageRecourse')}</span>
         </div>
       </section>
 
@@ -70,10 +70,10 @@ export default function WelfarePortalPage() {
       <section className="space-y-6">
         <div className="text-center max-w-2xl mx-auto space-y-1">
           <span className="text-xs font-semibold uppercase tracking-wider text-emerald-600">
-            Democratic Protections
+            {t('pillarsTag')}
           </span>
           <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">
-            Four Core Pillars of Cooperative Mutual Aid
+            {t('pillarsTitle')}
           </h2>
         </div>
 
@@ -85,15 +85,15 @@ export default function WelfarePortalPage() {
                 <HeartHandshake className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="text-base font-bold text-slate-900">₹5 Lakhs Family Health Shield</h3>
-                <span className="text-xs text-emerald-600 font-semibold">Cashless Hospitalization</span>
+                <h3 className="text-base font-bold text-slate-900">{t('pillar1Title')}</h3>
+                <span className="text-xs text-emerald-600 font-semibold">{t('pillar1Badge')}</span>
               </div>
             </div>
             <p className="text-xs text-slate-600 leading-relaxed">
-              Covers primary member, spouse, and dependent children across 850+ empanelled government and cooperative healthcare facilities. Pre-existing conditions covered after 90 days of active standing.
+              {t('pillar1Desc')}
             </p>
             <div className="pt-2 border-t border-slate-100 text-[11px] text-slate-500 flex justify-between">
-              <span>Claims Approval Rate: <strong className="text-slate-900">98.4%</strong></span>
+              <span>{t('pillar1Rate')}</span>
               <span className="text-emerald-700 font-medium">Direct TPA Settlement</span>
             </div>
           </div>
@@ -105,15 +105,15 @@ export default function WelfarePortalPage() {
                 <ShieldCheck className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="text-base font-bold text-slate-900">₹10 Lakhs Accident & Disability Cover</h3>
-                <span className="text-xs text-blue-600 font-semibold">Active On-Duty & In-Transit</span>
+                <h3 className="text-base font-bold text-slate-900">{t('pillar2Title')}</h3>
+                <span className="text-xs text-blue-600 font-semibold">{t('pillar2Badge')}</span>
               </div>
             </div>
             <p className="text-xs text-slate-600 leading-relaxed">
-              Immediate financial support in the event of job-site electrical shocks, falls from height, or transit accidents while travelling to appointments within the service radius.
+              {t('pillar2Desc')}
             </p>
             <div className="pt-2 border-t border-slate-100 text-[11px] text-slate-500 flex justify-between">
-              <span>Active Policies: <strong className="text-slate-900">4,120 workers</strong></span>
+              <span>{t('pillar2Rate')}</span>
               <span className="text-blue-700 font-medium">24-Hour Nominee Disbursement</span>
             </div>
           </div>
@@ -125,15 +125,15 @@ export default function WelfarePortalPage() {
                 <TrendingUp className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="text-base font-bold text-slate-900">Retirement Micro-Pension Trust</h3>
-                <span className="text-xs text-indigo-600 font-semibold">50% Federation Match</span>
+                <h3 className="text-base font-bold text-slate-900">{t('pillar3Title')}</h3>
+                <span className="text-xs text-indigo-600 font-semibold">{t('pillar3Badge')}</span>
               </div>
             </div>
             <p className="text-xs text-slate-600 leading-relaxed">
-              Every ₹100 of dividend earnings opted by the worker into their pension fund receives a ₹50 matching grant from the Cooperative Society operating pool, creating true long-term security.
+              {t('pillar3Desc')}
             </p>
             <div className="pt-2 border-t border-slate-100 text-[11px] text-slate-500 flex justify-between">
-              <span>Enrolled Members: <strong className="text-slate-900">3,840</strong></span>
+              <span>{t('pillar3Rate')}</span>
               <span className="text-indigo-700 font-medium">Tier-II Compliant</span>
             </div>
           </div>
@@ -145,15 +145,15 @@ export default function WelfarePortalPage() {
                 <Wallet className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="text-base font-bold text-slate-900">1% Customer Guarantee Fund</h3>
-                <span className="text-xs text-amber-600 font-semibold">Decoupled Damage Recourse</span>
+                <h3 className="text-base font-bold text-slate-900">{t('pillar4Title')}</h3>
+                <span className="text-xs text-amber-600 font-semibold">{t('pillar4Badge')}</span>
               </div>
             </div>
             <p className="text-xs text-slate-600 leading-relaxed">
-              Eliminates unfair financial penalties on gig workers. In case of unintentional damage to client property, claims up to ₹25,000 are settled from this reserve without docking worker pay.
+              {t('pillar4Desc')}
             </p>
             <div className="pt-2 border-t border-slate-100 text-[11px] text-slate-500 flex justify-between">
-              <span>Reserve Size: <strong className="text-slate-900">₹48.25 Lakhs</strong></span>
+              <span>{t('pillar4Rate')}</span>
               <span className="text-amber-700 font-medium">Peer Council Adjudicated</span>
             </div>
           </div>
@@ -164,20 +164,20 @@ export default function WelfarePortalPage() {
       <section className="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200/80 shadow-sm space-y-6">
         <div className="max-w-2xl mx-auto text-center space-y-1">
           <span className="text-xs font-semibold uppercase tracking-wider text-blue-600">
-            Interactive Calculator
+            {t('calcTag')}
           </span>
           <h2 className="text-xl sm:text-2xl font-bold text-slate-900">
-            Worker Retirement Corpus Simulator
+            {t('calcTitle')}
           </h2>
           <p className="text-xs sm:text-sm text-slate-600">
-            See how small monthly contributions from completed gig payouts grow with the 50% cooperative match.
+            {t('calcSub')}
           </p>
         </div>
 
         <div className="max-w-xl mx-auto p-6 rounded-2xl bg-slate-50 border border-slate-200/60 space-y-5">
           <div>
             <div className="flex justify-between items-center text-xs text-slate-700 mb-2">
-              <span className="font-semibold">Your Monthly Contribution:</span>
+              <span className="font-semibold">{t('monthlyWorkerContrib')}</span>
               <span className="text-base font-bold text-emerald-600">₹{pensionMonthlyContrib} / month</span>
             </div>
             <input 
@@ -193,18 +193,18 @@ export default function WelfarePortalPage() {
 
           <div className="grid grid-cols-2 gap-3 text-xs">
             <div className="p-3.5 rounded-xl bg-white border border-slate-200 shadow-sm">
-              <span className="text-slate-500 block text-[11px]">Coop Federation 50% Match</span>
+              <span className="text-slate-500 block text-[11px]">{t('monthlyCoopMatch')}</span>
               <span className="text-base font-bold text-blue-600">+₹{coopMatch} / mo</span>
             </div>
             <div className="p-3.5 rounded-xl bg-white border border-slate-200 shadow-sm">
-              <span className="text-slate-500 block text-[11px]">Total Monthly Invested</span>
+              <span className="text-slate-500 block text-[11px]">{t('monthlyTotalSavings')}</span>
               <span className="text-base font-bold text-slate-900">₹{totalMonthlySavings} / mo</span>
             </div>
           </div>
 
           <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 flex flex-col sm:flex-row items-center justify-between gap-4">
             <div>
-              <span className="text-xs text-slate-600 block font-medium">Projected 15-Year Retirement Corpus:</span>
+              <span className="text-xs text-slate-600 block font-medium">{t('estimatedCorpus15Years')}</span>
               <span className="text-2xl font-bold text-emerald-700">
                 ₹{estimatedRetirementCorpus15Yrs.toLocaleString()}
               </span>
@@ -213,7 +213,7 @@ export default function WelfarePortalPage() {
               href="/register/worker"
               className="w-full sm:w-auto px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs transition-colors text-center shadow-sm"
             >
-              Enroll as Member
+              {t('startContributingBtn')}
             </Link>
           </div>
         </div>

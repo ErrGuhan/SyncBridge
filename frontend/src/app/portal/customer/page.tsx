@@ -161,7 +161,7 @@ export default function CustomerPortalPage() {
 
           {/* Preset Prompts Pills */}
           <div className="flex items-center gap-1.5 flex-wrap pt-1">
-            <span className="text-[11px] text-slate-400 font-medium mr-1">Try:</span>
+            <span className="text-[11px] text-slate-400 font-medium mr-1">{t('samplePromptsLabel')}</span>
             {samplePrompts.map((p, idx) => (
               <button
                 key={idx}
@@ -244,7 +244,7 @@ export default function CustomerPortalPage() {
             <section className="space-y-3">
               <div className="flex items-center justify-between">
                 <h2 className="text-base font-bold text-slate-900">
-                  Active Service Dispatch
+                  {t('activeBookingHeader')}
                 </h2>
                 <span className="text-xs text-slate-500 font-mono">
                   Order #{activeOrder.id} • Real-Time GPS Tracking
@@ -265,7 +265,7 @@ export default function CustomerPortalPage() {
         return (
           <div className="p-5 rounded-2xl bg-white border border-slate-200 text-center space-y-2">
             <CheckCircle2 className="w-8 h-8 text-emerald-600 mx-auto" />
-            <h3 className="font-bold text-slate-900 text-sm">No Active Dispatches Right Now</h3>
+            <h3 className="font-bold text-slate-900 text-sm">{t('noActiveBookingMsg')}</h3>
             <p className="text-xs text-slate-500 max-w-sm mx-auto">
               All previous services have been fulfilled and verified. Need on-demand trade assistance?
             </p>
@@ -273,7 +273,7 @@ export default function CustomerPortalPage() {
               href="/services"
               className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold mt-2"
             >
-              <span>Explore Trade Services</span>
+              <span>{t('findArtisanBtn')}</span>
               <ArrowRight className="w-3 h-3" />
             </Link>
           </div>

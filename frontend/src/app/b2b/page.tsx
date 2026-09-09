@@ -56,7 +56,7 @@ export default function B2GPortalPage() {
             <span>{t('b2bStatHours')}</span>
           </div>
           <p className="text-2xl font-bold text-slate-900">6,450+ hrs/mo</p>
-          <p className="text-xs text-slate-500">Committed institutional hours preventing seasonal gig starvation.</p>
+          <p className="text-xs text-slate-500">{t('b2bStatHoursDesc')}</p>
         </div>
 
         <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-2">
@@ -65,7 +65,7 @@ export default function B2GPortalPage() {
             <span>{t('b2bStatSLA')}</span>
           </div>
           <p className="text-2xl font-bold text-slate-900">100% On-Time</p>
-          <p className="text-xs text-slate-500">Cooperative escrow eliminates traditional 90-day government contractor delays.</p>
+          <p className="text-xs text-slate-500">{t('b2bStatSLADesc')}</p>
         </div>
 
         <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-2">
@@ -74,7 +74,7 @@ export default function B2GPortalPage() {
             <span>{t('b2bStatCompliance')}</span>
           </div>
           <p className="text-2xl font-bold text-slate-900">98.6% Average</p>
-          <p className="text-xs text-slate-500">Backed by certified master technicians and primary society pooling.</p>
+          <p className="text-xs text-slate-500">{t('b2bStatComplianceDesc')}</p>
         </div>
       </section>
 
@@ -90,7 +90,7 @@ export default function B2GPortalPage() {
             </h2>
           </div>
           <span className="text-xs text-slate-500">
-            Governed under Multi-State Cooperative Framework & verified registry
+            {t('b2bLedgerSubtitle')}
           </span>
         </div>
 
@@ -132,7 +132,7 @@ export default function B2GPortalPage() {
               {/* Scope & Details */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
                 <div className="p-4 rounded-xl bg-slate-50 border border-slate-100 space-y-2">
-                  <span className="text-slate-500 uppercase tracking-wider text-[10px] font-bold block">Contract Scope</span>
+                  <span className="text-slate-500 uppercase tracking-wider text-[10px] font-bold block">{t('contractScopeLabel')}</span>
                   <p className="text-slate-700 leading-relaxed">{c.scope}</p>
                   <div className="pt-2 flex items-center gap-2 text-slate-600 text-[11px]">
                     <Users className="w-3.5 h-3.5 text-blue-600" />
@@ -142,7 +142,7 @@ export default function B2GPortalPage() {
 
                 <div className="p-4 rounded-xl bg-slate-50 border border-slate-100 flex flex-col justify-between space-y-3">
                   <div className="space-y-1.5">
-                    <span className="text-slate-500 uppercase tracking-wider text-[10px] font-bold block">Cooperative Fleet</span>
+                    <span className="text-slate-500 uppercase tracking-wider text-[10px] font-bold block">{t('contractWorkersLabel')}</span>
                     <div className="flex items-center gap-2 text-slate-900 font-semibold">
                       <Users className="w-4 h-4 text-blue-600" />
                       <span>{c.assignedWorkersCount} Dedicated Tradespeople</span>
@@ -155,7 +155,7 @@ export default function B2GPortalPage() {
                   </div>
 
                   <div className="flex items-center justify-between border-t border-slate-200/60 pt-2 text-[11px]">
-                    <span className="text-emerald-700 font-medium">✓ Escrow Protected: {c.paymentTermDays}-Day Net Settlement</span>
+                    <span className="text-emerald-700 font-medium">✓ {t('contractEscrowLabel')} {c.paymentTermDays}-Day Net Settlement</span>
                     <span className="text-blue-700 font-medium">Audit Grade: A+</span>
                   </div>
                 </div>
@@ -173,29 +173,29 @@ export default function B2GPortalPage() {
               For Municipalities, PSU Warehouses & Cooperative Enterprises
             </span>
             <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mt-1">
-              {t('b2bIssueRfq')}
+              {t('b2bIssueRfqTitle')}
             </h2>
             <p className="text-xs sm:text-sm text-slate-600 mt-1">
-              Directly empanel registered Labour Cooperatives for your ward offices, processing facilities, and campuses with transparent 90/5/5 accounting and guaranteed SLAs.
+              {t('b2bIssueRfqSub')}
             </p>
           </div>
 
           {showRfqSuccess ? (
             <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm flex items-center justify-center gap-2">
               <CheckCircle2 className="w-5 h-5 text-emerald-600" />
-              <span>Institutional RFQ registered! Federation Nodal Desk will transmit formal tender empanelment documents within 24 hours.</span>
+              <span>{t('rfqSuccessMsg')}</span>
             </div>
           ) : (
             <form onSubmit={handleRfqSubmit} className="space-y-4 text-left">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 mb-1">
-                    Institution / Department Name *
+                    {t('rfqInstNameLabel')}
                   </label>
                   <input
                     type="text"
                     required
-                    placeholder="e.g. City Municipal Corporation"
+                    placeholder={t('rfqInstNamePlaceholder')}
                     value={institutionName}
                     onChange={(e) => setInstitutionName(e.target.value)}
                     className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-slate-900 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 bg-white"
@@ -204,17 +204,16 @@ export default function B2GPortalPage() {
 
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 mb-1">
-                    Primary Service Requirement *
+                    {t('rfqServiceTypeLabel')}
                   </label>
                   <select
                     value={serviceReq}
                     onChange={(e) => setServiceReq(e.target.value)}
                     className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-slate-900 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 bg-white"
                   >
-                    <option value="Municipal Facility Maintenance">Municipal Facility Electrical & Plumbing</option>
-                    <option value="Cold Chain & Dairy Refrigeration">Cold Chain & Dairy Refrigeration</option>
-                    <option value="Agro-Warehouse Conveyor Electricals">Agro-Warehouse Conveyor Electricals</option>
-                    <option value="Hospital Sanitary & Oxygen Line Maintenance">Hospital Sanitary & Oxygen Line Maintenance</option>
+                    <option value="Comprehensive Facility Electrical & Plumbing">{t('rfqServiceOptionFacility')}</option>
+                    <option value="Commercial HVAC & Chiller Plant Overhaul">{t('rfqServiceOptionHvac')}</option>
+                    <option value="Campus Industrial Deep Sanitation">{t('rfqServiceOptionSanitation')}</option>
                   </select>
                 </div>
               </div>
@@ -228,7 +227,7 @@ export default function B2GPortalPage() {
                   className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs sm:text-sm shadow-sm transition-all flex items-center justify-center gap-2"
                 >
                   <Send className="w-4 h-4" />
-                  <span>{t('b2bSubmitRfq')}</span>
+                  <span>{t('rfqSubmitBtn')}</span>
                 </button>
               </div>
             </form>

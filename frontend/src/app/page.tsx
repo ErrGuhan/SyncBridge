@@ -6,7 +6,6 @@ import { useRouter } from 'next/navigation';
 import { 
   ShieldCheck, 
   Wallet, 
-  HeartHandshake, 
   ArrowRight, 
   Search, 
   Droplets, 
@@ -23,51 +22,6 @@ import {
 } from 'lucide-react';
 import { MOCK_WORKERS } from '@/data/mockData';
 import { useLanguage } from '@/context/LanguageContext';
-
-const QUICK_SERVICES = [
-  {
-    id: 'plumbing',
-    name: 'Plumbing',
-    rate: 'From ₹450/hr',
-    icon: Droplets,
-    desc: 'Leaks, fittings, pipes & heaters'
-  },
-  {
-    id: 'electrical',
-    name: 'Electrical',
-    rate: 'From ₹500/hr',
-    icon: Zap,
-    desc: 'Wiring, switches, fans & fuse'
-  },
-  {
-    id: 'cleaning',
-    name: 'Home Cleaning',
-    rate: 'From ₹420/hr',
-    icon: Sparkles,
-    desc: 'Deep cleaning, tanks & sanitization'
-  },
-  {
-    id: 'appliance-repair',
-    name: 'Appliances',
-    rate: 'From ₹550/hr',
-    icon: Wind,
-    desc: 'AC servicing, fridge & washing machine'
-  },
-  {
-    id: 'carpentry',
-    name: 'Carpentry',
-    rate: 'From ₹520/hr',
-    icon: Hammer,
-    desc: 'Furniture repair, locks & doors'
-  },
-  {
-    id: 'painting',
-    name: 'Painting',
-    rate: 'From ₹480/hr',
-    icon: Paintbrush,
-    desc: 'Wall touch-ups, waterproofing'
-  }
-];
 
 interface AiDiagnosticResponse {
   tradeCategory: string;
@@ -88,6 +42,51 @@ export default function HomePage() {
   const [aiPrompt, setAiPrompt] = useState('');
   const [isDiagnosing, setIsDiagnosing] = useState(false);
   const [aiResult, setAiResult] = useState<AiDiagnosticResponse | null>(null);
+
+  const QUICK_SERVICES = [
+    {
+      id: 'plumbing',
+      name: t('servicePlumbingName'),
+      rate: t('serviceFromRate', { rate: 450 }),
+      icon: Droplets,
+      desc: t('servicePlumbingDesc')
+    },
+    {
+      id: 'electrical',
+      name: t('serviceElectricalName'),
+      rate: t('serviceFromRate', { rate: 500 }),
+      icon: Zap,
+      desc: t('serviceElectricalDesc')
+    },
+    {
+      id: 'cleaning',
+      name: t('serviceCleaningName'),
+      rate: t('serviceFromRate', { rate: 420 }),
+      icon: Sparkles,
+      desc: t('serviceCleaningDesc')
+    },
+    {
+      id: 'appliance-repair',
+      name: t('serviceApplianceName'),
+      rate: t('serviceFromRate', { rate: 550 }),
+      icon: Wind,
+      desc: t('serviceApplianceDesc')
+    },
+    {
+      id: 'carpentry',
+      name: t('serviceCarpentryName'),
+      rate: t('serviceFromRate', { rate: 520 }),
+      icon: Hammer,
+      desc: t('serviceCarpentryDesc')
+    },
+    {
+      id: 'painting',
+      name: t('servicePaintingName'),
+      rate: t('serviceFromRate', { rate: 480 }),
+      icon: Paintbrush,
+      desc: t('servicePaintingDesc')
+    }
+  ];
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -133,17 +132,17 @@ export default function HomePage() {
         
         {/* Cooperative Trust Pill */}
         <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200">
-          <ShieldCheck className="w-4 h-4 text-blue-600" />
-          <span>100% Worker-Member Owned Cooperative • Zero Corporate Middlemen</span>
+          <ShieldCheck className="w-4 h-4 text-blue-600 shrink-0" />
+          <span>{t('heroTrustBadge')}</span>
         </div>
 
         {/* Clear, Human-Centered Heading */}
         <div className="space-y-3 max-w-3xl mx-auto">
           <h1 className="text-3xl sm:text-5xl font-extrabold text-slate-900 tracking-tight leading-[1.15]">
-            Trusted Home Services by <span className="text-blue-600">Certified Artisans</span>
+            {t('heroTitle')}
           </h1>
           <p className="text-sm sm:text-base text-slate-600 max-w-2xl mx-auto leading-relaxed">
-            Book background-verified electricians, plumbers, technicians, and carpenters in minutes. Fair transparent pricing for you, 90% direct earnings for skilled workers.
+            {t('heroSub')}
           </p>
         </div>
 
@@ -155,23 +154,23 @@ export default function HomePage() {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search service, trade, or area (e.g. Electrician, Water leak, AC repair)..."
+              placeholder={t('heroSearchPlaceholder')}
               className="w-full px-3 py-2.5 bg-transparent text-sm text-slate-900 placeholder-slate-400 focus:outline-none"
             />
             <button
               type="submit"
               className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs sm:text-sm flex items-center gap-1.5 shadow-2xs transition-colors shrink-0"
             >
-              <span>Find Artisan</span>
+              <span>{t('heroFindBtn')}</span>
               <ArrowRight className="w-4 h-4" />
             </button>
           </div>
         </form>
 
-        {/* Clean Service Category Cards (Unified Styling, No Rainbow Clutter) */}
+        {/* Clean Service Category Cards */}
         <div className="pt-4">
           <div className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">
-            Popular Services
+            {t('popularServicesLabel')}
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
             {QUICK_SERVICES.map((cat) => {
@@ -205,44 +204,44 @@ export default function HomePage() {
       <section className="space-y-4">
         <div className="text-center space-y-1">
           <h2 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
-            Why Choose a Cooperative Platform?
+            {t('howItWorksTitle')}
           </h2>
           <p className="text-xs sm:text-sm text-slate-500">
-            A sustainable, equitable alternative to predatory aggregator platforms.
+            {t('howItWorksSub')}
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-          {/* Pillar 1: Fair Pricing */}
+          {/* Pillar 1 */}
           <div className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-xs space-y-3">
             <div className="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold">
               <Wallet className="w-5 h-5" />
             </div>
-            <h3 className="text-base font-bold text-slate-900">Direct 90% Worker Pay</h3>
+            <h3 className="text-base font-bold text-slate-900">{t('pillar1Title')}</h3>
             <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-              Every artisan keeps 90% of what you pay. No hidden surge charges, no 30% aggregator commissions, and no arbitrary clawbacks.
+              {t('pillar1Desc')}
             </p>
           </div>
 
-          {/* Pillar 2: Background Verified */}
+          {/* Pillar 2 */}
           <div className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-xs space-y-3">
             <div className="w-11 h-11 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center font-bold">
               <ShieldCheck className="w-5 h-5" />
             </div>
-            <h3 className="text-base font-bold text-slate-900">100% Certified & Verified</h3>
+            <h3 className="text-base font-bold text-slate-900">{t('pillar2Title')}</h3>
             <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-              Every worker is verified via Ministry of Labour e-Shram, background-checked, and sponsored by a registered primary labour society.
+              {t('pillar2Desc')}
             </p>
           </div>
 
-          {/* Pillar 3: Fast Local Dispatch */}
+          {/* Pillar 3 */}
           <div className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-xs space-y-3">
             <div className="w-11 h-11 rounded-xl bg-indigo-50 text-indigo-700 flex items-center justify-center font-bold">
               <MapPin className="w-5 h-5" />
             </div>
-            <h3 className="text-base font-bold text-slate-900">5 km Local Geofencing</h3>
+            <h3 className="text-base font-bold text-slate-900">{t('pillar3Title')}</h3>
             <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-              Get matched instantly with qualified artisans in your immediate neighborhood for faster arrival and verified local accountability.
+              {t('pillar3Desc')}
             </p>
           </div>
         </div>
@@ -259,16 +258,16 @@ export default function HomePage() {
             </div>
             <div>
               <h2 className="text-base sm:text-lg font-bold text-slate-900">
-                Not sure what trade you need? Ask AI Assistant
+                {t('aiDiagTitle')}
               </h2>
               <p className="text-xs text-slate-500">
-                Describe your home maintenance issue to instantly determine the required trade, tools, and fair quote range.
+                {t('aiDiagSub')}
               </p>
             </div>
           </div>
 
           <span className="text-[11px] font-semibold px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200 self-start sm:self-auto">
-            Powered by Gemini AI
+            {t('aiDiagTag')}
           </span>
         </div>
 
@@ -280,7 +279,7 @@ export default function HomePage() {
               value={aiPrompt}
               onChange={(e) => setAiPrompt(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleRunAiDiagnosis()}
-              placeholder="Describe your issue (e.g. Water dripping from bathroom ceiling, circuit breaker tripping)..."
+              placeholder={t('aiDiagInputPlaceholder')}
               className="flex-1 px-4 py-3 rounded-xl border border-slate-300 text-slate-900 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-indigo-600 bg-slate-50/50"
             />
             <button
@@ -290,11 +289,11 @@ export default function HomePage() {
               className="px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-2xs transition-all disabled:opacity-50"
             >
               {isDiagnosing ? (
-                <span>Analyzing Issue...</span>
+                <span>{t('aiDiagBtnRunning')}</span>
               ) : (
                 <>
                   <Sparkles className="w-4 h-4" />
-                  <span>Diagnose Now</span>
+                  <span>{t('aiDiagBtnRun')}</span>
                 </>
               )}
             </button>
@@ -302,11 +301,12 @@ export default function HomePage() {
 
           {/* Quick Sample Prompts */}
           <div className="flex items-center gap-2 flex-wrap text-xs">
-            <span className="text-xs text-slate-400 font-medium">Try asking:</span>
+            <span className="text-xs text-slate-400 font-medium">{t('popularServicesLabel')}</span>
             {[
-              'Water tap leaking under kitchen sink',
-              'Circuit breaker trips when water heater starts',
-              'Air conditioner blowing warm air'
+              t('aiSamplePrompt1'),
+              t('aiSamplePrompt2'),
+              t('aiSamplePrompt3'),
+              t('aiSamplePrompt4')
             ].map((p, idx) => (
               <button
                 key={idx}
@@ -329,7 +329,7 @@ export default function HomePage() {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-indigo-100/60 pb-3">
               <div className="flex items-center gap-2 flex-wrap">
                 <span className="text-xs font-bold text-slate-900 uppercase tracking-wider">
-                  Recommended Trade:
+                  {t('aiResultTrade')}
                 </span>
                 <span className="px-3 py-0.5 rounded-full text-xs font-bold bg-indigo-600 text-white">
                   {aiResult.tradeCategory}
@@ -344,11 +344,13 @@ export default function HomePage() {
               </div>
 
               <div className="text-xs text-slate-700">
-                Fair Quote Estimate:{' '}
+                {t('aiResultQuoteRange')}{' '}
                 <strong className="text-slate-900 font-bold text-sm">
                   ₹{aiResult.fairPriceRange?.min} – ₹{aiResult.fairPriceRange?.max}
                 </strong>
-                <span className="text-slate-500 text-xs ml-1">({aiResult.estimatedHours} hrs standard)</span>
+                <span className="text-slate-500 text-xs ml-1">
+                  ({t('aiResultHours', { hours: aiResult.estimatedHours || 1 })})
+                </span>
               </div>
             </div>
 
@@ -365,15 +367,15 @@ export default function HomePage() {
 
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2">
               <div className="text-xs text-slate-500 flex items-center gap-1.5 flex-wrap">
-                <Wrench className="w-3.5 h-3.5 text-indigo-600" />
-                <span>Suggested Tools: {aiResult.suggestedTools?.join(', ')}</span>
+                <Wrench className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
+                <span>{t('aiResultSuggestedTools')} {aiResult.suggestedTools?.join(', ')}</span>
               </div>
 
               <Link
                 href={`/services?category=${encodeURIComponent(aiResult.tradeCategory.toLowerCase())}&ai=true&desc=${encodeURIComponent(aiPrompt || aiResult.diagnosisSummary)}${aiResult.urgencyLevel === 'EMERGENCY' ? '&emergency=true' : ''}`}
                 className="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs flex items-center justify-center gap-1.5 shadow-xs transition-all"
               >
-                <span>Book Certified {aiResult.tradeCategory}</span>
+                <span>{t('aiResultBookNow', { trade: aiResult.tradeCategory })}</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </Link>
             </div>
@@ -388,10 +390,10 @@ export default function HomePage() {
         <div className="flex items-center justify-between border-b border-slate-200 pb-3">
           <div>
             <h2 className="text-lg sm:text-xl font-bold text-slate-900">
-              Top-Rated Local Artisans
+              {t('topArtisansTitle')}
             </h2>
             <p className="text-xs text-slate-500">
-              Verified members available within 5 km for immediate or scheduled booking.
+              {t('topArtisansSub')}
             </p>
           </div>
 
@@ -399,7 +401,7 @@ export default function HomePage() {
             href="/services"
             className="text-xs font-semibold text-blue-600 hover:text-blue-800 flex items-center gap-1"
           >
-            <span>View All Tradespeople</span>
+            <span>{t('viewAll')}</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
@@ -435,7 +437,7 @@ export default function HomePage() {
                   {worker.rating}
                 </span>
                 <span className="text-slate-300">·</span>
-                <span>{worker.completedJobs} jobs completed</span>
+                <span>{t('jobsDone', { count: worker.completedJobs })}</span>
                 <span className="text-slate-300">·</span>
                 <span className="flex items-center text-slate-500">
                   <MapPin className="w-3 h-3 mr-0.5 text-slate-400" />
@@ -446,23 +448,21 @@ export default function HomePage() {
               {/* Single Clean Verification Badge */}
               <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-200/80 text-xs text-slate-700">
                 <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                <span className="font-medium text-slate-700">e-Shram Verified Member</span>
-                <span className="text-slate-300">·</span>
-                <span className="text-slate-500">Police Cleared</span>
+                <span className="font-medium text-slate-700">{t('verifiedBadge')}</span>
               </div>
 
               {/* Price & Action Button */}
               <div className="flex items-center justify-between pt-2 border-t border-slate-100">
                 <div>
                   <span className="text-base font-bold text-slate-900">₹{worker.hourlyRate}</span>
-                  <span className="text-xs text-slate-500">/hr</span>
+                  <span className="text-xs text-slate-500">{t('perHour')}</span>
                 </div>
 
                 <Link
                   href="/services"
                   className="min-h-[44px] px-5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors shadow-2xs"
                 >
-                  <span>Book Now</span>
+                  <span>{t('bookNow')}</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </Link>
               </div>
@@ -477,10 +477,10 @@ export default function HomePage() {
       <section className="bg-gradient-to-r from-slate-900 to-blue-950 rounded-3xl p-6 sm:p-10 text-white flex flex-col sm:flex-row items-center justify-between gap-6 shadow-sm">
         <div className="space-y-2 text-center sm:text-left">
           <h2 className="text-xl sm:text-2xl font-bold tracking-tight">
-            Are You a Skilled Trade Professional?
+            {t('joinWorkerTitle')}
           </h2>
           <p className="text-xs sm:text-sm text-slate-300 max-w-xl leading-relaxed">
-            Join your local primary labour cooperative society. Keep 90% of every rupee earned, receive instant daily payouts, and access group welfare benefits.
+            {t('joinWorkerSub')}
           </p>
         </div>
 
@@ -489,7 +489,7 @@ export default function HomePage() {
             href="/register/worker"
             className="h-11 px-5 rounded-xl bg-blue-500 hover:bg-blue-400 text-white font-semibold text-xs sm:text-sm flex items-center gap-2 transition-colors shadow-sm"
           >
-            <span>Register as an Artisan</span>
+            <span>{t('joinWorkerBtn')}</span>
             <ArrowRight className="w-4 h-4" />
           </Link>
         </div>

@@ -141,7 +141,7 @@ export default function TopAccessibleHeader() {
                 />
                 <div className="fixed sm:absolute left-4 right-4 sm:left-auto sm:right-0 top-16 sm:top-12 bg-white border border-slate-200 rounded-xl p-1.5 shadow-xl sm:w-56 z-50 animate-in fade-in zoom-in-95 duration-150 space-y-1">
                   <div className="px-2.5 py-1 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                    Active Languages
+                    {t('activeLanguages')}
                   </div>
                   {langOptions.map((opt) => (
                     <button
@@ -167,7 +167,7 @@ export default function TopAccessibleHeader() {
                   {/* 22 Scheduled Languages Roadmap */}
                   <div className="pt-2 border-t border-slate-100">
                     <div className="px-2.5 py-1 text-[9px] font-bold text-slate-400 uppercase tracking-wider">
-                      Upcoming (Eighth Schedule)
+                      {t('upcomingLanguages')}
                     </div>
                     <div className="px-2 py-1 flex flex-wrap gap-1 text-[10px] text-slate-500">
                       <span className="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600">বাংলা</span>
@@ -180,7 +180,7 @@ export default function TopAccessibleHeader() {
                       <span className="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600">অসমীয়া</span>
                     </div>
                     <p className="px-2.5 pt-1 text-[9px] text-slate-400 italic">
-                      Bhashini AI translation integration in progress
+                      {t('bhashiniNote')}
                     </p>
                   </div>
                 </div>
@@ -215,7 +215,7 @@ export default function TopAccessibleHeader() {
                     ? 'bg-amber-50 text-amber-700 border-amber-200'
                     : 'bg-blue-50 text-blue-700 border-blue-200'
                 }`}>
-                  {role === 'WORKER' ? 'Worker' : role === 'SOCIETY_SECRETARY' || role === 'COOP_ADMIN' ? 'Admin' : 'Customer'}
+                  {role === 'WORKER' ? t('roleWorker') : role === 'SOCIETY_SECRETARY' || role === 'COOP_ADMIN' ? t('roleAdmin') : t('roleCustomer')}
                 </span>
                 <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
               </button>
@@ -259,10 +259,10 @@ export default function TopAccessibleHeader() {
                     >
                       <span>
                         {role === 'WORKER' 
-                          ? 'Open Worker Workspace' 
+                          ? t('openWorkspace') 
                           : role === 'SOCIETY_SECRETARY' || role === 'COOP_ADMIN' 
-                          ? 'Open Admin Console' 
-                          : 'Open Customer Portal'}
+                          ? t('openAdminConsole') 
+                          : t('openCustomerPortal')}
                       </span>
                       <span>→</span>
                     </Link>
@@ -276,12 +276,13 @@ export default function TopAccessibleHeader() {
                       className="w-full py-2 px-3 rounded-xl hover:bg-rose-50 text-rose-600 text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors border border-rose-100"
                     >
                       <LogOut className="w-3.5 h-3.5" />
-                      <span>Sign Out</span>
+                      <span>{t('navSignOut')}</span>
                     </button>
                   </div>
                 </>
               )}
             </div>
+
           ) : (
             <Link
               href="/auth/login"
@@ -301,7 +302,7 @@ export default function TopAccessibleHeader() {
             <span className="w-2 h-2 rounded-full bg-white animate-ping shrink-0" />
             <Zap className="w-3.5 h-3.5 text-white fill-white group-hover:scale-110 transition-transform shrink-0" />
             <span className="font-bold tracking-tight">
-              <span className="hidden 2xl:inline">Emergency </span>SOS
+              <span className="hidden 2xl:inline">{t('emergencyLabel')} </span>SOS
             </span>
           </Link>
         </div>

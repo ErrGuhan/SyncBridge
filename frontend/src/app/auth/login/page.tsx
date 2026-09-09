@@ -203,10 +203,10 @@ export default function LoginPage() {
           <span>Role-Gated Cooperative Authentication</span>
         </div>
         <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
-          Sign In to SyncBridge
+          {t('authGatewayTitle')}
         </h1>
         <p className="text-xs sm:text-sm text-slate-600 max-w-md mx-auto">
-          Choose your account type below. Unauthenticated visitors are kept isolated from internal data until verified.
+          {t('authGatewaySubtitle')}
         </p>
       </div>
 
@@ -222,7 +222,7 @@ export default function LoginPage() {
           }`}
         >
           <User className="w-4 h-4 text-blue-600" />
-          <span>Customer</span>
+          <span>{t('authRoleCustomer')}</span>
         </button>
 
         <button
@@ -235,7 +235,7 @@ export default function LoginPage() {
           }`}
         >
           <Briefcase className="w-4 h-4 text-emerald-600" />
-          <span>Tradesperson</span>
+          <span>{t('authRoleWorker')}</span>
         </button>
 
         <button
@@ -248,7 +248,7 @@ export default function LoginPage() {
           }`}
         >
           <Building2 className="w-4 h-4 text-amber-600" />
-          <span>SOP / Admin</span>
+          <span>{t('authRoleAdmin')}</span>
         </button>
       </div>
 
