@@ -4,7 +4,7 @@ import { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Cooperative Federation Admin Dashboard — SyncBridge',
-  description: 'Manage worker skill verifications, monitor 80/15/5 patronage split, and audit cooperative federation reserves.',
+  description: 'Manage worker skill verifications, monitor 90/5/3/2 cooperative revenue split, and audit cooperative federation reserves.',
 };
 
 export default function DashboardPage() {

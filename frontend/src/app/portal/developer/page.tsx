@@ -59,7 +59,7 @@ export default function DeveloperPortalPage() {
       name: 'Payment & Split Microservice',
       port: 3003,
       protocol: 'HTTP/REST',
-      role: '90/5/5 cooperative dividend calculation engine',
+      role: '90/5/3/2 cooperative revenue split engine',
       status: 'ONLINE',
       latencyMs: 5,
       endpoint: 'http://localhost:3003/health'

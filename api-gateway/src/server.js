@@ -125,6 +125,17 @@ app.use(
   proxy(USER_SERVICE_URL, createProxyOptions('User Service'))
 );
 
+// Read-only Federation Admin Metrics endpoint
+app.use(
+  '/api/federation/metrics',
+  authenticateSupabase,
+  requireRole('FEDERATION_ADMIN', 'SUPER_ADMIN', 'COOP_ADMIN', 'SOCIETY_SECRETARY'),
+  proxy(USER_SERVICE_URL, {
+    ...createProxyOptions('User Service'),
+    proxyReqPathResolver: () => `/admin/federation-metrics`
+  })
+);
+
 // ----------------------------------------------------------------------------
 // ROUTE 2: BOOKING SERVICE (Port 3002)
 // ----------------------------------------------------------------------------

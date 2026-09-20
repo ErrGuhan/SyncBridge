@@ -8,7 +8,8 @@ import {
   Clock, 
   Users, 
   Send, 
-  Award
+  Award,
+  AlertTriangle
 } from 'lucide-react';
 import { MOCK_B2G_CONTRACTS, B2GContract } from '@/data/mockData';
 import { useLanguage } from '@/context/LanguageContext';
@@ -32,6 +33,17 @@ export default function B2GPortalPage() {
   return (
     <div className="space-y-10 py-6 sm:py-8 animate-in fade-in duration-300">
       
+      {/* Illustrative Demonstration Disclaimer Banner */}
+      <div 
+        role="alert"
+        className="flex items-center gap-3 px-4 py-3 sm:px-5 sm:py-3.5 rounded-xl bg-amber-50 border border-amber-300 text-amber-900 shadow-sm"
+      >
+        <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0" />
+        <p className="text-xs sm:text-sm font-medium leading-relaxed">
+          {t('b2bDisclaimer')}
+        </p>
+      </div>
+
       {/* Header Banner */}
       <section className="text-center space-y-4 max-w-3xl mx-auto">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 text-xs font-semibold text-blue-700 border border-blue-200">

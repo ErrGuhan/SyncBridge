@@ -14,7 +14,7 @@ SyncBridge/
 ├── services/
 │   ├── user-service/                 # Port 3001: Customers, Worker Profiles & Coop Verification
 │   ├── booking-service/              # Port 3002: Booking Engine & 10km Haversine Geo-Matching
-│   └── payment-service/              # Port 3003: 80/15/5 Cooperative & Worker Welfare Tri-Split
+│   └── payment-service/              # Port 3003: 90/5/3/2 Cooperative Revenue Split
 ├── prisma/
 │   └── schema.prisma                 # Complete PostgreSQL schema (Entities, Wallets & Ledgers)
 ```

@@ -4,6 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { useLanguage } from '@/context/LanguageContext';
 import { NAV_LINKS, EMERGENCY_LINK } from '@/config/nav';
+import { SPLIT_PCT } from '@/lib/constants';
 
 export default function Footer() {
   const { t } = useLanguage();
@@ -15,6 +16,7 @@ export default function Footer() {
       case '/bookings': return t('navOrders');
       case '/welfare': return t('navWelfare');
       case '/b2b': return t('navB2B');
+      case '/federation': return t('navFederation');
       case '/portal/worker': return t('navWorker');
       case '/portal/admin': return t('navAdmin');
       default: return fallbackLabel;
@@ -36,17 +38,21 @@ export default function Footer() {
             </span>
           </div>
 
-          <div className="flex items-center gap-4 text-[11px] font-medium text-slate-600 flex-wrap justify-center">
+          <div className="flex items-center gap-3 sm:gap-4 text-[11px] font-medium text-slate-600 flex-wrap justify-center">
             <span className="flex items-center gap-1">
-              <strong className="text-emerald-700">90%</strong> {t('footerWorkerTakeHome')}
+              <strong className="text-emerald-700">{SPLIT_PCT.worker}</strong> {t('footerWorkerTakeHome')}
             </span>
             <span>•</span>
             <span className="flex items-center gap-1">
-              <strong className="text-blue-700">5%</strong> {t('footerSocietyReserve')}
+              <strong className="text-blue-700">{SPLIT_PCT.coopAdmin}</strong> {t('footerSocietyReserve')}
             </span>
             <span>•</span>
             <span className="flex items-center gap-1">
-              <strong className="text-amber-700">5%</strong> {t('footerWelfareTrust')}
+              <strong className="text-amber-700">{SPLIT_PCT.welfare}</strong> {t('footerWelfareTrust')}
+            </span>
+            <span>•</span>
+            <span className="flex items-center gap-1">
+              <strong className="text-purple-700">{SPLIT_PCT.techFund}</strong> {t('footerTechFund')}
             </span>
           </div>
         </div>

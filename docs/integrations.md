@@ -8,7 +8,7 @@ SyncBridge is built using an **Adapter Pattern** for all external financial, gov
 ## 1. Financial & Settlement Integrations (`PaymentGateway`)
 
 ### Interface: `PaymentGateway` (`frontend/src/lib/paymentGateway.ts`)
-Controls the lifecycle of service escrows and direct 90/5/5 instant payouts to worker UPI accounts.
+Controls the lifecycle of service escrows and direct 90/5/3/2 instant payouts to worker UPI accounts.
 
 ```typescript
 export interface PaymentGateway {

@@ -355,7 +355,7 @@ export default function WorkerPortalPage() {
         </div>
       </section>
 
-      {/* WEEKLY & TODAY'S 90/5/5 EARNINGS BREAKDOWN */}
+      {/* WEEKLY & TODAY'S 90/5/3/2 EARNINGS BREAKDOWN */}
       {(() => {
         const completedVolume = recentCompletedOrders.reduce((sum, o) => sum + o.totalAmount, 0) || 14200;
         const completedTakeHome = Math.round(completedVolume * 0.9);
@@ -387,7 +387,7 @@ export default function WorkerPortalPage() {
               </div>
             </div>
 
-            {/* 3 Metric Cards for the 90/5/5 distribution */}
+            {/* 4 Metric Cards for the 90/5/3/2 distribution */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
               <div className="p-4 rounded-xl bg-emerald-50/60 border border-emerald-200/80 space-y-1">
                 <div className="flex items-center justify-between">

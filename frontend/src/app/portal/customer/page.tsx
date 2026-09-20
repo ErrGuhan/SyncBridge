@@ -282,7 +282,7 @@ export default function CustomerPortalPage() {
         );
       })()}
 
-      {/* RECENT BOOKINGS & 90/5/5 TRANSPARENT RECEIPTS */}
+      {/* RECENT BOOKINGS & 90/5/3/2 TRANSPARENT RECEIPTS */}
       <section className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm space-y-4">
         <div className="flex items-center justify-between border-b border-slate-100 pb-3">
           <div>
@@ -290,7 +290,7 @@ export default function CustomerPortalPage() {
               Recent Completed Services
             </h2>
             <p className="text-xs text-slate-500">
-              Verified with 100% transparent 90/5/5 cooperative dividend receipts.
+              Verified with 100% transparent 90/5/3/2 cooperative revenue split receipts.
             </p>
           </div>
 

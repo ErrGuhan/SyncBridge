@@ -362,7 +362,7 @@ export async function approveWorker(
 
 /**
  * 4. Process payment split calculation for a completed booking.
- * Triggers the 90/5/5 cooperative patronage dividend distribution.
+ * Triggers the 90/5/3/2 cooperative revenue split distribution.
  */
 export async function processPaymentSplit(
   bookingId: string

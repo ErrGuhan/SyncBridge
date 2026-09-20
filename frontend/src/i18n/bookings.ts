@@ -9,10 +9,10 @@ export const bookingsTranslations: Record<string, TranslationItem> = {
     ta: 'செயலில் உள்ள முன்பதிவுகள்' 
   },
   bookingsSubtitle: { 
-    en: 'Real-time dispatch tracking with transparent 90/5/5 cooperative dividend accounting.', 
-    hi: 'पारदर्शी 90/5/5 लाभांश ब्योरे के साथ रीयल-टाइम ट्रैकिंग।', 
-    kn: 'ಪಾರದರ್ಶಕ 90/5/5 ಲೆಕ್ಕಪತ್ರದೊಂದಿಗೆ ನೈಜ-ಸಮಯದ ಟ್ರ್ಯಾಕಿಂಗ್.', 
-    ta: 'வெளிப்படையான 90/5/5 கணக்குடன் நேரடி கண்காணிப்பு.' 
+    en: 'Real-time dispatch tracking with transparent 90/5/3/2 cooperative dividend accounting.', 
+    hi: 'पारदर्शी 90/5/3/2 लाभांश ब्योरे के साथ रीयल-टाइम ट्रैकिंग।', 
+    kn: 'ಪಾರದರ್ಶಕ 90/5/3/2 ಲೆಕ್ಕಪತ್ರದೊಂದಿಗೆ ನೈಜ-ಸಮಯದ ಟ್ರ್ಯಾಕಿಂಗ್.', 
+    ta: 'வெளிப்படையான 90/5/3/2 கணக்குடன் நேரடி கண்காணிப்பு.' 
   },
   activeTrackingHeader: {
     en: 'Active Order Live Tracking',

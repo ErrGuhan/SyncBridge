@@ -65,7 +65,7 @@ The four accessibility-first phases have been implemented, verified via automate
 - **Traffic-Light Color System**:
   - 🔴 **Red (Waiting for Worker)**: Pulsing radar circle with "Searching for Member-Worker".
   - 🟡 **Yellow (Worker on the Way)**: Animated moving scooter on road track, live ETA, and a one-tap "Call Worker" button.
-  - 🟢 **Green (Job Done)**: Verified completion checkmark and transparent breakdown of the 90% direct worker payout.
+  - 🟢 **Green (Job Done)**: Verified completion checkmark and transparent breakdown of the 90/5/3/2 direct worker payout split.
 - Includes interactive state pills (🔴 🟡 🟢) allowing instant inspection of all 3 visual states.
 
 ---

@@ -340,7 +340,7 @@ export function CoopDataProvider({ children }: { children: React.ReactNode }) {
     }));
   };
 
-  // ACTION 3: Complete Order (Worker marks done -> 90/5/5 split)
+  // ACTION 3: Complete Order (Worker marks done -> 90/5/3/2 split)
   const completeOrder = (orderId: string) => {
     // Asynchronously invoke payments process endpoint
     fetch('/api/payments/process', {

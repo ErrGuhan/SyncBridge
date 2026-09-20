@@ -1,11 +1,16 @@
 const prisma = require('../lib/prisma');
+const { REVENUE_SPLIT, SPLIT_LABEL, SPLIT_LABEL_DETAILED } = require('../config/revenueSplit');
 
 /**
- * Calculate the Cooperative Welfare Tri-Split per Ministry of Cooperation / NCCT (PS ID: 26089)
- *  - 90% directly to the Worker's Bank Account
- *  - 5% to the Primary Cooperative Society for administrative overhead
- *  - 5% into the Worker Social Security / Mutual Aid Insurance Pool
+ * Calculate the Cooperative Revenue Split per Ministry of Cooperation / NCCT (PS ID: 26089)
+ *  - 90% directly to the Worker's Bank Account (WORKER_WALLET)
+ *  - 5% to the Primary Cooperative Society for administrative overhead (COOP_ADMIN_FUND)
+ *  - 3% into the Worker Social Security / Mutual Aid Insurance Pool (WORKER_WELFARE_INSURANCE_FUND)
+ *  - 2% into the Platform Technology & Cloud Hosting Fund (TECH_PLATFORM_FUND)
  *  - 100% of Emergency Surge Premiums routed directly to the Worker
+ *
+ * All arithmetic uses toFixed(2) rounding; the welfare slot absorbs any residual penny.
+ *
  * @param {number} total Gross amount in INR
  * @param {boolean} [isEmergency=false] Whether booking was an emergency on-demand dispatch
  * @param {number} [emergencySurgeAmount=0] Surcharge for rapid emergency response
@@ -14,16 +19,19 @@ function calculateCooperativeSplit(total, isEmergency = false, emergencySurgeAmo
   const gross = Number(total);
   const surge = isEmergency ? Math.max(0, Number(emergencySurgeAmount)) : 0;
   const baseServiceAmount = Math.max(0, gross - surge);
-  
+
   // 90% of base amount + 100% of emergency surge premium to Worker
-  const baseWorker = Number((baseServiceAmount * 0.90).toFixed(2));
+  const baseWorker = Number((baseServiceAmount * REVENUE_SPLIT.worker).toFixed(2));
   const workerAmount = Number((baseWorker + surge).toFixed(2));
-  
+
   // 5% of base amount to Primary Cooperative Society
-  const coopAmount = Number((baseServiceAmount * 0.05).toFixed(2));
-  
-  // 5% of base amount to Worker Welfare & Social Security Fund (absorbs minor penny rounding)
-  const welfareAmount = Number((gross - workerAmount - coopAmount).toFixed(2));
+  const coopAmount = Number((baseServiceAmount * REVENUE_SPLIT.coopAdmin).toFixed(2));
+
+  // 2% of base amount to Platform Technology & Cloud Hosting Fund
+  const techFundAmount = Number((baseServiceAmount * REVENUE_SPLIT.techFund).toFixed(2));
+
+  // 3% of base amount to Worker Welfare & Social Security Fund (absorbs minor penny rounding)
+  const welfareAmount = Number((gross - workerAmount - coopAmount - techFundAmount).toFixed(2));
 
   return {
     gross,
@@ -32,15 +40,17 @@ function calculateCooperativeSplit(total, isEmergency = false, emergencySurgeAmo
     workerAmount,
     coopAmount,
     welfareAmount,
-    workerRatio: 0.9000,
-    coopRatio: 0.0500,
-    welfareRatio: 0.0500,
-    policyStandard: 'Ministry of Cooperation / NCCT (PS ID: 26089) — 90/5/5 Protocol'
+    techFundAmount,
+    workerRatio:   REVENUE_SPLIT.worker,
+    coopRatio:     REVENUE_SPLIT.coopAdmin,
+    welfareRatio:  REVENUE_SPLIT.welfare,
+    techFundRatio: REVENUE_SPLIT.techFund,
+    policyStandard: `Ministry of Cooperation / NCCT (PS ID: 26089) — ${SPLIT_LABEL} Protocol`
   };
 }
 
 /**
- * Process a completed booking payment with 90/5/5 cooperative split.
+ * Process a completed booking payment with 90/5/3/2 cooperative split.
  * POST /api/payments/process
  */
 async function processBookingPayment(req, res) {
@@ -151,7 +161,22 @@ async function processBookingPayment(req, res) {
         });
       }
 
-      // 2d. Create / Upsert Payment Record
+      // 2d. Find or create Platform Technology & Cloud Hosting Fund Wallet
+      let techFundWallet = await tx.wallet.findFirst({
+        where: { cooperativeId: cooperativeId, type: 'TECH_PLATFORM_FUND' }
+      });
+      if (!techFundWallet) {
+        techFundWallet = await tx.wallet.create({
+          data: {
+            cooperativeId: cooperativeId,
+            type: 'TECH_PLATFORM_FUND',
+            balance: 0.00,
+            currency: 'INR'
+          }
+        });
+      }
+
+      // 2e. Create / Upsert Payment Record
       const payment = await tx.payment.upsert({
         where: { bookingId },
         update: {
@@ -160,9 +185,11 @@ async function processBookingPayment(req, res) {
           workerAmount: split.workerAmount,
           coopAmount: split.coopAmount,
           welfareAmount: split.welfareAmount,
+          techFundAmount: split.techFundAmount,
           workerSplitRatio: split.workerRatio,
           coopSplitRatio: split.coopRatio,
           welfareSplitRatio: split.welfareRatio,
+          techFundSplitRatio: split.techFundRatio,
           paymentMethod,
           status: 'PAID_OUT',
           workerPaidOutAt: new Date()
@@ -175,16 +202,18 @@ async function processBookingPayment(req, res) {
           workerAmount: split.workerAmount,
           coopAmount: split.coopAmount,
           welfareAmount: split.welfareAmount,
+          techFundAmount: split.techFundAmount,
           workerSplitRatio: split.workerRatio,
           coopSplitRatio: split.coopRatio,
           welfareSplitRatio: split.welfareRatio,
+          techFundSplitRatio: split.techFundRatio,
           paymentMethod,
           status: 'PAID_OUT',
           workerPaidOutAt: new Date()
         }
       });
 
-      // 2e. Update Balances
+      // 2f. Update Balances
       const updatedWorkerWallet = await tx.wallet.update({
         where: { id: workerWallet.id },
         data: { balance: { increment: split.workerAmount } }
@@ -200,7 +229,12 @@ async function processBookingPayment(req, res) {
         data: { balance: { increment: split.welfareAmount } }
       });
 
-      // 2f. Double-entry Ledger Entries for full auditability
+      const updatedTechFundWallet = await tx.wallet.update({
+        where: { id: techFundWallet.id },
+        data: { balance: { increment: split.techFundAmount } }
+      });
+
+      // 2g. Double-entry Ledger Entries for full auditability
       await tx.walletLedger.createMany({
         data: [
           {
@@ -208,26 +242,33 @@ async function processBookingPayment(req, res) {
             paymentId: payment.id,
             amount: split.workerAmount,
             entryType: 'CREDIT',
-            description: `Worker payout (80%) for Booking #${booking.bookingNumber}`
+            description: `Worker payout (90%) for Booking #${booking.bookingNumber}`
           },
           {
             walletId: coopAdminWallet.id,
             paymentId: payment.id,
             amount: split.coopAmount,
             entryType: 'CREDIT',
-            description: `Cooperative operating & reserve contribution (15%) for Booking #${booking.bookingNumber}`
+            description: `Cooperative admin & governance fund (5%) for Booking #${booking.bookingNumber}`
           },
           {
             walletId: welfareWallet.id,
             paymentId: payment.id,
             amount: split.welfareAmount,
             entryType: 'CREDIT',
-            description: `Worker welfare & health mutual fund (5%) for Booking #${booking.bookingNumber}`
+            description: `Worker welfare & health mutual fund (3%) for Booking #${booking.bookingNumber}`
+          },
+          {
+            walletId: techFundWallet.id,
+            paymentId: payment.id,
+            amount: split.techFundAmount,
+            entryType: 'CREDIT',
+            description: `Platform tech & cloud hosting fund (2%) for Booking #${booking.bookingNumber}`
           }
         ]
       });
 
-      // 2g. Ensure Booking is marked COMPLETED if not already
+      // 2h. Ensure Booking is marked COMPLETED if not already
       if (booking.status !== 'COMPLETED') {
         await tx.booking.update({
           where: { id: booking.id },
@@ -237,9 +278,10 @@ async function processBookingPayment(req, res) {
 
       return {
         payment,
-        workerBalance: updatedWorkerWallet.balance,
-        coopBalance: updatedCoopAdminWallet.balance,
-        welfareBalance: updatedWelfareWallet.balance
+        workerBalance:    updatedWorkerWallet.balance,
+        coopBalance:      updatedCoopAdminWallet.balance,
+        welfareBalance:   updatedWelfareWallet.balance,
+        techFundBalance:  updatedTechFundWallet.balance
       };
     });
 
@@ -250,6 +292,7 @@ async function processBookingPayment(req, res) {
       bookingNumber: booking.bookingNumber,
       timestamp: result.payment.createdAt,
       currency: 'INR',
+      splitStandard: SPLIT_LABEL_DETAILED,
       payer: {
         customerId: booking.customerId,
         name: `${booking.customer.firstName} ${booking.customer.lastName}`
@@ -263,27 +306,35 @@ async function processBookingPayment(req, res) {
         grossAmount: split.gross,
         splits: {
           workerShare: {
-            ratio: '80%',
+            ratio: `${(REVENUE_SPLIT.worker * 100).toFixed(0)}%`,
             amount: split.workerAmount,
             destination: 'WORKER_WALLET',
             description: 'Direct worker wage compensation'
           },
           cooperativeAdminFund: {
-            ratio: '15%',
+            ratio: `${(REVENUE_SPLIT.coopAdmin * 100).toFixed(0)}%`,
             amount: split.coopAmount,
             destination: 'COOP_ADMIN_FUND',
-            description: 'Platform maintenance, governance, and reserve pool'
+            description: 'Platform governance, cooperative administration & reserve pool'
           },
           workerWelfareInsuranceFund: {
-            ratio: '5%',
+            ratio: `${(REVENUE_SPLIT.welfare * 100).toFixed(0)}%`,
             amount: split.welfareAmount,
             destination: 'WORKER_WELFARE_INSURANCE_FUND',
             description: 'Collective insurance, healthcare, emergency mutual aid'
+          },
+          platformTechFund: {
+            ratio: `${(REVENUE_SPLIT.techFund * 100).toFixed(0)}%`,
+            amount: split.techFundAmount,
+            destination: 'TECH_PLATFORM_FUND',
+            description: 'Cloud hosting, platform technology & infrastructure maintenance'
           }
         },
         checksumAudit: {
-          isBalanced: (split.workerAmount + split.coopAmount + split.welfareAmount) === split.gross,
-          formula: `${split.workerAmount} (80%) + ${split.coopAmount} (15%) + ${split.welfareAmount} (5%) = ${split.gross}`
+          isBalanced:
+            (split.workerAmount + split.coopAmount + split.welfareAmount + split.techFundAmount) ===
+            split.gross,
+          formula: `${split.workerAmount} (90%) + ${split.coopAmount} (5%) + ${split.welfareAmount} (3%) + ${split.techFundAmount} (2%) = ${split.gross}`
         }
       },
       paymentStatus: result.payment.status,

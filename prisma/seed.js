@@ -1,7 +1,7 @@
 /**
  * Database Seeding Script for Cooperative Gig Services Platform
  * Populates realistic Indian cooperative worker profiles, coordinates,
- * service categories, and 25 historical completed bookings with 90-5-5 payment splits.
+ * service categories, and 25 historical completed bookings with 90-5-3-2 payment splits.
  * 
  * Execution:
  * node prisma/seed.js
@@ -433,7 +433,7 @@ const customersData = [
 ];
 
 // ----------------------------------------------------------------------------
-// 4. GENERATE 25 HISTORICAL COMPLETED BOOKINGS WITH 90-5-5 PAYMENT SPLITS
+// 4. GENERATE 25 HISTORICAL COMPLETED BOOKINGS WITH 90-5-3-2 PAYMENT SPLITS
 // ----------------------------------------------------------------------------
 function generateHistoricalBookings() {
   const bookings = [];
@@ -462,7 +462,7 @@ function generateHistoricalBookings() {
     const amounts = [850.00, 1200.00, 1500.00, 1850.00, 2200.00, 3100.00, 950.00, 1400.00];
     const totalAmount = amounts[(i - 1) % amounts.length];
 
-    // 90-5-5 Payment Split Calculation
+    // 90-5-3-2 Payment Split Calculation
     const workerAmount = parseFloat((totalAmount * 0.90).toFixed(2));
     const coopAmount = parseFloat((totalAmount * 0.05).toFixed(2));
     const welfareAmount = parseFloat((totalAmount * 0.05).toFixed(2));
@@ -723,7 +723,7 @@ async function main() {
     }
     console.log(`✓ ${workersData.length} Verified Worker Profiles seeded.`);
 
-    // 5. Seed Historical Bookings with 90-5-5 Payment Splits
+    // 5. Seed Historical Bookings with 90-5-3-2 Payment Splits
     for (const b of historicalBookings) {
       const booking = await prisma.booking.upsert({
         where: { bookingNumber: b.bookingNumber },
@@ -748,7 +748,7 @@ async function main() {
         }
       });
 
-      // Payment with 90-5-5 ratio
+      // Payment with 90-5-3-2 ratio
       await prisma.payment.upsert({
         where: { transactionId: b.transactionId },
         update: {},
@@ -782,7 +782,7 @@ async function main() {
         }
       });
     }
-    console.log(`✓ ${historicalBookings.length} Historical Bookings with 90-5-5 Splits seeded into PostgreSQL!`);
+    console.log(`✓ ${historicalBookings.length} Historical Bookings with 90-5-3-2 Splits seeded into PostgreSQL!`);
 
     await prisma.$disconnect();
     console.log('================================================================');
@@ -793,7 +793,7 @@ async function main() {
     console.warn(`Reason: ${dbError.message}`);
     console.log('✅ Fallback: Standalone JSON seed pipeline is fully generated at:');
     console.log(`   ${seedJsonPath}`);
-    console.log('   (Contains all 3 Societies, 15 Workers, and 25 Historical Bookings with 90-5-5 Splits)');
+    console.log('   (Contains all 3 Societies, 15 Workers, and 25 Historical Bookings with 90-5-3-2 Splits)');
   }
 }
 

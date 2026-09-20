@@ -151,7 +151,7 @@ export default function CooperativeFederationAdminPage() {
     { month: 'Sep 2026 (MTD)', totalJobs: 482, gmv: '₹2.9L' },
   ];
 
-  // Aggregated 90/5/5 Gross Revenue Split
+  // Aggregated 90/5/3/2 Gross Revenue Split
   const totalGmv = 2480000;
   const workerTakeHome = Math.round(totalGmv * 0.90);
   const societyReserves = Math.round(totalGmv * 0.05);
@@ -262,12 +262,12 @@ export default function CooperativeFederationAdminPage() {
       {/* -------------------------------------------------------------------- */}
       {activeTab === 'OVERVIEW' && (
         <div className="space-y-6">
-          {/* Revenue Distribution Across 90/5/5 Split */}
+          {/* Revenue Distribution Across 90/5/3/2 Split */}
           <div className="bg-white border border-slate-200/80 rounded-3xl p-6 sm:p-8 shadow-xs space-y-5">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
               <div>
                 <h3 className="text-lg font-bold text-slate-900">
-                  Aggregated Revenue Distribution (Strict 90/5/5 Architecture)
+                  Aggregated Revenue Distribution (90/5/3/2 Architecture)
                 </h3>
                 <p className="text-xs text-slate-500">
                   Total audited gross receipts distributed automatically via cooperative smart contract.
@@ -282,20 +282,23 @@ export default function CooperativeFederationAdminPage() {
             <div className="space-y-2">
               <div className="w-full h-5 rounded-full overflow-hidden flex shadow-inner bg-slate-100">
                 <div style={{ width: '90%' }} className="bg-emerald-600 transition-all" title="90% Worker Direct Payout" />
-                <div style={{ width: '5%' }} className="bg-blue-600 transition-all" title="5% Primary Society Reserve" />
-                <div style={{ width: '5%' }} className="bg-amber-500 transition-all" title="5% Welfare & Healthcare Fund" />
+                <div style={{ width: '5%' }} className="bg-blue-600 transition-all" title="5% Co-op Admin Fund" />
+                <div style={{ width: '3%' }} className="bg-amber-500 transition-all" title="3% Welfare & Insurance Fund" />
+                <div style={{ width: '2%' }} className="bg-violet-600 transition-all" title="2% Platform Tech & Cloud Fund" />
               </div>
               <div className="flex flex-wrap items-center justify-between gap-x-2 gap-y-1 text-[11px] sm:text-xs text-slate-600 px-1 font-mono">
                 <span>90% Worker Take-Home (₹{workerTakeHome.toLocaleString()})</span>
                 <span className="text-slate-300 hidden sm:inline">·</span>
-                <span>5% Co-op (₹{societyReserves.toLocaleString()})</span>
+                <span>5% Co-op Admin (₹{societyReserves.toLocaleString()})</span>
                 <span className="text-slate-300 hidden sm:inline">·</span>
-                <span>5% Welfare (₹{welfarePool.toLocaleString()})</span>
+                <span>3% Welfare (₹{welfarePool.toLocaleString()})</span>
+                <span className="text-slate-300 hidden sm:inline">·</span>
+                <span>2% Tech Fund</span>
               </div>
             </div>
 
-            {/* 3 Split Metric Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+            {/* 4 Split Metric Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 pt-2">
               <div className="p-4 rounded-2xl bg-emerald-50/50 border border-emerald-200/80 space-y-1.5">
                 <div className="flex justify-between items-center text-xs font-bold text-emerald-800 uppercase tracking-wider">
                   <span>90% Worker Direct Pay</span>
@@ -309,23 +312,34 @@ export default function CooperativeFederationAdminPage() {
 
               <div className="p-4 rounded-2xl bg-blue-50/50 border border-blue-200/80 space-y-1.5">
                 <div className="flex justify-between items-center text-xs font-bold text-blue-800 uppercase tracking-wider">
-                  <span>5% Primary Society Treasury</span>
+                  <span>5% Co-op Admin Treasury</span>
                   <Building2 className="w-4 h-4 text-blue-600" />
                 </div>
                 <p className="text-2xl font-extrabold text-blue-900">₹{societyReserves.toLocaleString()}</p>
                 <p className="text-xs text-blue-700 leading-relaxed">
-                  Allocated democratically to the 4 chapter societies for power tool maintenance, physical offices, and local dispatchers.
+                  Allocated democratically to the 4 chapter societies for governance, power tool maintenance, and local dispatchers.
                 </p>
               </div>
 
               <div className="p-4 rounded-2xl bg-amber-50/50 border border-amber-200/80 space-y-1.5">
                 <div className="flex justify-between items-center text-xs font-bold text-amber-800 uppercase tracking-wider">
-                  <span>5% Welfare & Health Shield</span>
+                  <span>3% Welfare & Health Shield</span>
                   <Award className="w-4 h-4 text-amber-600" />
                 </div>
                 <p className="text-2xl font-extrabold text-amber-900">₹{welfarePool.toLocaleString()}</p>
                 <p className="text-xs text-amber-700 leading-relaxed">
                   Powers the ₹5 Lakh hospitalization pool, disability coverage, and a 1% customer guarantee reserve (₹{guaranteeReserve.toLocaleString()}).
+                </p>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-violet-50/50 border border-violet-200/80 space-y-1.5">
+                <div className="flex justify-between items-center text-xs font-bold text-violet-800 uppercase tracking-wider">
+                  <span>2% Platform Tech Fund</span>
+                  <Building2 className="w-4 h-4 text-violet-600" />
+                </div>
+                <p className="text-2xl font-extrabold text-violet-900">2%</p>
+                <p className="text-xs text-violet-700 leading-relaxed">
+                  Cloud hosting, MeghRaj infrastructure, API gateway maintenance, and platform engineering.
                 </p>
               </div>
             </div>

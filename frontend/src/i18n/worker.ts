@@ -23,13 +23,13 @@ export const workerTranslations: Record<string, TranslationItem> = {
   availableWallet: { en: 'Available 90% Wallet Balance', hi: 'उपलब्ध 90% वॉलेट बैलेंस', kn: 'ಲಭ್ಯವಿರುವ 90% ವಾಲೆಟ್ ಬ್ಯಾಲೆನ್ಸ್', ta: 'கிடைக்கும் 90% இருப்புத் தொகை' },
   withdrawUpi: { en: 'Instant Withdraw to UPI / Bank', hi: 'तुरंत यूपीआई / बैंक में निकालें', kn: 'ಯುಪಿಐ / ಬ್ಯಾಂಕ್‌ಗೆ ತಕ್ಷಣ ವಿತ್‌ಡ್ರಾ ಮಾಡಿ', ta: 'யுபிஐ / வங்கிக்கு உடனே மாற்றவும்' },
   activeJobEscrow: { en: 'Active Job Escrow (In Transit)', hi: 'सक्रिय एस्क्रो (प्रक्रियाधीन)', kn: 'ಸಕ್ರಿಯ ಎಸ್ಕ್ರೋ (ಪ್ರಗತಿಯಲ್ಲಿದೆ)', ta: 'செயலில் உள்ள எஸ்க்ரோ (பரிசீலனையில்)' },
-  pensionCorpus: { en: 'Accrued Pension Corpus (5% Pool)', hi: 'संचित पेंशन कोष (5% हिस्सा)', kn: 'ಸಂಗ್ರಹವಾದ ಪಿಂಚಣಿ ನಿಧಿ (5% ಪಾಲು)', ta: 'திரட்டப்பட்ட ஓய்வೂதிய நிதி (5% பங்கு)' },
+  pensionCorpus: { en: 'Accrued Welfare Corpus (3% Pool)', hi: 'संचित पेंशन कोष (5% हिस्सा)', kn: 'ಸಂಗ್ರಹವಾದ ಪಿಂಚಣಿ ನಿಧಿ (5% ಪಾಲು)', ta: 'திரட்டப்பட்ட ஓய்வೂதிய நிதி (5% பங்கு)' },
 
-  // Weekly 90/5/5 Distribution
-  weeklyBreakdownTitle: { en: 'Weekly Cooperative Earnings & 90/5/5 Breakdown', hi: 'साप्ताहिक सहकारी आय एवं 90/5/5 विवरण', kn: 'ವಾರದ ಸಹಕಾರಿ ಗಳಿಕೆ ಮತ್ತು 90/5/5 ವಿಭಜನೆ', ta: 'வாராந்திர கூட்டுறவு வருமானம் & 90/5/5 விவரம்' },
+  // Weekly 90/5/3/2 Distribution
+  weeklyBreakdownTitle: { en: 'Weekly Cooperative Earnings & 90/5/3/2 Breakdown', hi: 'साप्ताहिक सहकारी आय एवं 90/5/3/2 विवरण', kn: 'ವಾರದ ಸಹಕಾರಿ ಗಳಿಕೆ ಮತ್ತು 90/5/3/2 ವಿಭಜನೆ', ta: 'வாராந்திர கூட்டுறவு வருமானம் & 90/5/3/2 விவரம்' },
   workerTakeHome: { en: '90% Worker Take-Home', hi: '90% कारीगर को सीधा', kn: '90% ಕಾರ್ಮಿಕರ ಆದಾಯ', ta: '90% தொழிலாளர் ஊதியம்' },
-  societyTreasuryShare: { en: '5% Society Operational Treasury', hi: '5% समिति संचालन कोष', kn: '5% ಸಂಘದ ಕಾರ್ಯಾಚರಣೆ ನಿಧಿ', ta: '5% சங்க செயல்பாட்டு நிதி' },
-  mutualAidShare: { en: '5% Mutual Aid & Healthcare', hi: '5% कल्याण व स्वास्थ्य कोष', kn: '5% ಪರಸ್ಪರ ನೆರವು & ಆರೋಗ್ಯ', ta: '5% பரஸ்பர உதவி & சுகாதாரம்' },
+  societyTreasuryShare: { en: '5% Co-op Admin Fund', hi: '5% समिति संचालन कोष', kn: '5% ಸಂಘದ ಕಾರ್ಯಾಚರಣೆ ನಿಧಿ', ta: '5% சங்க செயல்பாட்டு நிதி' },
+  mutualAidShare: { en: '3% Welfare & Insurance', hi: '3% कल्याण एवं बीमा कोष', kn: '3% ಕಲ್ಯಾಣ & ವಿಮೆ', ta: '3% நலன் & காப்பீடு' },
 
   // Incoming Dispatch Lead
   incomingLeadTitle: { en: 'NEW INCOMING DISPATCH LEAD', hi: 'नया काम उपलब्ध है (लीड)', kn: 'ಹೊಸ ರವಾನೆ ವಿನಂತಿ ಬಂದಿದೆ', ta: 'புதிய வேலை வாய்ப்பு வந்துள்ளது' },

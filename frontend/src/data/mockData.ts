@@ -779,8 +779,8 @@ export const MOCK_PEER_ARBITRATION_CASES: PeerArbitrationCase[] = [
 
 export const MOCK_B2G_CONTRACTS: B2GContract[] = [
   {
-    id: 'b2g-bbmp-01',
-    institutionName: 'Bruhat Bengaluru Mahanagara Palike (BBMP)',
+    id: 'b2g-mcmc-01',
+    institutionName: 'Metro City Municipal Corporation (Illustrative)',
     department: 'Ward Infrastructure & Municipal Health Centres Maintenance',
     contractType: 'MUNICIPAL_B2G',
     status: 'ACTIVE_COMMITTED',
@@ -789,13 +789,13 @@ export const MOCK_B2G_CONTRACTS: B2GContract[] = [
     totalAnnualValue: '₹2.16 Crore',
     participatingCooperatives: ['Metro Technicians Labour Cooperative', 'Kalyan Labour Workers Society'],
     paymentTermDays: 7,
-    scope: 'Routine electrical safety audits, backup generator wiring, and plumbing maintenance across 28 municipal clinics and ward offices in Bengaluru East.',
-    contactNodalOfficer: 'Shri R. Manjunath (Chief Executive Engineer, BBMP)',
+    scope: 'Routine electrical safety audits, backup generator wiring, and plumbing maintenance across 28 municipal clinics and ward offices in Metro Urban Ward Sector (Demonstration Model).',
+    contactNodalOfficer: 'Nodal Engineering Officer (Ward Infrastructure)',
     slaCompliancePct: 99.2
   },
   {
-    id: 'b2b-kmf-02',
-    institutionName: 'Karnataka Milk Federation (KMF - Nandini)',
+    id: 'b2b-dairy-02',
+    institutionName: 'Regional Dairy Cooperative Federation (Illustrative)',
     department: 'Central Processing Dairies & Chilling Units',
     contractType: 'COOPERATIVE_FEDERATION_B2B',
     status: 'IN_EXECUTION',
@@ -804,13 +804,13 @@ export const MOCK_B2G_CONTRACTS: B2GContract[] = [
     totalAnnualValue: '₹1.28 Crore',
     participatingCooperatives: ['Metro Technicians Labour Cooperative', 'Karnataka Union Labour Federation'],
     paymentTermDays: 5,
-    scope: 'Cold chain electrical repairs, motor rewind diagnostics, and sanitary pipe fitting across 6 dairy packaging units in Bengaluru & Mysore.',
-    contactNodalOfficer: 'Smt. Anasuya Gowda (GM Operations, KMF)',
+    scope: 'Cold chain electrical repairs, motor rewind diagnostics, and sanitary pipe fitting across 6 dairy packaging and processing units.',
+    contactNodalOfficer: 'General Manager (Processing & Cold Chain Operations)',
     slaCompliancePct: 98.7
   },
   {
-    id: 'b2b-iffco-03',
-    institutionName: 'IFFCO Fertilizer & Agro-Logistics Hub',
+    id: 'b2b-agro-03',
+    institutionName: 'National Agro-Logistics & Fertilizer Cooperative Hub (Illustrative)',
     department: 'Regional Distribution & Warehouse Maintenance',
     contractType: 'COOPERATIVE_FEDERATION_B2B',
     status: 'TENDER_AWARDED',
@@ -820,7 +820,7 @@ export const MOCK_B2G_CONTRACTS: B2GContract[] = [
     participatingCooperatives: ['Karnataka Union Labour Federation'],
     paymentTermDays: 7,
     scope: 'Conveyor belt motor servicing, electrical panel preventive maintenance, and structural carpentry for agro-storage facilities.',
-    contactNodalOfficer: 'Dr. V. K. Sharma (Regional Director, IFFCO)',
+    contactNodalOfficer: 'Regional Director (Logistics & Distribution Facilities)',
     slaCompliancePct: 97.9
   }
 ];

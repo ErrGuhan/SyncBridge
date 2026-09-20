@@ -37,11 +37,19 @@ export const b2bTranslations: Record<string, TranslationItem> = {
   contractWorkersLabel: { en: 'Artisans Deployed:', hi: 'तैनात कामगार:', kn: 'ನಿಯೋಜಿಸಲಾದ ಕಾರ್ಮಿಕರು:', ta: 'பணியமர்த்தப்பட்ட தொழிலாளர்கள்:' },
   contractEscrowLabel: { en: 'Co-op Escrow Reserve:', hi: 'सहकारी एस्क्रो आरक्षित:', kn: 'ಸಹಕಾರಿ ಎಸ್ಕ್ರೋ ಮೀಸಲು:', ta: 'கூட்டுறவு எஸ்க்ரோ இருப்பு:' },
 
+  // Disclaimer Banner
+  b2bDisclaimer: {
+    en: 'Illustrative target accounts for demonstration purposes — not signed contracts.',
+    hi: 'प्रदर्शन उद्देश्यों के लिए उदाहरणात्मक लक्षित खाते — हस्ताक्षरित अनुबंध नहीं।',
+    kn: 'ಪ್ರದರ್ಶನ ಉದ್ದೇಶಗಳಿಗಾಗಿ ವಿವರಣಾತ್ಮಕ ಗುರಿ ಖಾತೆಗಳು — ಸಹಿ ಮಾಡಿದ ಒಪ್ಪಂದಗಳಲ್ಲ.',
+    ta: 'விளக்க நோக்கங்களுக்கான மாதிரி இலக்கு கணக்குகள் — கையெழுத்திடப்பட்ட ஒப்பந்தங்கள் அல்ல.'
+  },
+
   // RFQ Submission Section
   b2bIssueRfqTitle: { en: 'Issue an Institutional Maintenance RFQ', hi: 'संस्थागत रखरखाव आरएफक्यू जारी करें', kn: 'ಸಾಂಸ್ಥಿಕ ನಿರ್ವಹಣಾ RFQ ಸಲ್ಲಿಸಿ', ta: 'நிறுவன பராமரிப்பு RFQ சமர்ப்பிக்கவும்' },
   b2bIssueRfqSub: { en: 'Empanel certified cooperative labour clusters for public facilities, housing societies, or corporate campuses.', hi: 'सरकारी भवनों, आवासीय सोसायटियों या परिसरों के लिए प्रमाणित सहकारी समूहों को अनुबंधित करें।', kn: 'ಸಾರ್ವಜನಿಕ ಕಟ್ಟಡಗಳು ಅಥವಾ ಅಪಾರ್ಟ್‌ಮೆಂಟ್‌ಗಳಿಗೆ ಪ್ರಮಾಣೀಕೃತ ಕಾರ್ಮಿಕ ಗುಂಪುಗಳನ್ನು ನೇಮಿಸಿ.', ta: 'பொது கட்டிடங்கள் அல்லது குடியிருப்பு வளாகங்களுக்கு சான்றளிக்கப்பட்ட கூட்டுறவு குழுக்களை அமர்த்தவும்.' },
   rfqInstNameLabel: { en: 'Institution / Enterprise Name:', hi: 'संस्था / कंपनी का नाम:', kn: 'ಸಂಸ್ಥೆಯ ಹೆಸರು:', ta: 'நிறுவனத்தின் பெயர்:' },
-  rfqInstNamePlaceholder: { en: 'e.g. Bangalore Metro Rail Corporation Limited...', hi: 'जैसे बेंगलुरु मेट्रो रेल कॉर्पोरेशन...', kn: 'ಉದಾ: ಬೆಂಗಳೂರು ಮೆಟ್ರೋ ರೈಲು ನಿಗಮ...', ta: 'எ.கா. மெட்ரோ இரயில் கழகம்...' },
+  rfqInstNamePlaceholder: { en: 'e.g. Metro Urban Transit Corporation (illustrative)...', hi: 'जैसे मेट्रो अर्बन ट्रांजिट कॉर्पोरेशन (उदाहरणात्मक)...', kn: 'ಉದಾ: ಮೆಟ್ರೋ ನಗರ ಸಾರಿಗೆ ನಿಗಮ (ವಿವರಣಾತ್ಮಕ)...', ta: 'எ.கா. மெட்ரோ நகர்ப்புற போக்குவரத்து கழகம் (மாதிரி)...' },
   rfqServiceTypeLabel: { en: 'Primary Trade Requirement:', hi: 'मुख्य सेवा आवश्यकता:', kn: 'ಮುಖ್ಯ ಸೇವಾ ಅಗತ್ಯತೆ:', ta: 'முக்கிய சேவை தேவை:' },
   rfqServiceOptionFacility: { en: 'Comprehensive Facility Electrical & Plumbing', hi: 'व्यापक विद्युत एवं नलसाजी सुविधा रखरखाव', kn: 'ಸಮಗ್ರ ವಿದ್ಯುತ್ ಮತ್ತು ಕೊಳಾಯಿ ನಿರ್ವಹಣೆ', ta: 'முழுமையான மின் மற்றும் பிளம்பிங் பராமரிப்பு' },
   rfqServiceOptionHvac: { en: 'Commercial HVAC & Chiller Plant Overhaul', hi: 'व्यावसायिक एसी व चिलर प्लांट सर्विसिंग', kn: 'ವಾಣಿಜ್ಯ ಎಸಿ ಮತ್ತು ಚಿಲ್ಲರ್ ಪ್ಲಾಂಟ್ ಸರ್ವಿಸ್', ta: 'வணிக ஏசி & சில்லர் ஆலை பராமரிப்பு' },

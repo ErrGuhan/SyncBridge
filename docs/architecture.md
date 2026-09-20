@@ -31,17 +31,18 @@
 
 ---
 
-## 2. The 90/5/5 Cooperative Split Mathematics
+## 2. The 90/5/3/2 Cooperative Revenue Split
 
 Commercial gig aggregators retain 25%–35% in platform commissions and arbitrary cancellation clawbacks. SyncBridge is built on statutory cooperative principles:
 
-$$\text{Gross Total} = \text{Worker Payout (90\%)} + \text{Society Reserve (5\%)} + \text{Welfare Pool (5\%)}$$
+$$\text{Gross Total} = \text{Worker (90\%)} + \text{Co-op Admin (5\%)} + \text{Welfare Pool (3\%)} + \text{Platform Tech (2\%)}$$
 
 ### Integer Paise Arithmetic
 To prevent IEEE-754 floating-point drift, all calculations are computed via integer truncation with strict remainder assignment:
 1. $\text{Worker Payout} = \lfloor\text{Total} \times 0.90\rfloor$
-2. $\text{Society Fee} = \lfloor\text{Total} \times 0.05\rfloor$
-3. $\text{Welfare Fund} = \text{Total} - \text{Worker Payout} - \text{Society Fee}$
+2. $\text{Co-op Admin Fee} = \lfloor\text{Total} \times 0.05\rfloor$
+3. $\text{Tech Platform Fund} = \lfloor\text{Total} \times 0.02\rfloor$
+4. $\text{Welfare Fund} = \text{Total} - \text{Worker Payout} - \text{Co-op Admin Fee} - \text{Tech Platform Fund}$
 
 ### Section 3.8 Emergency Surge Rule
 During acute demand surges (e.g. monsoon storms, severe plumbing bursts), a surge premium is charged. **100% of the surge delta is passed directly to the dispatch artisan.** The cooperative retains 0% surge clawback:

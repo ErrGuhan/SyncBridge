@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.use(extractUser);
 
-// Process completed booking payment (80% Worker, 15% Coop Admin, 5% Worker Welfare)
+// Process completed booking payment (90% Worker, 5% Coop Admin, 3% Welfare, 2% Tech Fund) — 90/5/3/2
 router.post(
   '/process',
   [

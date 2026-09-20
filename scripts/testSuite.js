@@ -1,7 +1,7 @@
 /**
  * Comprehensive Automated Test Suite
  * Validates all microservices, fallback offline verification,
- * real-time WebSockets, Redlock distributed locking, and 90-5-5 payment splits.
+ * real-time WebSockets, Redlock distributed locking, and 90-5-3-2 payment splits.
  */
 
 const http = require('http');
@@ -233,18 +233,21 @@ async function runTests() {
   }
 
   // --------------------------------------------------------------------------
-  // TEST 4: 90-5-5 PATRONAGE SPLIT FINANCIAL INTEGRITY
+  // TEST 4: 90-5-3-2 PATRONAGE SPLIT FINANCIAL INTEGRITY
   // --------------------------------------------------------------------------
-  console.log('\n🔹 TEST SUITE 4: 90-5-5 Cooperative Split Accounting');
+  console.log('\n🔹 TEST SUITE 4: 90-5-3-2 Cooperative Split Accounting');
+  const { REVENUE_SPLIT } = require('../services/payment-service/src/config/revenueSplit');
   const sampleGross = 3000.00;
-  const expectedWorker = parseFloat((sampleGross * 0.90).toFixed(2));
-  const expectedCoop = parseFloat((sampleGross * 0.05).toFixed(2));
-  const expectedWelfare = parseFloat((sampleGross * 0.05).toFixed(2));
+  const expectedWorker = parseFloat((sampleGross * REVENUE_SPLIT.worker).toFixed(2));
+  const expectedCoop = parseFloat((sampleGross * REVENUE_SPLIT.coopAdmin).toFixed(2));
+  const expectedWelfare = parseFloat((sampleGross * REVENUE_SPLIT.welfare).toFixed(2));
+  const expectedTech = parseFloat((sampleGross * REVENUE_SPLIT.techFund).toFixed(2));
 
   assert(expectedWorker === 2700.00, `90% Worker Payout calculated accurately: ₹${expectedWorker} / ₹${sampleGross}`);
-  assert(expectedCoop === 150.00, `5% Cooperative Treasury Reserve calculated accurately: ₹${expectedCoop} / ₹${sampleGross}`);
-  assert(expectedWelfare === 150.00, `5% Worker Welfare & Insurance Fund calculated accurately: ₹${expectedWelfare} / ₹${sampleGross}`);
-  assert(expectedWorker + expectedCoop + expectedWelfare === sampleGross, `Financial Conservation: 100% of payment accounted for`);
+  assert(expectedCoop === 150.00, `5% Cooperative Admin & Reserve calculated accurately: ₹${expectedCoop} / ₹${sampleGross}`);
+  assert(expectedWelfare === 90.00, `3% Worker Welfare & Insurance Fund calculated accurately: ₹${expectedWelfare} / ₹${sampleGross}`);
+  assert(expectedTech === 60.00, `2% Platform Tech & Cloud Infrastructure calculated accurately: ₹${expectedTech} / ₹${sampleGross}`);
+  assert(expectedWorker + expectedCoop + expectedWelfare + expectedTech === sampleGross, `Financial Conservation: 100% of payment accounted for`);
 
   // --------------------------------------------------------------------------
   // TEST 5: MOCK PIPELINE & SEED DATASETS
@@ -260,7 +263,7 @@ async function runTests() {
     const data = JSON.parse(fs.readFileSync(jsonPath, 'utf-8'));
     assert(data.cooperatives?.length === 3, `3 Primary Labour Cooperatives present in seed data`);
     assert(data.workers?.length === 15, `15 Verified Worker Profiles with e-Shram UANs present`);
-    assert(data.historicalBookings?.length === 25, `25 Historical Completed Bookings with 90-5-5 splits present`);
+    assert(data.historicalBookings?.length === 25, `25 Historical Completed Bookings with 90-5-3-2 splits present`);
   }
 
   // --------------------------------------------------------------------------

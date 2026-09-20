@@ -92,9 +92,12 @@ enum DisputeVoteDecision {
 
 enum WalletType {
   WORKER_WALLET
-  SOCIETY_RESERVE         // 5% cooperative society fund
-  WELFARE_TRUST           // 5% mutual insurance / welfare fund
-  GUARANTEE_FUND          // 1% escrow / protection reserve
+  COOP_ADMIN_FUND                 // 5% cooperative admin & governance fund
+  SOCIETY_RESERVE                 // alias: 5% cooperative society fund
+  WORKER_WELFARE_INSURANCE_FUND   // 3% mutual insurance / welfare fund
+  WELFARE_TRUST                   // alias: 3% welfare fund
+  TECH_PLATFORM_FUND              // 2% platform tech & cloud hosting
+  GUARANTEE_FUND                  // 1% escrow / customer protection reserve
 }
 
 enum ToolCondition {

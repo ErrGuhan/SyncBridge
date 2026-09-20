@@ -1,7 +1,31 @@
 # SyncBridge Platform — Implementation Changelog
 **Smart India Hackathon PS ID 26089** — Ministry of Cooperation / NCCT  
 **Target:** Production-Hardened Cooperative Gig Services Platform  
-**Split Architecture:** 90% Direct Artisan Take-Home | 5% Primary Society Reserve | 5% Mutual Aid & Welfare Fund
+**Split Architecture:** 90% Direct Artisan Take-Home | 5% Cooperative Admin | 3% Welfare & Insurance Pool | 2% Platform Tech & Cloud
+
+---
+
+## [2.1.0] - 2026-09-20 — Canonical Revenue Split Unification, B2B De-risking & Federation Admin Dashboard
+
+### Canonical 90/5/3/2 Revenue Split Protocol
+- **Single Source of Truth**:
+  - Added `services/payment-service/src/config/revenueSplit.js` and `frontend/src/lib/constants.ts` enforcing `REVENUE_SPLIT = { worker: 0.90, coopAdmin: 0.05, welfare: 0.03, techFund: 0.02 }` with startup invariant assertion.
+  - Replaced hardcoded splits across `paymentController.js`, `calculateCooperativeSplit`, double-entry `walletLedger` records, and frontend `splitUtils.ts`.
+  - Added `TECH_PLATFORM_FUND` wallet tracking and unit tests in `services/payment-service/src/tests/revenueSplit.test.js` (16/16 passing).
+  - Updated shared `Footer.tsx` to render all 4 shares dynamically via `SPLIT_PCT`.
+
+### B2B Page De-Risking & Illustrative Labeling
+- Replaced real public/cooperative institutions (BBMP, KMF, IFFCO) in `frontend/src/data/mockData.ts` with fictional illustrative entities.
+- Replaced named officers with generic operational role titles.
+- Added styled warning disclaimer banner atop `/b2b` localized in English, Hindi, Kannada, and Tamil.
+
+### Truthful Compliance & Hosting Claims
+- Audited codebase for DPDP and hosting implementations; aligned footer copy to `"Designed for MeghRaj (GI Cloud) deployment"` and `"DPDP Act 2023-aligned architecture"`.
+
+### Read-Only Federation Admin Dashboard (`/federation`)
+- Added `/federation` admin dashboard route gated behind `AuthGuard` for federation and society admin roles.
+- Created `/api/federation/metrics` endpoint reporting monthly job volume, 90/5/3/2 revenue totals, open disputes queue, worker verification breakdown, and skill-category demand rankings.
+- Added stats grid and 4 section tables matching the design system.
 
 ---
 
@@ -9,7 +33,7 @@
 
 ### Phase 1: Schema & Auth Foundation
 - **Prisma Schema (`prisma/schema.prisma`)**:
-  - Enforced exact 90/5/5 split model (90% Worker, 5% Primary Cooperative, 5% Welfare Trust).
+  - Enforced exact 90/5/3/2 split model (90% Worker, 5% Cooperative Admin, 3% Welfare & Insurance, 2% Platform Tech).
   - Added full models: `Booking` (with `BookingType`, `surgeMultiplier`, `isEmergency`), `AvailabilityWindow`, `PeerCouncilVote`, `Dispute`, `Certification`, `WorkerVerification`, and `WalletLedger`.
   - Configured PostGIS extension (`postgis`, `uuid-ossp`) and geospatial coordinates.
 - **Supabase Seed Migration (`prisma/seed-syncbridge.sql`)**:

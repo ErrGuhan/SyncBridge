@@ -3,7 +3,7 @@
  *
  * Processes payment for a completed booking:
  *   1. Validates booking is COMPLETED
- *   2. Computes 90/5/5 split (or emergency split if isEmergency=true)
+ *   2. Computes 90/5/3/2 split (or emergency split if isEmergency=true)
  *   3. Simulates UPI escrow release via PaymentGateway interface
  *   4. Inserts Payment row + WalletLedger entries in a transaction
  *   5. Emits event to EventOutbox (event bus substitute)

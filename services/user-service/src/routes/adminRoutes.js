@@ -1,14 +1,17 @@
 const express = require('express');
 const { body } = require('express-validator');
-const { verifyWorkerProfile, getPendingWorkers } = require('../controllers/adminController');
+const { verifyWorkerProfile, getPendingWorkers, getFederationMetrics } = require('../controllers/adminController');
 const { getSecretaryQueue, resolveSecretaryTask } = require('../controllers/verificationController');
 const { extractUser, requireRole } = require('../middleware/auth');
 
 const router = express.Router();
 
-// Cooperative Admin / Super Admin Guard
+// Cooperative / Federation Admin Guard
 router.use(extractUser);
-router.use(requireRole('COOP_ADMIN', 'SUPER_ADMIN'));
+router.use(requireRole('COOP_ADMIN', 'SUPER_ADMIN', 'FEDERATION_ADMIN', 'SOCIETY_SECRETARY'));
+
+// Read-only Federation Admin Metrics
+router.get('/admin/federation-metrics', getFederationMetrics);
 
 // List workers awaiting verification
 router.get('/admin/workers/pending', getPendingWorkers);

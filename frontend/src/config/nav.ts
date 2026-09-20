@@ -7,7 +7,8 @@ export const PUBLIC_NAV_LINKS: NavItem[] = [
   { label: 'Services', href: '/services' },
   { label: 'Track Orders', href: '/bookings' },
   { label: 'Co-op Welfare', href: '/welfare' },
-  { label: 'B2B Contracts', href: '/b2b' }
+  { label: 'B2B Contracts', href: '/b2b' },
+  { label: 'Federation', href: '/federation' }
 ];
 
 export const GET_ROLE_NAV_LINKS = (role?: string | null): NavItem[] => {
@@ -19,9 +20,19 @@ export const GET_ROLE_NAV_LINKS = (role?: string | null): NavItem[] => {
       { label: 'Co-op Welfare', href: '/welfare' }
     ];
   }
+  if (role === 'FEDERATION_ADMIN' || role === 'SUPER_ADMIN') {
+    return [
+      { label: 'Federation Admin', href: '/federation' },
+      { label: 'Operations', href: '/portal/management' },
+      { label: 'Services', href: '/services' },
+      { label: 'B2B Contracts', href: '/b2b' },
+      { label: 'Co-op Welfare', href: '/welfare' }
+    ];
+  }
   if (role === 'SOCIETY_SECRETARY' || role === 'COOP_ADMIN') {
     return [
-      { label: 'Federation Admin', href: '/portal/admin' },
+      { label: 'Society Admin', href: '/portal/admin' },
+      { label: 'Federation Admin', href: '/federation' },
       { label: 'Operations', href: '/portal/management' },
       { label: 'Services', href: '/services' },
       { label: 'Co-op Welfare', href: '/welfare' }
