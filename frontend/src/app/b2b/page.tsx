@@ -129,7 +129,7 @@ export default function B2GPortalPage() {
                   <p className="text-xs text-slate-500">{c.department}</p>
                 </div>
 
-                <div className="flex items-center gap-6 bg-slate-50 px-4 py-2.5 rounded-xl border border-slate-200/60">
+                <div className="flex items-center justify-between sm:justify-start gap-4 sm:gap-6 bg-slate-50 px-3 sm:px-4 py-2.5 rounded-xl border border-slate-200/60 shrink-0">
                   <div>
                     <span className="text-[10px] text-slate-500 uppercase tracking-wider block font-medium">Annual Value</span>
                     <span className="text-base font-bold text-slate-900">{c.totalAnnualValue}</span>
@@ -155,10 +155,12 @@ export default function B2GPortalPage() {
                 <div className="p-4 rounded-xl bg-slate-50 border border-slate-100 flex flex-col justify-between space-y-3">
                   <div className="space-y-1.5">
                     <span className="text-slate-500 uppercase tracking-wider text-[10px] font-bold block">{t('contractWorkersLabel')}</span>
-                    <div className="flex items-center gap-2 text-slate-900 font-semibold">
-                      <Users className="w-4 h-4 text-blue-600" />
-                      <span>{c.assignedWorkersCount} Dedicated Tradespeople</span>
-                      <span className="text-slate-300">•</span>
+                    <div className="flex items-center gap-2 text-slate-900 font-semibold flex-wrap">
+                      <div className="flex items-center gap-2">
+                        <Users className="w-4 h-4 text-blue-600" />
+                        <span>{c.assignedWorkersCount} Dedicated Tradespeople</span>
+                      </div>
+                      <span className="text-slate-300 hidden sm:inline">•</span>
                       <span>{c.monthlyVolumeHours} hrs/month</span>
                     </div>
                     <div className="text-[11px] text-slate-600 pt-1">
@@ -166,7 +168,7 @@ export default function B2GPortalPage() {
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between border-t border-slate-200/60 pt-2 text-[11px]">
+                  <div className="flex items-center justify-between flex-wrap gap-2 border-t border-slate-200/60 pt-2 text-[11px]">
                     <span className="text-emerald-700 font-medium">✓ {t('contractEscrowLabel')} {c.paymentTermDays}-Day Net Settlement</span>
                     <span className="text-blue-700 font-medium">Audit Grade: A+</span>
                   </div>

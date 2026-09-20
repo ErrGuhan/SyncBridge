@@ -38,19 +38,19 @@ export default function Footer() {
             </span>
           </div>
 
-          <div className="flex items-center gap-3 sm:gap-4 text-[11px] font-medium text-slate-600 flex-wrap justify-center">
+          <div className="flex items-center gap-2.5 sm:gap-4 text-[11px] font-medium text-slate-600 flex-wrap justify-center">
             <span className="flex items-center gap-1">
               <strong className="text-emerald-700">{SPLIT_PCT.worker}</strong> {t('footerWorkerTakeHome')}
             </span>
-            <span>•</span>
+            <span className="hidden sm:inline text-slate-300">•</span>
             <span className="flex items-center gap-1">
               <strong className="text-blue-700">{SPLIT_PCT.coopAdmin}</strong> {t('footerSocietyReserve')}
             </span>
-            <span>•</span>
+            <span className="hidden sm:inline text-slate-300">•</span>
             <span className="flex items-center gap-1">
               <strong className="text-amber-700">{SPLIT_PCT.welfare}</strong> {t('footerWelfareTrust')}
             </span>
-            <span>•</span>
+            <span className="hidden sm:inline text-slate-300">•</span>
             <span className="flex items-center gap-1">
               <strong className="text-purple-700">{SPLIT_PCT.techFund}</strong> {t('footerTechFund')}
             </span>

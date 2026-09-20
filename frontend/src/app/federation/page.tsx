@@ -217,7 +217,7 @@ function FederationDashboardContent() {
       {/* ---------------------------------------------------------------------- */}
       {/* 1. TOP STATS GRID                                                      */}
       {/* ---------------------------------------------------------------------- */}
-      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
         
         {/* Stat 1: Total Job Volume This Month */}
         <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs space-y-2">
@@ -383,7 +383,7 @@ function FederationDashboardContent() {
             Recent Payment Settlement Records
           </h3>
           <div className="overflow-x-auto border border-slate-200 rounded-xl">
-            <table className="w-full text-left text-xs">
+            <table className="w-full text-left text-xs min-w-[720px]">
               <thead className="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold">
                 <tr>
                   <th className="py-3 px-4">Booking Ref</th>
@@ -450,7 +450,7 @@ function FederationDashboardContent() {
         </div>
 
         <div className="overflow-x-auto border border-slate-200 rounded-xl">
-          <table className="w-full text-left text-xs">
+          <table className="w-full text-left text-xs min-w-[640px]">
             <thead className="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold">
               <tr>
                 <th className="py-3 px-4">Trade Category Name</th>
@@ -528,7 +528,7 @@ function FederationDashboardContent() {
         </div>
 
         <div className="overflow-x-auto border border-slate-200 rounded-xl">
-          <table className="w-full text-left text-xs">
+          <table className="w-full text-left text-xs min-w-[680px]">
             <thead className="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold">
               <tr>
                 <th className="py-3 px-4">Member Name</th>
@@ -597,7 +597,7 @@ function FederationDashboardContent() {
         </div>
 
         <div className="overflow-x-auto border border-slate-200 rounded-xl">
-          <table className="w-full text-left text-xs">
+          <table className="w-full text-left text-xs min-w-[680px]">
             <thead className="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold">
               <tr>
                 <th className="py-3 px-4">Case ID</th>
