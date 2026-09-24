@@ -44,6 +44,7 @@ export default function TopAccessibleHeader() {
       case '/bookings': return t('navOrders');
       case '/welfare': return t('navWelfare');
       case '/b2b': return t('navB2B');
+      case '/federation': return t('navFederation');
       case '/portal/worker': return t('navWorker');
       case '/portal/admin': return t('navAdmin');
       default: return fallback;

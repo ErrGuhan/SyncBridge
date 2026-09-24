@@ -254,7 +254,7 @@ export const MOCK_WORKERS: WorkerProfile[] = [
     guaranteeCovered: true,
     skills: ['Three-Phase Wiring', 'Inverter Systems', 'MCB Distribution', 'Smart Home Setup'],
     phone: '+91 98452 11092',
-    locationName: 'Indiranagar (1.4 km away)',
+    locationName: 'Indiranagar',
     completedJobs: 320,
     avatarUrl: 'https://images.unsplash.com/photo-1540569014015-19a7be504e3a?w=150&auto=format&fit=crop&q=80',
     bio: 'Certified master electrician with 8+ years experience. NCCT accredited with full e-Shram social security.'
@@ -280,7 +280,7 @@ export const MOCK_WORKERS: WorkerProfile[] = [
     guaranteeCovered: true,
     skills: ['Leak Detection', 'PPR Pipe Jointing', 'RO Water Filter', 'Bathroom Fitting'],
     phone: '+91 98231 44520',
-    locationName: 'Koramangala (2.2 km away)',
+    locationName: 'Koramangala',
     completedJobs: 215,
     avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
     bio: 'Experienced in residential plumbing pipelines, motorized pumps, and immediate leak emergencies.'
@@ -306,7 +306,7 @@ export const MOCK_WORKERS: WorkerProfile[] = [
     guaranteeCovered: true,
     skills: ['Geriatric Care', 'Vitals Monitoring', 'Physiotherapy Assist', 'Post-Surgical Care'],
     phone: '+91 99120 78431',
-    locationName: 'HSR Layout (3.1 km away)',
+    locationName: 'HSR Layout',
     completedJobs: 178,
     avatarUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80',
     bio: 'Registered nursing assistant. Specializing in dignified, compassionate elderly home healthcare.'
@@ -332,7 +332,7 @@ export const MOCK_WORKERS: WorkerProfile[] = [
     guaranteeCovered: true,
     skills: ['Modular Kitchen Fitting', 'Hardwood Furniture', 'Door Hinges & Locks', 'Veneer Polishing'],
     phone: '+91 97411 90812',
-    locationName: 'BTM Layout (4.5 km away)',
+    locationName: 'BTM Layout',
     completedJobs: 290,
     avatarUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80',
     bio: 'Artisan woodworker with precision tools and decade-long craftsmanship on bespoke interiors.'
@@ -358,7 +358,7 @@ export const MOCK_WORKERS: WorkerProfile[] = [
     guaranteeCovered: true,
     skills: ['Inverter AC Gas Refill', 'Compressor Diagnostics', 'Circuit Board Repair', 'Drum Balancing'],
     phone: '+91 96321 00293',
-    locationName: 'Jayanagar (2.8 km away)',
+    locationName: 'Jayanagar',
     completedJobs: 410,
     avatarUrl: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=150&auto=format&fit=crop&q=80',
     bio: 'HVAC and refrigeration specialist with original spare parts guarantee from cooperative inventory.'
@@ -384,7 +384,7 @@ export const MOCK_WORKERS: WorkerProfile[] = [
     guaranteeCovered: true,
     skills: ['Industrial Vacuuming', 'Eco-friendly Degreasing', 'High-Pressure Wash', 'Fabric Sanitization'],
     phone: '+91 94488 12349',
-    locationName: 'Domlur (1.8 km away)',
+    locationName: 'Domlur',
     completedJobs: 185,
     avatarUrl: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150&auto=format&fit=crop&q=80',
     bio: 'Certified sanitation team leader with hospital-grade non-toxic disinfectant certification.'
@@ -410,11 +410,12 @@ export const MOCK_ADMIN_METRICS = {
   microPensionAccrued: '₹3,85,000',
   welfareGrowth: '+22.4%',
   totalPatronage: '₹28,40,000',
-  // Official 90 / 5 / 5 Tri-Split Protocol per Section 4, Item 5
-  triSplitPercentages: {
+  // Official Canonical 90/5/3/2 Revenue Split Protocol
+  revenueSplitPercentages: {
     workerWallet: 90,
     primaryCoop: 5,
-    workerSocialSecurity: 5
+    welfareFund: 3,
+    techFund: 2
   },
   emergencySurgeWorkerPassThrough: 100, // 100% of emergency surge goes to worker
   cooperativeGuaranteeReserve: '₹1,25,000', // 1% centralized customer protection fund

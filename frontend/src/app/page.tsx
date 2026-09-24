@@ -413,7 +413,7 @@ export default function HomePage() {
               key={worker.id}
               worker={worker}
               variant="compact"
-              bookingHref="/services"
+              bookingHref={`/services?workerId=${worker.id}`}
             />
           ))}
         </div>

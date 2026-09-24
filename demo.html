@@ -1,0 +1,2805 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SyncBridge — Cooperative Gig Services Platform</title>
+  <meta name="description" content="A cooperative-owned digital marketplace connecting verified skilled workers with households. Fair wages, worker welfare, community trust." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+  <style>
+    /* =====================================================
+       RESET & BASE
+    ===================================================== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; font-size: 16px; }
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: #f8fafc;
+      color: #0f172a;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    img { display: block; max-width: 100%; }
+    button { cursor: pointer; font-family: inherit; }
+    input, textarea, select { font-family: inherit; }
+
+    /* =====================================================
+       CSS VARIABLES
+    ===================================================== */
+    :root {
+      --blue-primary: #1e40af;
+      --blue-accent:  #2563eb;
+      --blue-light:   #dbeafe;
+      --blue-xlight:  #eff6ff;
+      --green:        #059669;
+      --green-light:  #d1fae5;
+      --amber:        #d97706;
+      --amber-light:  #fef3c7;
+      --red:          #dc2626;
+      --red-light:    #fee2e2;
+      --slate-900:    #0f172a;
+      --slate-700:    #334155;
+      --slate-600:    #475569;
+      --slate-500:    #64748b;
+      --slate-400:    #94a3b8;
+      --slate-300:    #cbd5e1;
+      --slate-200:    #e2e8f0;
+      --slate-100:    #f1f5f9;
+      --slate-50:     #f8fafc;
+      --white:        #ffffff;
+      --radius-card:  16px;
+      --radius-btn:   12px;
+      --radius-input: 10px;
+      --shadow-card:  0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+      --shadow-hover: 0 4px 16px rgba(0,0,0,0.09);
+      --transition:   0.2s cubic-bezier(0.16,1,0.3,1);
+    }
+
+    /* =====================================================
+       UTILITIES
+    ===================================================== */
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+    .section { padding: 72px 0; }
+    .section-sm { padding: 48px 0; }
+    .text-center { text-align: center; }
+    .flex { display: flex; }
+    .flex-col { flex-direction: column; }
+    .items-center { align-items: center; }
+    .justify-center { justify-content: center; }
+    .justify-between { justify-content: space-between; }
+    .gap-4 { gap: 16px; }
+    .gap-6 { gap: 24px; }
+    .gap-8 { gap: 32px; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 24px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 20px; }
+    .grid-5 { display: grid; grid-template-columns: repeat(5,1fr); gap: 16px; }
+    .hidden { display: none; }
+    .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
+
+    /* =====================================================
+       TYPOGRAPHY
+    ===================================================== */
+    .display-xl { font-size: 48px; font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; }
+    .display-lg { font-size: 36px; font-weight: 700; line-height: 1.15; letter-spacing: -0.015em; }
+    .display-md { font-size: 28px; font-weight: 700; line-height: 1.2; letter-spacing: -0.01em; }
+    .heading-xl { font-size: 22px; font-weight: 700; line-height: 1.3; }
+    .heading-lg { font-size: 18px; font-weight: 600; line-height: 1.4; }
+    .heading-md { font-size: 15px; font-weight: 600; line-height: 1.5; }
+    .body-lg { font-size: 16px; line-height: 1.7; }
+    .body-md { font-size: 14px; line-height: 1.6; }
+    .body-sm { font-size: 12px; line-height: 1.5; }
+    .text-primary { color: var(--slate-900); }
+    .text-secondary { color: var(--slate-600); }
+    .text-muted { color: var(--slate-500); }
+    .text-blue { color: var(--blue-accent); }
+    .text-green { color: var(--green); }
+    .text-red { color: var(--red); }
+    .font-bold { font-weight: 700; }
+    .font-semibold { font-weight: 600; }
+    .font-medium { font-weight: 500; }
+
+    /* =====================================================
+       BADGES
+    ===================================================== */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+    }
+    .badge-coop { background: var(--blue-light); color: var(--blue-primary); border: 1px solid #bfdbfe; }
+    .badge-verified { background: var(--green-light); color: #065f46; border: 1px solid #a7f3d0; }
+    .badge-pending { background: var(--amber-light); color: #92400e; border: 1px solid #fde68a; }
+    .badge-rejected { background: var(--red-light); color: #991b1b; border: 1px solid #fca5a5; }
+    .badge-emergency { background: var(--red); color: #fff; }
+    .badge-gov { background: #f0fdf4; color: #14532d; border: 1px solid #86efac; }
+
+    /* =====================================================
+       BUTTONS
+    ===================================================== */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 11px 22px;
+      border-radius: var(--radius-btn);
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 1;
+      border: none;
+      text-decoration: none;
+      min-height: 44px;
+      transition: background var(--transition), transform var(--transition), box-shadow var(--transition);
+      white-space: nowrap;
+    }
+    .btn-primary {
+      background: var(--blue-primary);
+      color: #fff;
+    }
+    .btn-primary:hover { background: #1d4ed8; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(37,99,235,0.25); }
+    .btn-primary:active { transform: translateY(0); background: #1e3a8a; }
+
+    .btn-accent {
+      background: var(--blue-accent);
+      color: #fff;
+    }
+    .btn-accent:hover { background: #1d4ed8; transform: translateY(-1px); }
+
+    .btn-secondary {
+      background: #fff;
+      color: var(--blue-primary);
+      border: 1.5px solid var(--blue-accent);
+    }
+    .btn-secondary:hover { background: var(--blue-xlight); transform: translateY(-1px); }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--slate-700);
+      border: 1.5px solid var(--slate-200);
+    }
+    .btn-ghost:hover { background: var(--slate-100); border-color: var(--slate-300); }
+
+    .btn-emergency {
+      background: var(--red);
+      color: #fff;
+      font-size: 15px;
+      font-weight: 700;
+      padding: 13px 28px;
+      animation: pulseRed 2s infinite;
+    }
+    .btn-emergency:hover { background: #b91c1c; }
+
+    .btn-sm { padding: 7px 14px; font-size: 12px; min-height: 32px; border-radius: 8px; }
+    .btn-lg { padding: 14px 28px; font-size: 15px; min-height: 52px; }
+
+    @keyframes pulseRed {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(220,38,38,0.4); }
+      50% { box-shadow: 0 0 0 10px rgba(220,38,38,0); }
+    }
+
+    /* =====================================================
+       CARDS
+    ===================================================== */
+    .card {
+      background: var(--white);
+      border: 1px solid var(--slate-200);
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-card);
+      transition: box-shadow var(--transition), transform var(--transition), border-color var(--transition);
+    }
+    .card-hover:hover {
+      box-shadow: var(--shadow-hover);
+      transform: translateY(-3px);
+      border-color: var(--slate-300);
+    }
+    .card-p { padding: 24px; }
+    .card-p-sm { padding: 16px; }
+
+    /* =====================================================
+       INPUTS
+    ===================================================== */
+    .input {
+      width: 100%;
+      border: 1.5px solid var(--slate-200);
+      border-radius: var(--radius-input);
+      padding: 11px 14px;
+      font-size: 14px;
+      background: var(--slate-50);
+      color: var(--slate-900);
+      transition: border-color 0.15s, box-shadow 0.15s;
+      outline: none;
+    }
+    .input:focus {
+      border-color: var(--blue-accent);
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+    }
+    .input::placeholder { color: var(--slate-400); }
+
+    /* =====================================================
+       NAVBAR
+    ===================================================== */
+    #navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      background: rgba(255,255,255,0.97);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--slate-200);
+      height: 64px;
+      display: flex;
+      align-items: center;
+    }
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+      gap: 16px;
+    }
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      flex-shrink: 0;
+    }
+    .nav-logo-icon {
+      width: 36px;
+      height: 36px;
+      background: var(--blue-primary);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 800;
+      font-size: 16px;
+    }
+    .nav-logo-text { font-size: 18px; font-weight: 800; color: var(--slate-900); }
+    .nav-logo-sub { font-size: 10px; font-weight: 500; color: var(--slate-500); letter-spacing: 0.05em; text-transform: uppercase; }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      list-style: none;
+    }
+    .nav-links a {
+      padding: 7px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--slate-600);
+      text-decoration: none;
+      transition: background 0.15s, color 0.15s;
+    }
+    .nav-links a:hover, .nav-links a.active {
+      background: var(--blue-xlight);
+      color: var(--blue-primary);
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .lang-switcher {
+      display: flex;
+      gap: 2px;
+      background: var(--slate-100);
+      border-radius: 8px;
+      padding: 3px;
+    }
+    .lang-btn {
+      padding: 4px 9px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      border: none;
+      background: transparent;
+      color: var(--slate-500);
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+    .lang-btn.active {
+      background: #fff;
+      color: var(--blue-primary);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .sos-btn {
+      background: var(--red);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 6px 13px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      animation: pulseRed 2s infinite;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    /* =====================================================
+       HERO
+    ===================================================== */
+    #hero {
+      padding: 120px 0 72px;
+      background: var(--white);
+      border-bottom: 1px solid var(--slate-200);
+    }
+    .hero-inner {
+      max-width: 760px;
+      margin: 0 auto;
+      text-align: center;
+      padding: 0 20px;
+    }
+    .hero-inner .badge { margin-bottom: 20px; }
+    .hero-title {
+      font-size: clamp(32px, 5vw, 52px);
+      font-weight: 800;
+      color: var(--slate-900);
+      line-height: 1.1;
+      letter-spacing: -0.025em;
+      margin-bottom: 16px;
+    }
+    .hero-title span { color: var(--blue-primary); }
+    .hero-sub {
+      font-size: 17px;
+      color: var(--slate-600);
+      line-height: 1.7;
+      margin-bottom: 36px;
+      max-width: 560px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .hero-search {
+      display: flex;
+      align-items: center;
+      background: #fff;
+      border: 1.5px solid var(--slate-200);
+      border-radius: 14px;
+      padding: 6px 6px 6px 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      gap: 8px;
+      max-width: 600px;
+      margin: 0 auto 28px;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .hero-search:focus-within {
+      border-color: var(--blue-accent);
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+    }
+    .hero-search input {
+      flex: 1;
+      border: none;
+      background: transparent;
+      font-size: 15px;
+      color: var(--slate-900);
+      outline: none;
+    }
+    .hero-search input::placeholder { color: var(--slate-400); }
+
+    .hero-stats {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 32px;
+      flex-wrap: wrap;
+    }
+    .hero-stat-item { text-align: center; }
+    .hero-stat-num {
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--slate-900);
+      line-height: 1;
+    }
+    .hero-stat-label { font-size: 12px; color: var(--slate-500); font-weight: 500; margin-top: 2px; }
+    .hero-stat-divider { width: 1px; height: 36px; background: var(--slate-200); }
+
+    /* =====================================================
+       SERVICES GRID
+    ===================================================== */
+    #services { background: var(--slate-50); }
+    .section-header { text-align: center; margin-bottom: 48px; }
+    .section-label {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--blue-accent);
+      margin-bottom: 10px;
+    }
+    .section-title { font-size: 30px; font-weight: 700; color: var(--slate-900); margin-bottom: 12px; }
+    .section-sub { font-size: 15px; color: var(--slate-600); max-width: 480px; margin: 0 auto; line-height: 1.7; }
+
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 16px;
+    }
+    .service-card {
+      background: #fff;
+      border: 1.5px solid var(--slate-200);
+      border-radius: 14px;
+      padding: 20px 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: all var(--transition);
+      position: relative;
+    }
+    .service-card:hover, .service-card.active {
+      border-color: var(--blue-accent);
+      background: var(--blue-xlight);
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(37,99,235,0.12);
+    }
+    .service-card.active::after {
+      content: '';
+      position: absolute;
+      bottom: -8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0; height: 0;
+      border-left: 8px solid transparent;
+      border-right: 8px solid transparent;
+      border-top: 8px solid var(--blue-accent);
+    }
+    .service-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: var(--slate-100);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 10px;
+      font-size: 22px;
+      transition: background var(--transition);
+    }
+    .service-card:hover .service-icon, .service-card.active .service-icon {
+      background: var(--blue-light);
+    }
+    .service-name { font-size: 13px; font-weight: 600; color: var(--slate-900); margin-bottom: 2px; }
+    .service-rate { font-size: 11px; color: var(--slate-500); font-weight: 500; }
+
+    /* =====================================================
+       WORKER DISCOVERY
+    ===================================================== */
+    #workers { background: #fff; }
+    .workers-filter {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 28px;
+      flex-wrap: wrap;
+    }
+    .filter-label { font-size: 13px; font-weight: 600; color: var(--slate-600); }
+    .filter-chip {
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      border: 1.5px solid var(--slate-200);
+      background: #fff;
+      color: var(--slate-600);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .filter-chip:hover, .filter-chip.active {
+      border-color: var(--blue-accent);
+      background: var(--blue-xlight);
+      color: var(--blue-primary);
+    }
+
+    .workers-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+    .worker-card {
+      padding: 22px;
+      position: relative;
+    }
+    .worker-card-top {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+    .worker-avatar {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      font-size: 20px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      position: relative;
+    }
+    .availability-dot {
+      position: absolute;
+      bottom: 1px;
+      right: 1px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      border: 2px solid #fff;
+    }
+    .dot-green { background: var(--green); }
+    .dot-grey { background: var(--slate-400); }
+
+    .worker-info { flex: 1; min-width: 0; }
+    .worker-name { font-size: 15px; font-weight: 700; color: var(--slate-900); margin-bottom: 2px; }
+    .worker-skill { font-size: 12px; color: var(--slate-500); font-weight: 500; margin-bottom: 6px; }
+    .worker-rating {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--slate-700);
+    }
+    .star { color: #f59e0b; }
+
+    .worker-skills-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 14px;
+    }
+    .skill-tag {
+      padding: 3px 9px;
+      background: var(--slate-100);
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--slate-600);
+    }
+
+    .worker-card-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 14px;
+      border-top: 1px solid var(--slate-100);
+    }
+    .worker-meta { display: flex; flex-direction: column; gap: 3px; }
+    .worker-price { font-size: 16px; font-weight: 800; color: var(--slate-900); }
+    .worker-distance { font-size: 11px; color: var(--slate-500); font-weight: 500; }
+
+    /* =====================================================
+       MODAL
+    ===================================================== */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15,23,42,0.5);
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+    .modal {
+      background: #fff;
+      border-radius: 20px;
+      width: 100%;
+      max-width: 520px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+      transform: translateY(16px);
+      transition: transform 0.2s cubic-bezier(0.16,1,0.3,1);
+    }
+    .modal-overlay.open .modal { transform: translateY(0); }
+    .modal-header {
+      padding: 24px 24px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .modal-title { font-size: 18px; font-weight: 700; color: var(--slate-900); }
+    .modal-close {
+      width: 32px; height: 32px;
+      border-radius: 8px;
+      border: 1.5px solid var(--slate-200);
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 16px;
+      color: var(--slate-500);
+      transition: background 0.15s;
+    }
+    .modal-close:hover { background: var(--slate-100); }
+    .modal-body { padding: 0 24px 24px; }
+
+    .modal-worker-summary {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px;
+      background: var(--slate-50);
+      border-radius: 12px;
+      margin-bottom: 20px;
+    }
+
+    .form-group { margin-bottom: 16px; }
+    .form-label { display: block; font-size: 13px; font-weight: 600; color: var(--slate-700); margin-bottom: 6px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    textarea.input { resize: vertical; min-height: 80px; }
+
+    .price-breakdown {
+      background: var(--slate-50);
+      border: 1px solid var(--slate-200);
+      border-radius: 12px;
+      padding: 16px;
+      margin: 20px 0;
+    }
+    .price-breakdown-title { font-size: 12px; font-weight: 700; color: var(--slate-500); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 12px; }
+    .price-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      padding: 5px 0;
+    }
+    .price-row-label { color: var(--slate-600); font-weight: 500; }
+    .price-row-value { font-weight: 600; color: var(--slate-900); }
+    .price-row.total {
+      border-top: 1px solid var(--slate-200);
+      margin-top: 8px;
+      padding-top: 10px;
+      font-size: 15px;
+    }
+    .price-row.total .price-row-label { color: var(--slate-900); font-weight: 700; }
+
+    .split-preview {
+      border-top: 1px dashed var(--slate-200);
+      margin-top: 10px;
+      padding-top: 10px;
+    }
+    .split-bar {
+      display: flex;
+      height: 8px;
+      border-radius: 999px;
+      overflow: hidden;
+      margin: 10px 0;
+    }
+    .split-bar-seg { height: 100%; transition: width 0.4s ease; }
+    .split-legend {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .split-legend-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .split-legend-dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+
+    .success-state {
+      text-align: center;
+      padding: 32px 0 8px;
+    }
+    .success-icon {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: var(--green-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      font-size: 34px;
+      animation: scaleIn 0.4s cubic-bezier(0.16,1,0.3,1);
+    }
+    @keyframes scaleIn {
+      from { transform: scale(0.5); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+    .booking-id-box {
+      background: var(--blue-xlight);
+      border: 1px solid var(--blue-light);
+      border-radius: 10px;
+      padding: 12px;
+      margin: 16px 0;
+      font-size: 13px;
+      color: var(--blue-primary);
+      font-weight: 600;
+    }
+
+    /* =====================================================
+       HOW IT WORKS
+    ===================================================== */
+    #how-it-works { background: var(--slate-50); }
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 28px;
+      position: relative;
+    }
+    .steps-grid::before {
+      content: '';
+      position: absolute;
+      top: 40px;
+      left: calc(16.67% + 14px);
+      right: calc(16.67% + 14px);
+      height: 2px;
+      background: var(--slate-200);
+    }
+    .step-card { text-align: center; padding: 32px 24px; }
+    .step-num {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: var(--blue-primary);
+      color: #fff;
+      font-size: 20px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+      position: relative;
+      z-index: 1;
+    }
+    .step-icon { font-size: 26px; margin-bottom: 12px; }
+    .step-title { font-size: 17px; font-weight: 700; color: var(--slate-900); margin-bottom: 8px; }
+    .step-desc { font-size: 14px; color: var(--slate-600); line-height: 1.7; }
+
+    /* =====================================================
+       COMPARISON TABLE
+    ===================================================== */
+    #why-coop { background: #fff; }
+    .comparison-table { width: 100%; border-collapse: collapse; border-radius: 16px; overflow: hidden; box-shadow: var(--shadow-card); }
+    .comparison-table th {
+      padding: 16px 20px;
+      font-size: 14px;
+      font-weight: 700;
+      text-align: left;
+    }
+    .comparison-table th:first-child { background: var(--slate-50); color: var(--slate-600); }
+    .comparison-table th.col-private { background: #fff3f3; color: var(--red); }
+    .comparison-table th.col-coop { background: var(--blue-xlight); color: var(--blue-primary); }
+    .comparison-table td {
+      padding: 14px 20px;
+      font-size: 13px;
+      border-top: 1px solid var(--slate-100);
+    }
+    .comparison-table td:first-child { font-weight: 600; color: var(--slate-700); background: var(--slate-50); }
+    .comparison-table td.bad { color: var(--red); font-weight: 500; }
+    .comparison-table td.good { color: var(--green); font-weight: 600; }
+    .comparison-table tr:hover td { background-color: rgba(248,250,252,0.8); }
+    .comparison-table tr:hover td:first-child { background: var(--slate-100); }
+
+    /* =====================================================
+       REVENUE SPLIT
+    ===================================================== */
+    #revenue-split { background: var(--slate-50); }
+    .split-section-inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+      align-items: center;
+    }
+    .split-donut-wrap {
+      position: relative;
+      max-width: 300px;
+      margin: 0 auto;
+    }
+    .split-donut-center {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+    .split-donut-center-num { font-size: 32px; font-weight: 800; color: var(--blue-primary); }
+    .split-donut-center-label { font-size: 11px; font-weight: 600; color: var(--slate-500); }
+
+    .split-details { display: flex; flex-direction: column; gap: 16px; }
+    .split-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px;
+      border-radius: 12px;
+      border: 1px solid var(--slate-200);
+      background: #fff;
+    }
+    .split-item-icon {
+      width: 48px; height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+    .split-item-info { flex: 1; }
+    .split-item-title { font-size: 14px; font-weight: 700; color: var(--slate-900); margin-bottom: 2px; }
+    .split-item-desc { font-size: 12px; color: var(--slate-500); }
+    .split-item-pct { font-size: 24px; font-weight: 800; flex-shrink: 0; }
+
+    /* =====================================================
+       ADMIN DASHBOARD
+    ===================================================== */
+    #admin { background: #fff; }
+    .admin-tabs {
+      display: flex;
+      gap: 4px;
+      background: var(--slate-100);
+      border-radius: 10px;
+      padding: 4px;
+      margin-bottom: 28px;
+      width: fit-content;
+    }
+    .admin-tab {
+      padding: 8px 18px;
+      border-radius: 7px;
+      font-size: 13px;
+      font-weight: 600;
+      border: none;
+      background: transparent;
+      color: var(--slate-500);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .admin-tab.active {
+      background: #fff;
+      color: var(--blue-primary);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+    .admin-tab-content { display: none; }
+    .admin-tab-content.active { display: block; }
+
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+    .metric-card {
+      padding: 20px;
+      border-radius: 14px;
+      border: 1px solid var(--slate-200);
+      background: #fff;
+    }
+    .metric-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--slate-500); margin-bottom: 8px; }
+    .metric-value { font-size: 28px; font-weight: 800; color: var(--slate-900); line-height: 1; margin-bottom: 4px; }
+    .metric-change { font-size: 12px; font-weight: 500; color: var(--green); }
+
+    .data-table { width: 100%; border-collapse: collapse; }
+    .data-table th {
+      text-align: left;
+      padding: 10px 14px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--slate-500);
+      background: var(--slate-50);
+      border-bottom: 1px solid var(--slate-200);
+    }
+    .data-table td {
+      padding: 12px 14px;
+      font-size: 13px;
+      color: var(--slate-700);
+      border-bottom: 1px solid var(--slate-100);
+    }
+    .data-table tr:hover td { background: var(--slate-50); }
+    .status-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
+    .status-dot.green { background: var(--green); }
+    .status-dot.amber { background: var(--amber); }
+    .status-dot.red { background: var(--red); }
+    .action-btns { display: flex; gap: 6px; }
+
+    /* =====================================================
+       AI FORECAST
+    ===================================================== */
+    #ai-forecast { background: var(--slate-50); }
+    .forecast-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 24px; }
+    .ai-insight-card {
+      background: var(--blue-xlight);
+      border: 1px solid var(--blue-light);
+      border-radius: 14px;
+      padding: 18px;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+    .ai-insight-icon { font-size: 22px; flex-shrink: 0; }
+    .ai-insight-text .heading-md { color: var(--blue-primary); margin-bottom: 4px; }
+    .ai-insight-text .body-sm { color: var(--slate-700); }
+    .insights-list { display: flex; flex-direction: column; gap: 10px; margin-top: 16px; }
+
+    /* =====================================================
+       EMERGENCY SECTION
+    ===================================================== */
+    #emergency {
+      background: #fff5f5;
+      border-top: 1px solid #fecaca;
+      border-bottom: 1px solid #fecaca;
+    }
+    .emergency-inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+      align-items: center;
+    }
+    .emergency-badge-big {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #fff;
+      border: 1.5px solid #fca5a5;
+      border-radius: 12px;
+      padding: 10px 16px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--red);
+      margin-bottom: 16px;
+    }
+    .sla-box {
+      background: #fff;
+      border: 1px solid #fecaca;
+      border-radius: 14px;
+      padding: 20px;
+      text-align: center;
+    }
+    .sla-timer {
+      font-size: 40px;
+      font-weight: 800;
+      color: var(--red);
+      font-variant-numeric: tabular-nums;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+    .sla-label { font-size: 12px; color: var(--slate-500); font-weight: 600; }
+
+    /* =====================================================
+       WORKER REGISTRATION
+    ===================================================== */
+    #register { background: var(--slate-50); }
+    .reg-steps { display: flex; gap: 8px; margin-bottom: 28px; }
+    .reg-step {
+      flex: 1;
+      height: 6px;
+      border-radius: 999px;
+      background: var(--slate-200);
+      transition: background 0.3s;
+    }
+    .reg-step.done { background: var(--blue-primary); }
+    .reg-step.active { background: var(--blue-accent); }
+    .reg-form-panel { display: none; }
+    .reg-form-panel.active { display: block; }
+    .reg-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+    /* =====================================================
+       FOOTER
+    ===================================================== */
+    #footer {
+      background: var(--slate-900);
+      color: var(--slate-400);
+      padding: 56px 0 32px;
+    }
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 40px;
+      margin-bottom: 48px;
+    }
+    .footer-brand-name { font-size: 22px; font-weight: 800; color: #fff; margin: 12px 0 8px; }
+    .footer-brand-desc { font-size: 13px; line-height: 1.7; }
+    .footer-gov-badges { display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
+    .footer-gov-badge {
+      padding: 5px 10px;
+      border-radius: 6px;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .footer-col-title { font-size: 13px; font-weight: 700; color: #fff; margin-bottom: 14px; }
+    .footer-links { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .footer-links a { font-size: 13px; color: var(--slate-400); text-decoration: none; transition: color 0.15s; }
+    .footer-links a:hover { color: #fff; }
+    .footer-bottom {
+      border-top: 1px solid rgba(255,255,255,0.08);
+      padding-top: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+    }
+    .footer-coop-line {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--green);
+      font-weight: 600;
+    }
+
+    /* =====================================================
+       SCROLL ANIMATIONS
+    ===================================================== */
+    .fade-up {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+    .fade-up.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .fade-up:nth-child(2) { transition-delay: 0.08s; }
+    .fade-up:nth-child(3) { transition-delay: 0.16s; }
+    .fade-up:nth-child(4) { transition-delay: 0.24s; }
+    .fade-up:nth-child(5) { transition-delay: 0.32s; }
+    .fade-up:nth-child(6) { transition-delay: 0.40s; }
+
+    /* =====================================================
+       COUNTER ANIMATION
+    ===================================================== */
+    .count-up { display: inline-block; }
+
+    /* =====================================================
+       RESPONSIVE
+    ===================================================== */
+    @media (max-width: 1024px) {
+      .services-grid { grid-template-columns: repeat(5, 1fr); }
+      .workers-grid { grid-template-columns: repeat(2, 1fr); }
+      .metrics-grid { grid-template-columns: repeat(2, 1fr); }
+      .split-section-inner { grid-template-columns: 1fr; gap: 32px; }
+      .forecast-grid { grid-template-columns: 1fr; }
+      .emergency-inner { grid-template-columns: 1fr; }
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 768px) {
+      .services-grid { grid-template-columns: repeat(5, 1fr); gap: 10px; }
+      .workers-grid { grid-template-columns: 1fr; }
+      .steps-grid { grid-template-columns: 1fr; }
+      .steps-grid::before { display: none; }
+      .grid-2 { grid-template-columns: 1fr; }
+      .nav-links { display: none; }
+      .display-xl { font-size: 32px; }
+      .hero-stats { gap: 16px; }
+      .footer-grid { grid-template-columns: 1fr; }
+      .metrics-grid { grid-template-columns: 1fr 1fr; }
+      .reg-grid { grid-template-columns: 1fr; }
+      .form-row { grid-template-columns: 1fr; }
+      .comparison-table { font-size: 12px; }
+      .comparison-table th, .comparison-table td { padding: 10px 12px; }
+    }
+    @media (max-width: 480px) {
+      .services-grid { grid-template-columns: repeat(5, 1fr); gap: 8px; }
+      .service-card { padding: 12px 8px; }
+      .service-icon { width: 36px; height: 36px; font-size: 18px; }
+      .service-name { font-size: 10px; }
+      .service-rate { display: none; }
+    }
+
+    /* =====================================================
+       MISC HELPERS
+    ===================================================== */
+    .divider { height: 1px; background: var(--slate-200); margin: 28px 0; }
+    .mt-4 { margin-top: 16px; }
+    .mt-6 { margin-top: 24px; }
+    .mt-8 { margin-top: 32px; }
+    .mb-4 { margin-bottom: 16px; }
+    .w-full { width: 100%; }
+    .overflow-hidden { overflow: hidden; }
+    .relative { position: relative; }
+  </style>
+</head>
+<body>
+
+<!-- =====================================================
+     NAVBAR
+===================================================== -->
+<nav id="navbar" role="navigation" aria-label="Main navigation">
+  <div class="nav-inner">
+    <a href="#hero" class="nav-logo" aria-label="SyncBridge home">
+      <div class="nav-logo-icon" aria-hidden="true">S</div>
+      <div>
+        <div class="nav-logo-text">SyncBridge</div>
+        <div class="nav-logo-sub">Cooperative Platform</div>
+      </div>
+    </a>
+
+    <ul class="nav-links" role="list">
+      <li><a href="#services" class="nav-link">Services</a></li>
+      <li><a href="#workers" class="nav-link">Workers</a></li>
+      <li><a href="#how-it-works" class="nav-link">How It Works</a></li>
+      <li><a href="#why-coop" class="nav-link">Why Cooperative?</a></li>
+      <li><a href="#admin" class="nav-link">Admin</a></li>
+      <li><a href="#ai-forecast" class="nav-link">AI Forecast</a></li>
+    </ul>
+
+    <div class="nav-right">
+      <div class="lang-switcher" role="group" aria-label="Language selector">
+        <button class="lang-btn active" onclick="switchLang('en')" aria-pressed="true">EN</button>
+        <button class="lang-btn" onclick="switchLang('hi')" aria-pressed="false">हि</button>
+        <button class="lang-btn" onclick="switchLang('kn')" aria-pressed="false">ಕ</button>
+        <button class="lang-btn" onclick="switchLang('ta')" aria-pressed="false">த</button>
+      </div>
+      <button class="sos-btn" onclick="openEmergencyModal()" aria-label="Emergency SOS booking">
+        🚨 SOS
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- =====================================================
+     HERO
+===================================================== -->
+<section id="hero" aria-labelledby="hero-heading">
+  <div class="hero-inner">
+    <div class="badge badge-coop" style="margin-bottom:20px;">
+      🏛️ <span id="badge-coop-text">Ministry of Cooperation · NCCT Certified</span>
+    </div>
+
+    <h1 class="hero-title" id="hero-heading">
+      <span id="hero-title-1">Verified Workers.</span><br>
+      <span class="text-blue" id="hero-title-2">Fair Wages.</span><br>
+      <span id="hero-title-3">Cooperative Power.</span>
+    </h1>
+
+    <p class="hero-sub" id="hero-sub">
+      India's first cooperative-owned service marketplace. Every worker is verified, insured, and a member-owner. Fair prices, transparent splits, community surplus.
+    </p>
+
+    <div class="hero-search" role="search">
+      <span aria-hidden="true" style="font-size:18px;">🔍</span>
+      <input
+        type="text"
+        id="hero-search-input"
+        placeholder="Search: electrician, plumber, cleaner..."
+        aria-label="Search for a service"
+        oninput="handleHeroSearch(this.value)"
+      />
+      <button class="btn btn-primary" onclick="scrollToWorkers()" aria-label="Find workers near you">
+        <span id="hero-find-btn">Find Near Me</span> →
+      </button>
+    </div>
+
+    <div class="hero-stats" aria-label="Platform statistics">
+      <div class="hero-stat-item">
+        <div class="hero-stat-num">
+          <span class="count-up" data-target="5240">0</span>+
+        </div>
+        <div class="hero-stat-label" id="stat-workers">Registered Workers</div>
+      </div>
+      <div class="hero-stat-divider" aria-hidden="true"></div>
+      <div class="hero-stat-item">
+        <div class="hero-stat-num">
+          <span class="count-up" data-target="18400">0</span>+
+        </div>
+        <div class="hero-stat-label" id="stat-bookings">Bookings Completed</div>
+      </div>
+      <div class="hero-stat-divider" aria-hidden="true"></div>
+      <div class="hero-stat-item">
+        <div class="hero-stat-num">₹<span class="count-up" data-target="2">0</span>.1 Cr</div>
+        <div class="hero-stat-label" id="stat-disbursed">Wages Disbursed</div>
+      </div>
+      <div class="hero-stat-divider" aria-hidden="true"></div>
+      <div class="hero-stat-item">
+        <div class="hero-stat-num">
+          <span class="count-up" data-target="12">0</span>+
+        </div>
+        <div class="hero-stat-label" id="stat-federations">Federations Onboard</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =====================================================
+     SERVICE CATEGORIES
+===================================================== -->
+<section id="services" class="section" aria-labelledby="services-heading">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-label">Browse Services</span>
+      <h2 class="section-title" id="services-heading" data-i18n="services-heading">Find the Right Expert</h2>
+      <p class="section-sub">10 verified service categories. All workers cooperative-verified with skills, certifications and insurance.</p>
+    </div>
+
+    <div class="services-grid" id="services-grid" role="list" aria-label="Service categories">
+      <!-- Populated by JS -->
+    </div>
+  </div>
+</section>
+
+<!-- =====================================================
+     WORKER DISCOVERY
+===================================================== -->
+<section id="workers" class="section" aria-labelledby="workers-heading">
+  <div class="container">
+    <div style="display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:28px; flex-wrap:wrap; gap:16px;">
+      <div>
+        <span class="section-label">Nearby Verified Workers</span>
+        <h2 class="heading-xl text-primary" id="workers-heading" style="margin-top:4px;">
+          <span id="workers-heading-text">Available Now Near You</span>
+        </h2>
+        <p class="body-md text-secondary" style="margin-top:4px;" id="workers-geo-note">📍 Showing workers within 10 km · Koramangala, Bengaluru</p>
+      </div>
+      <div style="display:flex; align-items:center; gap:8px;">
+        <span style="font-size:13px; font-weight:600; color:var(--slate-500);">Sort:</span>
+        <select class="input" style="width:auto; padding:8px 12px; font-size:13px;" aria-label="Sort workers">
+          <option>Nearest First</option>
+          <option>Highest Rated</option>
+          <option>Price: Low–High</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="workers-filter" role="group" aria-label="Filter workers">
+      <span class="filter-label">Filter:</span>
+      <button class="filter-chip active" onclick="filterWorkers('all',this)">All Services</button>
+      <button class="filter-chip" onclick="filterWorkers('electrician',this)">⚡ Electrician</button>
+      <button class="filter-chip" onclick="filterWorkers('plumber',this)">🔧 Plumber</button>
+      <button class="filter-chip" onclick="filterWorkers('carpenter',this)">🪚 Carpenter</button>
+      <button class="filter-chip" onclick="filterWorkers('cleaner',this)">🧹 Cleaner</button>
+      <button class="filter-chip" onclick="filterWorkers('caregiver',this)">🩺 Caregiver</button>
+    </div>
+
+    <div class="workers-grid" id="workers-grid" role="list" aria-label="Available workers">
+      <!-- Populated by JS -->
+    </div>
+
+    <div style="text-align:center; margin-top:32px;">
+      <button class="btn btn-secondary btn-lg" onclick="alert('Full worker directory would load here with pagination and advanced geo-filter.')">
+        View All 5,240 Workers →
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- =====================================================
+     HOW IT WORKS
+===================================================== -->
+<section id="how-it-works" class="section" aria-labelledby="hiw-heading">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-label">Simple Process</span>
+      <h2 class="section-title" id="hiw-heading">How It Works</h2>
+      <p class="section-sub">Three steps to get a verified cooperative worker at your doorstep.</p>
+    </div>
+    <div class="steps-grid">
+      <div class="step-card card card-hover fade-up" role="article">
+        <div class="step-num" aria-label="Step 1">1</div>
+        <div class="step-icon" aria-hidden="true">🔍</div>
+        <div class="step-title">Search & Browse</div>
+        <p class="step-desc">Enter your service need and location. Browse verified workers within 10 km sorted by proximity and rating.</p>
+      </div>
+      <div class="step-card card card-hover fade-up" role="article">
+        <div class="step-num" aria-label="Step 2">2</div>
+        <div class="step-icon" aria-hidden="true">📅</div>
+        <div class="step-title">Book & Pay Securely</div>
+        <p class="step-desc">Pick a time, confirm booking, and pay via UPI or card. Full price transparency — no hidden charges ever.</p>
+      </div>
+      <div class="step-card card card-hover fade-up" role="article">
+        <div class="step-num" aria-label="Step 3">3</div>
+        <div class="step-icon" aria-hidden="true">🛡️</div>
+        <div class="step-title">Verified Worker Arrives</div>
+        <p class="step-desc">Your cooperative-verified, insured worker arrives on time. Rate the service and your feedback builds the worker's profile.</p>
+      </div>
+    </div>
+
+    <div class="card card-p" style="margin-top:32px; background:var(--blue-xlight); border-color:var(--blue-light); display:flex; align-items:center; gap:20px; flex-wrap:wrap;">
+      <div style="font-size:36px;" aria-hidden="true">🤝</div>
+      <div>
+        <div class="heading-lg" style="color:var(--blue-primary); margin-bottom:4px;">Cooperative Difference</div>
+        <p class="body-md" style="color:var(--slate-700);">
+          Unlike private platforms, 100% of our surplus stays in the community. Workers earn <strong>80%</strong> of every booking. <strong>5%</strong> funds insurance & welfare. No VC extraction. No CEO bonuses. Pure cooperative economics.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =====================================================
+     WHY COOPERATIVE? COMPARISON
+===================================================== -->
+<section id="why-coop" class="section" aria-labelledby="coop-heading">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-label">Cooperative Advantage</span>
+      <h2 class="section-title" id="coop-heading">Why Not Just Use Urban Company?</h2>
+      <p class="section-sub">Private platforms extract wealth from workers and communities. Cooperatives return it.</p>
+    </div>
+    <div style="overflow-x:auto;">
+      <table class="comparison-table" aria-label="Comparison between private platforms and SyncBridge cooperative">
+        <thead>
+          <tr>
+            <th>Feature</th>
+            <th class="col-private">❌ Private Platforms</th>
+            <th class="col-coop">✅ SyncBridge Cooperative</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Worker Earnings</td>
+            <td class="bad">55–65% (after platform cut)</td>
+            <td class="good">80% guaranteed to worker wallet</td>
+          </tr>
+          <tr>
+            <td>Welfare / Insurance</td>
+            <td class="bad">None mandatory</td>
+            <td class="good">5% auto-credited to Welfare Fund</td>
+          </tr>
+          <tr>
+            <td>Pricing Transparency</td>
+            <td class="bad">Surge pricing, hidden fees</td>
+            <td class="good">Published cooperative rate card</td>
+          </tr>
+          <tr>
+            <td>Worker Ownership</td>
+            <td class="bad">Workers are contractors only</td>
+            <td class="good">Workers are member-owners</td>
+          </tr>
+          <tr>
+            <td>Platform Surplus</td>
+            <td class="bad">Goes to investors / shareholders</td>
+            <td class="good">Stays in cooperative community</td>
+          </tr>
+          <tr>
+            <td>Verification</td>
+            <td class="bad">Self-reported, minimal checks</td>
+            <td class="good">KYC + cooperative membership + skill cert</td>
+          </tr>
+          <tr>
+            <td>Dispute Resolution</td>
+            <td class="bad">Algorithm-based, opaque</td>
+            <td class="good">Human admin mediation by cooperative</td>
+          </tr>
+          <tr>
+            <td>Governance</td>
+            <td class="bad">VC board decisions</td>
+            <td class="good">Democratic federation governance</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- =====================================================
+     REVENUE SPLIT VISUALISER
+===================================================== -->
+<section id="revenue-split" class="section" aria-labelledby="split-heading">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-label">Transparent Economics</span>
+      <h2 class="section-title" id="split-heading">Every Rupee. Accounted For.</h2>
+      <p class="section-sub">For every ₹1,000 booking, here's exactly where the money goes — recorded in an immutable audit ledger.</p>
+    </div>
+
+    <div class="split-section-inner">
+      <div>
+        <div class="split-donut-wrap">
+          <canvas id="splitDonut" width="280" height="280" aria-label="Revenue split donut chart showing 80% worker, 15% cooperative fund, 5% welfare fund"></canvas>
+          <div class="split-donut-center">
+            <div class="split-donut-center-num">₹1000</div>
+            <div class="split-donut-center-label">Sample Booking</div>
+          </div>
+        </div>
+      </div>
+      <div class="split-details">
+        <div class="split-item card">
+          <div class="split-item-icon" style="background:#dbeafe; font-size:24px;">👷</div>
+          <div class="split-item-info">
+            <div class="split-item-title">Worker Wallet</div>
+            <div class="split-item-desc">Direct credit to worker's digital wallet. Withdrawable via UPI anytime.</div>
+            <div style="margin-top:8px;">
+              <div style="height:4px; border-radius:999px; background:var(--slate-200); overflow:hidden;">
+                <div style="width:80%; height:100%; background:#2563eb; border-radius:999px;"></div>
+              </div>
+            </div>
+          </div>
+          <div class="split-item-pct" style="color:#2563eb;">80%<br><span style="font-size:14px; color:var(--slate-500);">₹800</span></div>
+        </div>
+        <div class="split-item card">
+          <div class="split-item-icon" style="background:#f1f5f9; font-size:24px;">🏛️</div>
+          <div class="split-item-info">
+            <div class="split-item-title">Cooperative Fund</div>
+            <div class="split-item-desc">Platform operations, capital investment, and federation administration.</div>
+            <div style="margin-top:8px;">
+              <div style="height:4px; border-radius:999px; background:var(--slate-200); overflow:hidden;">
+                <div style="width:15%; height:100%; background:#475569; border-radius:999px;"></div>
+              </div>
+            </div>
+          </div>
+          <div class="split-item-pct" style="color:#475569;">15%<br><span style="font-size:14px; color:var(--slate-500);">₹150</span></div>
+        </div>
+        <div class="split-item card">
+          <div class="split-item-icon" style="background:#d1fae5; font-size:24px;">🛡️</div>
+          <div class="split-item-info">
+            <div class="split-item-title">Worker Welfare Fund</div>
+            <div class="split-item-desc">Mutual aid insurance, medical support, and emergency assistance for workers.</div>
+            <div style="margin-top:8px;">
+              <div style="height:4px; border-radius:999px; background:var(--slate-200); overflow:hidden;">
+                <div style="width:5%; height:100%; background:#059669; border-radius:999px;"></div>
+              </div>
+            </div>
+          </div>
+          <div class="split-item-pct" style="color:#059669;">5%<br><span style="font-size:14px; color:var(--slate-500);">₹50</span></div>
+        </div>
+
+        <div class="card card-p-sm" style="background:var(--blue-xlight); border-color:var(--blue-light);">
+          <p class="body-sm" style="color:var(--blue-primary); font-weight:600;">
+            🔐 Every transaction creates an immutable ledger entry. Federation auditors can inspect every rupee in real time. No hidden charges. No opaque algorithms.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =====================================================
+     ADMIN DASHBOARD
+===================================================== -->
+<section id="admin" class="section" aria-labelledby="admin-heading">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-label">Federation Administration</span>
+      <h2 class="section-title" id="admin-heading">Cooperative Admin Dashboard</h2>
+      <p class="section-sub">Real-time insights for federation officers to manage workers, bookings, and welfare funds.</p>
+    </div>
+
+    <div class="admin-tabs" role="tablist" aria-label="Admin dashboard sections">
+      <button class="admin-tab active" role="tab" aria-selected="true" onclick="switchAdminTab('overview',this)">📊 Overview</button>
+      <button class="admin-tab" role="tab" aria-selected="false" onclick="switchAdminTab('workers',this)">👷 Workers</button>
+      <button class="admin-tab" role="tab" aria-selected="false" onclick="switchAdminTab('bookings',this)">📋 Bookings</button>
+      <button class="admin-tab" role="tab" aria-selected="false" onclick="switchAdminTab('welfare',this)">🛡️ Welfare</button>
+    </div>
+
+    <!-- OVERVIEW TAB -->
+    <div class="admin-tab-content active" id="tab-overview" role="tabpanel">
+      <div class="metrics-grid">
+        <div class="metric-card card">
+          <div class="metric-label">Active Workers</div>
+          <div class="metric-value" style="color:var(--blue-primary);">3,842</div>
+          <div class="metric-change">↑ 12% this month</div>
+        </div>
+        <div class="metric-card card">
+          <div class="metric-label">Bookings Today</div>
+          <div class="metric-value" style="color:var(--green);">247</div>
+          <div class="metric-change">↑ 8% vs yesterday</div>
+        </div>
+        <div class="metric-card card">
+          <div class="metric-label">Revenue Today</div>
+          <div class="metric-value">₹1.4L</div>
+          <div class="metric-change">↑ 5% vs yesterday</div>
+        </div>
+        <div class="metric-card card">
+          <div class="metric-label">Welfare Fund Balance</div>
+          <div class="metric-value" style="color:var(--green);">₹12.6L</div>
+          <div class="metric-change">↑ ₹7,200 today</div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card card-p">
+          <div class="heading-md text-primary" style="margin-bottom:16px;">Booking Status Distribution</div>
+          <canvas id="statusChart" height="200" aria-label="Bar chart of booking status distribution"></canvas>
+        </div>
+        <div class="card card-p">
+          <div class="heading-md text-primary" style="margin-bottom:16px;">Top Services This Week</div>
+          <canvas id="servicesChart" height="200" aria-label="Horizontal bar chart of top services"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- WORKERS TAB -->
+    <div class="admin-tab-content" id="tab-workers" role="tabpanel">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; flex-wrap:wrap; gap:12px;">
+        <div class="heading-md text-primary">Worker Verification Queue</div>
+        <div style="display:flex; gap:8px;">
+          <input class="input" style="width:220px;" placeholder="Search worker..." aria-label="Search workers" />
+          <button class="btn btn-ghost btn-sm">Export CSV</button>
+        </div>
+      </div>
+      <div style="overflow-x:auto;">
+        <table class="data-table" aria-label="Worker verification queue">
+          <thead>
+            <tr>
+              <th>Worker</th>
+              <th>Service</th>
+              <th>Coop ID</th>
+              <th>KYC</th>
+              <th>Status</th>
+              <th>Joined</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="worker-table-body">
+            <!-- Populated by JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- BOOKINGS TAB -->
+    <div class="admin-tab-content" id="tab-bookings" role="tabpanel">
+      <div style="overflow-x:auto;">
+        <table class="data-table" aria-label="Recent bookings">
+          <thead>
+            <tr>
+              <th>Booking ID</th>
+              <th>Customer</th>
+              <th>Worker</th>
+              <th>Service</th>
+              <th>Amount</th>
+              <th>Status</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody id="bookings-table-body">
+            <!-- Populated by JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- WELFARE TAB -->
+    <div class="admin-tab-content" id="tab-welfare" role="tabpanel">
+      <div class="metrics-grid" style="grid-template-columns: repeat(3,1fr);">
+        <div class="metric-card card">
+          <div class="metric-label">Total Welfare Fund</div>
+          <div class="metric-value" style="color:var(--green);">₹12.6L</div>
+          <div class="metric-change">Cumulative since launch</div>
+        </div>
+        <div class="metric-card card">
+          <div class="metric-label">Claims This Month</div>
+          <div class="metric-value">23</div>
+          <div class="metric-change">₹1.8L disbursed</div>
+        </div>
+        <div class="metric-card card">
+          <div class="metric-label">Enrolled Workers</div>
+          <div class="metric-value">5,240</div>
+          <div class="metric-change">100% auto-enrolled</div>
+        </div>
+      </div>
+      <div class="card card-p">
+        <div class="heading-md text-primary" style="margin-bottom:16px;">Recent Welfare Claims</div>
+        <table class="data-table" aria-label="Recent welfare claims">
+          <thead>
+            <tr><th>Worker</th><th>Type</th><th>Amount</th><th>Status</th><th>Date</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Meena Devi</td><td>Medical Emergency</td><td>₹12,000</td><td><span class="badge badge-verified">Approved</span></td><td>Sep 22</td></tr>
+            <tr><td>Suresh Kumar</td><td>Injury Compensation</td><td>₹8,500</td><td><span class="badge badge-verified">Approved</span></td><td>Sep 20</td></tr>
+            <tr><td>Fatima Begum</td><td>Mutual Aid Loan</td><td>₹5,000</td><td><span class="badge badge-pending">Under Review</span></td><td>Sep 19</td></tr>
+            <tr><td>Ravi Shankar</td><td>Tool Replacement</td><td>₹3,200</td><td><span class="badge badge-verified">Approved</span></td><td>Sep 18</td></tr>
+            <tr><td>Priya Nair</td><td>Medical Emergency</td><td>₹9,800</td><td><span class="badge badge-pending">Under Review</span></td><td>Sep 17</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =====================================================
+     AI DEMAND FORECAST
+===================================================== -->
+<section id="ai-forecast" class="section" aria-labelledby="forecast-heading">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-label">AI Intelligence Layer</span>
+      <h2 class="section-title" id="forecast-heading">AI Demand Forecasting</h2>
+      <p class="section-sub">Our AI model predicts service demand by hour, category, and location — enabling cooperative federations to optimally deploy workers.</p>
+    </div>
+
+    <div class="forecast-grid">
+      <div class="card card-p">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; flex-wrap:wrap; gap:12px;">
+          <div class="heading-md text-primary">Hourly Demand Forecast — Today</div>
+          <select class="input" style="width:auto; padding:7px 12px; font-size:13px;" onchange="updateForecastChart(this.value)" aria-label="Select service for forecast">
+            <option value="all">All Services</option>
+            <option value="electrician">Electrician</option>
+            <option value="plumber">Plumber</option>
+            <option value="cleaner">Cleaner</option>
+            <option value="caregiver">Caregiver</option>
+          </select>
+        </div>
+        <canvas id="forecastChart" height="240" aria-label="Hourly demand forecast chart"></canvas>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:16px;">
+        <div class="ai-insight-card">
+          <div class="ai-insight-icon" aria-hidden="true">🤖</div>
+          <div class="ai-insight-text">
+            <div class="heading-md" style="color:var(--blue-primary);">AI Workforce Recommendation</div>
+            <div class="insights-list">
+              <div class="card card-p-sm" style="background:#fff;">
+                <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+                  <span style="font-size:16px;">⚡</span>
+                  <span class="heading-md" style="font-size:13px;">Deploy +3 Electricians</span>
+                </div>
+                <p class="body-sm text-secondary">Koramangala zone — peak demand expected 5–8 PM today (festival lighting)</p>
+              </div>
+              <div class="card card-p-sm" style="background:#fff;">
+                <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+                  <span style="font-size:16px;">🔧</span>
+                  <span class="heading-md" style="font-size:13px;">Deploy +2 Plumbers</span>
+                </div>
+                <p class="body-sm text-secondary">Indiranagar zone — monsoon pipe issue reports trending on WhatsApp</p>
+              </div>
+              <div class="card card-p-sm" style="background:#fff;">
+                <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+                  <span style="font-size:16px;">🧹</span>
+                  <span class="heading-md" style="font-size:13px;">Reduce Cleaners</span>
+                </div>
+                <p class="body-sm text-secondary">Whitefield zone — demand forecast 40% below Monday average</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card card-p">
+          <div class="heading-md text-primary" style="margin-bottom:12px;">Category Demand Mix</div>
+          <canvas id="categoryMixChart" height="160" aria-label="Category demand pie chart"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =====================================================
+     EMERGENCY SECTION
+===================================================== -->
+<section id="emergency" class="section-sm" aria-labelledby="emergency-heading">
+  <div class="container">
+    <div class="emergency-inner">
+      <div>
+        <div class="emergency-badge-big">
+          🚨 <span>Emergency / On-Demand</span>
+        </div>
+        <h2 class="display-md" id="emergency-heading" style="margin-bottom:12px;">
+          Critical Issue?<br>Worker in <span style="color:var(--red);">&lt; 30 Minutes</span>
+        </h2>
+        <p class="body-lg text-secondary" style="margin-bottom:24px;">
+          Water pipe burst, electrical short circuit, or urgent care need — our emergency booking connects you to the nearest available cooperative worker within our <strong>30-minute SLA guarantee</strong>.
+        </p>
+        <div style="display:flex; gap:12px; flex-wrap:wrap;">
+          <button class="btn btn-emergency btn-lg" onclick="openEmergencyModal()">
+            🚨 Book Emergency Now
+          </button>
+          <button class="btn btn-ghost btn-lg" onclick="alert('Helpline: 1800-XXX-XXXX (Toll Free)')">
+            📞 Call Helpline
+          </button>
+        </div>
+        <p class="body-sm text-muted" style="margin-top:12px;">
+          Emergency bookings carry a 20% priority surcharge — fully transparent, goes 100% to the worker.
+        </p>
+      </div>
+      <div class="sla-box card">
+        <p class="body-sm text-secondary" style="margin-bottom:12px; font-weight:600; text-transform:uppercase; letter-spacing:0.06em;">Average Response Time</p>
+        <div class="sla-timer" id="demo-timer" aria-live="polite">28:00</div>
+        <div class="sla-label">minutes SLA target</div>
+        <div class="divider"></div>
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          <div style="display:flex; align-items:center; justify-content:space-between; font-size:13px;">
+            <span class="text-secondary">⚡ Electrician Emergency</span>
+            <span class="font-semibold" style="color:var(--green);">Avg 22 min</span>
+          </div>
+          <div style="display:flex; align-items:center; justify-content:space-between; font-size:13px;">
+            <span class="text-secondary">🔧 Plumbing Emergency</span>
+            <span class="font-semibold" style="color:var(--green);">Avg 18 min</span>
+          </div>
+          <div style="display:flex; align-items:center; justify-content:space-between; font-size:13px;">
+            <span class="text-secondary">🩺 Medical Caregiver</span>
+            <span class="font-semibold" style="color:var(--amber);">Avg 31 min</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =====================================================
+     WORKER REGISTRATION
+===================================================== -->
+<section id="register" class="section" aria-labelledby="register-heading">
+  <div class="container">
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:48px; align-items:flex-start;">
+      <div>
+        <span class="section-label">Join the Cooperative</span>
+        <h2 class="display-md" id="register-heading" style="margin-bottom:12px;">Are You a Skilled Worker?</h2>
+        <p class="body-lg text-secondary" style="margin-bottom:24px;">
+          Join 5,240+ workers who earn 80% of every booking, get insured through our welfare fund, and are member-owners of the cooperative platform.
+        </p>
+        <div style="display:flex; flex-direction:column; gap:12px; margin-bottom:28px;">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <div style="width:32px; height:32px; background:var(--green-light); border-radius:8px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">✅</div>
+            <span class="body-md"><strong>80%</strong> earnings on every job</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:10px;">
+            <div style="width:32px; height:32px; background:var(--green-light); border-radius:8px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">✅</div>
+            <span class="body-md"><strong>Welfare insurance</strong> and mutual aid access</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:10px;">
+            <div style="width:32px; height:32px; background:var(--green-light); border-radius:8px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">✅</div>
+            <span class="body-md"><strong>Digital wallet</strong> — instant UPI withdrawal</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:10px;">
+            <div style="width:32px; height:32px; background:var(--green-light); border-radius:8px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">✅</div>
+            <span class="body-md"><strong>Cooperative ownership</strong> — vote on decisions</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card card-p">
+        <!-- Step Progress -->
+        <div style="margin-bottom:20px;">
+          <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+            <span class="body-sm font-semibold" id="reg-step-label">Step 1 of 3 — Personal Info</span>
+            <span class="body-sm text-muted" id="reg-step-pct">33%</span>
+          </div>
+          <div class="reg-steps" aria-label="Registration progress">
+            <div class="reg-step done active" id="reg-bar-1"></div>
+            <div class="reg-step" id="reg-bar-2"></div>
+            <div class="reg-step" id="reg-bar-3"></div>
+          </div>
+        </div>
+
+        <!-- Step 1 -->
+        <div class="reg-form-panel active" id="reg-panel-1">
+          <div class="reg-grid">
+            <div class="form-group">
+              <label class="form-label" for="reg-name">Full Name</label>
+              <input class="input" id="reg-name" type="text" placeholder="Ramesh Kumar" aria-required="true" />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="reg-phone">Mobile Number</label>
+              <input class="input" id="reg-phone" type="tel" placeholder="+91 98765 43210" aria-required="true" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="reg-email">Email (optional)</label>
+            <input class="input" id="reg-email" type="email" placeholder="ramesh@email.com" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="reg-city">City / District</label>
+            <input class="input" id="reg-city" type="text" placeholder="Bengaluru, Karnataka" aria-required="true" />
+          </div>
+          <button class="btn btn-primary w-full" onclick="regNext(2)">Next: Skills & Certifications →</button>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="reg-form-panel" id="reg-panel-2">
+          <div class="form-group">
+            <label class="form-label" for="reg-skill">Primary Skill Category</label>
+            <select class="input" id="reg-skill" aria-required="true">
+              <option value="">Select your skill...</option>
+              <option>Electrician</option>
+              <option>Plumber</option>
+              <option>Carpenter</option>
+              <option>Painter</option>
+              <option>Domestic Helper</option>
+              <option>Caregiver</option>
+              <option>Driver</option>
+              <option>Gardener</option>
+              <option>Cleaner</option>
+              <option>Technician</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="reg-exp">Years of Experience</label>
+            <select class="input" id="reg-exp">
+              <option>1–2 years</option>
+              <option>3–5 years</option>
+              <option>6–10 years</option>
+              <option>10+ years</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="reg-cert">Upload Certification (PDF/JPG)</label>
+            <input class="input" id="reg-cert" type="file" accept=".pdf,.jpg,.png" aria-describedby="cert-help" />
+            <p class="body-sm text-muted" id="cert-help" style="margin-top:4px;">ITI certificate, trade license, or equivalent. Max 5MB.</p>
+          </div>
+          <div style="display:flex; gap:10px;">
+            <button class="btn btn-ghost" onclick="regNext(1)" style="flex:1;">← Back</button>
+            <button class="btn btn-primary" onclick="regNext(3)" style="flex:2;">Next: Cooperative ID →</button>
+          </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="reg-form-panel" id="reg-panel-3">
+          <div class="form-group">
+            <label class="form-label" for="reg-coop-id">Cooperative Membership ID</label>
+            <input class="input" id="reg-coop-id" type="text" placeholder="LCS-KA-2024-XXXXX" aria-required="true" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="reg-aadhaar">Aadhaar Number (last 4 digits)</label>
+            <input class="input" id="reg-aadhaar" type="text" placeholder="XXXX" maxlength="4" aria-required="true" aria-describedby="aadhaar-help" />
+            <p class="body-sm text-muted" id="aadhaar-help" style="margin-top:4px;">We store only last 4 digits. Full Aadhaar is hashed and never stored in plain text.</p>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="reg-upi">UPI ID for Wallet Withdrawals</label>
+            <input class="input" id="reg-upi" type="text" placeholder="ramesh@upi" />
+          </div>
+          <div style="display:flex; gap:10px;">
+            <button class="btn btn-ghost" onclick="regNext(2)" style="flex:1;">← Back</button>
+            <button class="btn btn-primary" onclick="regSubmit()" style="flex:2;">Submit Registration ✓</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =====================================================
+     FOOTER
+===================================================== -->
+<footer id="footer" role="contentinfo">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div style="width:36px; height:36px; background:var(--blue-accent); border-radius:10px; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:800; font-size:16px;" aria-hidden="true">S</div>
+          <div>
+            <div class="footer-brand-name">SyncBridge</div>
+          </div>
+        </div>
+        <p class="footer-brand-desc" style="margin-top:12px;">
+          A cooperative-owned digital service marketplace. Fair wages. Worker welfare. Community surplus. Problem Statement ID: 26089
+        </p>
+        <div class="footer-gov-badges">
+          <span class="footer-gov-badge" style="background:#064e3b; color:#d1fae5;">Ministry of Cooperation</span>
+          <span class="footer-gov-badge" style="background:#1e3a8a; color:#dbeafe;">NCCT Certified</span>
+        </div>
+      </div>
+
+      <div>
+        <div class="footer-col-title">Platform</div>
+        <ul class="footer-links">
+          <li><a href="#services">Browse Services</a></li>
+          <li><a href="#workers">Find Workers</a></li>
+          <li><a href="#emergency">Emergency Booking</a></li>
+          <li><a href="#register">Join as Worker</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <div class="footer-col-title">Cooperative</div>
+        <ul class="footer-links">
+          <li><a href="#why-coop">Why Cooperative?</a></li>
+          <li><a href="#revenue-split">Revenue Split</a></li>
+          <li><a href="#admin">Admin Dashboard</a></li>
+          <li><a href="#ai-forecast">AI Forecasting</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <div class="footer-col-title">Legal</div>
+        <ul class="footer-links">
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Terms of Service</a></li>
+          <li><a href="#">Cooperative Bylaws</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>© 2026 SyncBridge Cooperative Platform. SIH Problem ID 26089.</p>
+      <div class="footer-coop-line">
+        <span>🌱</span>
+        <span>A cooperative-owned platform — profits stay with workers, not investors</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- =====================================================
+     BOOKING MODAL
+===================================================== -->
+<div class="modal-overlay" id="booking-modal" role="dialog" aria-modal="true" aria-labelledby="booking-modal-title" onclick="closeBookingModal(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="booking-modal-title">Book a Worker</div>
+      <button class="modal-close" onclick="closeBookingModal()" aria-label="Close booking modal">✕</button>
+    </div>
+    <div class="modal-body" id="booking-modal-body">
+      <!-- Populated by JS -->
+    </div>
+  </div>
+</div>
+
+<!-- =====================================================
+     EMERGENCY MODAL
+===================================================== -->
+<div class="modal-overlay" id="emergency-modal" role="dialog" aria-modal="true" aria-labelledby="emergency-modal-title" onclick="closeEmergencyModal(event)">
+  <div class="modal">
+    <div class="modal-header" style="border-bottom:2px solid #fee2e2;">
+      <div style="display:flex; align-items:center; gap:8px;">
+        <span style="font-size:20px;" aria-hidden="true">🚨</span>
+        <div class="modal-title" id="emergency-modal-title" style="color:var(--red);">Emergency Booking</div>
+      </div>
+      <button class="modal-close" onclick="closeEmergencyModal()" aria-label="Close emergency modal">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="background:#fff5f5; border:1px solid #fecaca; border-radius:12px; padding:14px; margin-bottom:20px;">
+        <p class="body-md" style="color:var(--red); font-weight:600; margin-bottom:4px;">🚨 SLA Guarantee: Worker dispatched within 30 minutes</p>
+        <p class="body-sm text-secondary">Priority queue. All available verified workers in your area are notified simultaneously.</p>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="em-service">Emergency Service Type</label>
+        <select class="input" id="em-service" aria-required="true">
+          <option>Water Pipe Burst 🔧</option>
+          <option>Electrical Short / Fire Risk ⚡</option>
+          <option>Medical Caregiver Needed 🩺</option>
+          <option>Gas Leak / Appliance Hazard 🔥</option>
+          <option>Structural Emergency 🏗️</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="em-address">Your Location / Address</label>
+        <input class="input" id="em-address" type="text" placeholder="Flat 4B, Sunrise Apartments, Koramangala" aria-required="true" />
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="em-desc">Describe the Emergency</label>
+        <textarea class="input" id="em-desc" rows="3" placeholder="Water pipe burst in bathroom, flooding..."></textarea>
+      </div>
+      <div style="background:var(--amber-light); border:1px solid #fde68a; border-radius:10px; padding:12px; margin-bottom:16px;">
+        <p class="body-sm" style="color:#92400e; font-weight:600;">⚠️ 20% Emergency Surcharge applies. This goes 100% to the worker — not the platform.</p>
+      </div>
+      <button class="btn btn-emergency w-full btn-lg" onclick="confirmEmergency()">
+        🚨 Dispatch Emergency Worker Now
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- =====================================================
+     JAVASCRIPT
+===================================================== -->
+<script>
+// =====================================================
+// DATA
+// =====================================================
+const SERVICES = [
+  { id:'electrician', icon:'⚡', name:'Electrician', rate:'₹500/hr' },
+  { id:'plumber', icon:'🔧', name:'Plumber', rate:'₹450/hr' },
+  { id:'carpenter', icon:'🪚', name:'Carpenter', rate:'₹520/hr' },
+  { id:'painter', icon:'🎨', name:'Painter', rate:'₹480/hr' },
+  { id:'cleaner', icon:'🧹', name:'Cleaner', rate:'₹420/hr' },
+  { id:'driver', icon:'🚗', name:'Driver', rate:'₹400/hr' },
+  { id:'gardener', icon:'🌿', name:'Gardener', rate:'₹380/hr' },
+  { id:'caregiver', icon:'🩺', name:'Caregiver', rate:'₹550/hr' },
+  { id:'technician', icon:'🔩', name:'Technician', rate:'₹530/hr' },
+  { id:'domestic', icon:'🏠', name:'Domestic Help', rate:'₹350/hr' }
+];
+
+const WORKERS = [
+  {
+    id:1, name:'Ramesh Kumar', skill:'Electrician', category:'electrician',
+    avatar:'RK', color:'#dbeafe', rating:4.9, reviews:142,
+    distance:'1.2 km', price:'₹500/hr', available:true,
+    skills:['Wiring','Panel Box','AC Install','CCTV']
+  },
+  {
+    id:2, name:'Meena Devi', skill:'House Cleaner', category:'cleaner',
+    avatar:'MD', color:'#d1fae5', rating:4.8, reviews:98,
+    distance:'0.8 km', price:'₹420/hr', available:true,
+    skills:['Deep Clean','Kitchen','Bathroom','Laundry']
+  },
+  {
+    id:3, name:'Suresh Rao', skill:'Plumber', category:'plumber',
+    avatar:'SR', color:'#fef3c7', rating:4.7, reviews:76,
+    distance:'2.1 km', price:'₹450/hr', available:true,
+    skills:['Pipe Repair','Fitting','Water Tank','Drainage']
+  },
+  {
+    id:4, name:'Fatima Begum', skill:'Caregiver', category:'caregiver',
+    avatar:'FB', color:'#fce7f3', rating:5.0, reviews:54,
+    distance:'3.4 km', price:'₹550/hr', available:true,
+    skills:['Elder Care','Post-Op','Medication','Mobility']
+  },
+  {
+    id:5, name:'Vijay Nair', skill:'Carpenter', category:'carpenter',
+    avatar:'VN', color:'#ede9fe', rating:4.6, reviews:89,
+    distance:'1.9 km', price:'₹520/hr', available:false,
+    skills:['Furniture','Doors','Polish','Custom Work']
+  },
+  {
+    id:6, name:'Priya Sharma', skill:'Technician', category:'technician',
+    avatar:'PS', color:'#fef9c3', rating:4.8, reviews:63,
+    distance:'2.7 km', price:'₹530/hr', available:true,
+    skills:['AC Repair','Washing Machine','Fridge','Microwave']
+  }
+];
+
+const ADMIN_WORKERS = [
+  { name:'Kavitha R.', service:'Electrician', coopId:'LCS-KA-001', kyc:'Verified', status:'VERIFIED', joined:'Sep 10' },
+  { name:'Mohan Das', service:'Plumber', coopId:'LCS-KA-002', kyc:'Verified', status:'VERIFIED', joined:'Sep 12' },
+  { name:'Lakshmi B.', service:'Caregiver', coopId:'LCS-KA-003', kyc:'Pending', status:'PENDING', joined:'Sep 20' },
+  { name:'Arjun Nair', service:'Carpenter', coopId:'LCS-KA-004', kyc:'Verified', status:'PENDING', joined:'Sep 21' },
+  { name:'Deepa M.', service:'Cleaner', coopId:'LCS-KA-005', kyc:'Rejected', status:'REJECTED', joined:'Sep 22' },
+];
+
+const ADMIN_BOOKINGS = [
+  { id:'BKG-00841', customer:'Anita Roy', worker:'Ramesh K.', service:'Electrician', amount:'₹1,500', status:'COMPLETED', date:'Sep 24' },
+  { id:'BKG-00840', customer:'Raj Malhotra', worker:'Suresh R.', service:'Plumber', amount:'₹900', status:'IN_PROGRESS', date:'Sep 24' },
+  { id:'BKG-00839', customer:'Divya S.', worker:'Meena D.', service:'Cleaner', amount:'₹840', status:'CONFIRMED', date:'Sep 24' },
+  { id:'BKG-00838', customer:'Kiran Shah', worker:'Priya S.', service:'Technician', amount:'₹1,060', status:'COMPLETED', date:'Sep 23' },
+  { id:'BKG-00837', customer:'Neha Gupta', worker:'Fatima B.', service:'Caregiver', amount:'₹2,200', status:'CANCELLED', date:'Sep 23' },
+];
+
+// =====================================================
+// I18N
+// =====================================================
+const TRANSLATIONS = {
+  en: {
+    'hero-title-1': 'Verified Workers.',
+    'hero-title-2': 'Fair Wages.',
+    'hero-title-3': 'Cooperative Power.',
+    'hero-sub': "India's first cooperative-owned service marketplace. Every worker is verified, insured, and a member-owner. Fair prices, transparent splits, community surplus.",
+    'hero-find-btn': 'Find Near Me',
+    'stat-workers': 'Registered Workers',
+    'stat-bookings': 'Bookings Completed',
+    'stat-disbursed': 'Wages Disbursed',
+    'stat-federations': 'Federations Onboard',
+    'badge-coop-text': 'Ministry of Cooperation · NCCT Certified',
+    'workers-heading-text': 'Available Now Near You',
+    'services-heading': 'Find the Right Expert',
+    'workers-geo-note': '📍 Showing workers within 10 km · Koramangala, Bengaluru'
+  },
+  hi: {
+    'hero-title-1': 'सत्यापित कारीगर।',
+    'hero-title-2': 'उचित मज़दूरी।',
+    'hero-title-3': 'सहकारी शक्ति।',
+    'hero-sub': 'भारत का पहला सहकारी सेवा बाज़ार। हर कारीगर सत्यापित, बीमाकृत, और सदस्य-स्वामी है। उचित मूल्य, पारदर्शी विभाजन।',
+    'hero-find-btn': 'नज़दीक खोजें',
+    'stat-workers': 'पंजीकृत कारीगर',
+    'stat-bookings': 'पूर्ण बुकिंग',
+    'stat-disbursed': 'वेतन वितरित',
+    'stat-federations': 'महासंघ शामिल',
+    'badge-coop-text': 'सहकारिता मंत्रालय · NCCT प्रमाणित',
+    'workers-heading-text': 'अभी पास में उपलब्ध',
+    'services-heading': 'सही विशेषज्ञ खोजें',
+    'workers-geo-note': '📍 10 किमी के भीतर · कोरमंगला, बेंगलुरू'
+  },
+  kn: {
+    'hero-title-1': 'ಪರಿಶೀಲಿತ ಕಾರ್ಮಿಕರು.',
+    'hero-title-2': 'ನ್ಯಾಯಯುತ ವೇತನ.',
+    'hero-title-3': 'ಸಹಕಾರ ಶಕ್ತಿ.',
+    'hero-sub': 'ಭಾರತದ ಮೊದಲ ಸಹಕಾರ ಸ್ವಾಮ್ಯದ ಸೇವಾ ಮಾರ್ಕೆಟ್‌ಪ್ಲೇಸ್. ಪ್ರತಿ ಕಾರ್ಮಿಕ ಪರಿಶೀಲಿತ ಮತ್ತು ಸದಸ್ಯ-ಮಾಲೀಕ.',
+    'hero-find-btn': 'ಹತ್ತಿರ ಹುಡುಕಿ',
+    'stat-workers': 'ನೋಂದಾಯಿತ ಕಾರ್ಮಿಕರು',
+    'stat-bookings': 'ಪೂರ್ಣ ಬುಕಿಂಗ್‌ಗಳು',
+    'stat-disbursed': 'ವೇತನ ವಿತರಿಸಲಾಗಿದೆ',
+    'stat-federations': 'ಒಕ್ಕೂಟಗಳು',
+    'badge-coop-text': 'ಸಹಕಾರ ಸಚಿವಾಲಯ · NCCT ಪ್ರಮಾಣಿತ',
+    'workers-heading-text': 'ಈಗ ಲಭ್ಯವಿದ್ದಾರೆ',
+    'services-heading': 'ಸರಿಯಾದ ತಜ್ಞರನ್ನು ಹುಡುಕಿ',
+    'workers-geo-note': '📍 10 ಕಿಮೀ ವ್ಯಾಪ್ತಿಯಲ್ಲಿ · ಕೋರಮಂಗಲ, ಬೆಂಗಳೂರು'
+  },
+  ta: {
+    'hero-title-1': 'சரிபார்க்கப்பட்ட தொழிலாளர்.',
+    'hero-title-2': 'நியாயமான ஊதியம்.',
+    'hero-title-3': 'கூட்டுறவு சக்தி.',
+    'hero-sub': 'இந்தியாவின் முதல் கூட்டுறவு சேவை சந்தை. ஒவ்வொரு தொழிலாளரும் சரிபார்க்கப்பட்டவர், காப்பீடு பெற்றவர், உறுப்பினர்-உரிமையாளர்.',
+    'hero-find-btn': 'அருகில் தேடுங்கள்',
+    'stat-workers': 'பதிவு செய்யப்பட்ட தொழிலாளர்',
+    'stat-bookings': 'முடிந்த முன்பதிவுகள்',
+    'stat-disbursed': 'ஊதியம் வழங்கப்பட்டது',
+    'stat-federations': 'கூட்டமைப்புகள்',
+    'badge-coop-text': 'கூட்டுறவு அமைச்சகம் · NCCT சான்றளிக்கப்பட்டது',
+    'workers-heading-text': 'இப்போது அருகில் கிடைக்கிறார்கள்',
+    'services-heading': 'சரியான நிபுணரை கண்டுபிடிக்கவும்',
+    'workers-geo-note': '📍 10 கி.மீ. வரம்பில் · கொரமங்கலா, பெங்களூரு'
+  }
+};
+
+let currentLang = 'en';
+
+function switchLang(lang) {
+  currentLang = lang;
+  const btns = document.querySelectorAll('.lang-btn');
+  btns.forEach(b => { b.classList.remove('active'); b.setAttribute('aria-pressed','false'); });
+  const activeBtn = Array.from(btns).find(b => b.getAttribute('onclick').includes(`'${lang}'`));
+  if (activeBtn) { activeBtn.classList.add('active'); activeBtn.setAttribute('aria-pressed','true'); }
+
+  const t = TRANSLATIONS[lang];
+  Object.keys(t).forEach(key => {
+    const el = document.getElementById(key);
+    if (el) el.textContent = t[key];
+  });
+}
+
+// =====================================================
+// RENDER SERVICES
+// =====================================================
+function renderServices() {
+  const grid = document.getElementById('services-grid');
+  grid.innerHTML = SERVICES.map(s => `
+    <div class="service-card" onclick="filterWorkers('${s.id}', null)" role="listitem" tabindex="0"
+         aria-label="${s.name} service, from ${s.rate}"
+         onkeydown="if(event.key==='Enter'||event.key===' ')filterWorkers('${s.id}',null)">
+      <div class="service-icon" aria-hidden="true">${s.icon}</div>
+      <div class="service-name">${s.name}</div>
+      <div class="service-rate">from ${s.rate}</div>
+    </div>
+  `).join('');
+}
+
+// =====================================================
+// RENDER WORKERS
+// =====================================================
+function renderWorkers(filter = 'all') {
+  const grid = document.getElementById('workers-grid');
+  const filtered = filter === 'all' ? WORKERS : WORKERS.filter(w => w.category === filter);
+
+  grid.innerHTML = filtered.map(w => `
+    <article class="worker-card card card-hover fade-up" role="listitem">
+      <div class="worker-card-top">
+        <div class="worker-avatar" style="background:${w.color}; color:var(--slate-700);" aria-hidden="true">
+          ${w.avatar}
+          <div class="availability-dot ${w.available ? 'dot-green' : 'dot-grey'}"
+               title="${w.available ? 'Available' : 'Offline'}" role="img"
+               aria-label="${w.available ? 'Worker is available' : 'Worker is offline'}"></div>
+        </div>
+        <div class="worker-info">
+          <div class="worker-name">${w.name}</div>
+          <div class="worker-skill">${w.skill}</div>
+          <div class="worker-rating">
+            <span class="star" aria-hidden="true">★</span>
+            <span>${w.rating}</span>
+            <span class="text-muted" style="font-weight:400;">(${w.reviews} reviews)</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-bottom:12px;">
+        <span class="badge badge-coop" style="font-size:10px;">🛡️ Coop Verified</span>
+        ${w.available ? '<span class="badge badge-verified" style="font-size:10px; margin-left:4px;">● Online</span>' : '<span class="badge" style="background:var(--slate-100); color:var(--slate-500); font-size:10px; margin-left:4px; border:1px solid var(--slate-200);">● Offline</span>'}
+      </div>
+
+      <div class="worker-skills-tags">
+        ${w.skills.map(sk => `<span class="skill-tag">${sk}</span>`).join('')}
+      </div>
+
+      <div class="worker-card-bottom">
+        <div class="worker-meta">
+          <div class="worker-price">${w.price}</div>
+          <div class="worker-distance">📍 ${w.distance} away</div>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="openBookingModal(${w.id})"
+                ${!w.available ? 'disabled style="opacity:0.5;cursor:not-allowed;"' : ''}
+                aria-label="Book ${w.name}">
+          ${w.available ? 'Book Now' : 'Unavailable'}
+        </button>
+      </div>
+    </article>
+  `).join('');
+
+  // Trigger fade-up animations
+  setTimeout(() => {
+    document.querySelectorAll('#workers-grid .fade-up').forEach((el, i) => {
+      setTimeout(() => el.classList.add('visible'), i * 80);
+    });
+  }, 50);
+}
+
+function filterWorkers(cat, btnEl) {
+  // Update filter chips
+  if (btnEl) {
+    document.querySelectorAll('.filter-chip').forEach(b => b.classList.remove('active'));
+    btnEl.classList.add('active');
+  }
+  // Update service card active state
+  document.querySelectorAll('.service-card').forEach(c => c.classList.remove('active'));
+  if (cat !== 'all') {
+    const sCards = document.querySelectorAll('.service-card');
+    sCards.forEach(c => {
+      if (c.getAttribute('onclick').includes(cat)) c.classList.add('active');
+    });
+  }
+  renderWorkers(cat);
+  document.getElementById('workers').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function handleHeroSearch(val) {
+  if (!val) return;
+  const matched = SERVICES.find(s => s.name.toLowerCase().includes(val.toLowerCase()) || s.id.includes(val.toLowerCase()));
+}
+
+function scrollToWorkers() {
+  const q = document.getElementById('hero-search-input').value.trim();
+  if (q) {
+    const matched = SERVICES.find(s => s.name.toLowerCase().includes(q.toLowerCase()));
+    if (matched) filterWorkers(matched.id, null);
+  }
+  document.getElementById('workers').scrollIntoView({ behavior: 'smooth' });
+}
+
+// =====================================================
+// BOOKING MODAL
+// =====================================================
+let currentWorker = null;
+
+function openBookingModal(workerId) {
+  currentWorker = WORKERS.find(w => w.id === workerId);
+  if (!currentWorker) return;
+
+  const modal = document.getElementById('booking-modal');
+  const body = document.getElementById('booking-modal-body');
+
+  body.innerHTML = `
+    <div class="modal-worker-summary">
+      <div class="worker-avatar" style="background:${currentWorker.color}; color:var(--slate-700); width:44px; height:44px; font-size:15px;" aria-hidden="true">
+        ${currentWorker.avatar}
+      </div>
+      <div>
+        <div class="heading-md">${currentWorker.name}</div>
+        <div class="body-sm text-secondary">${currentWorker.skill} · 📍 ${currentWorker.distance}</div>
+        <span class="badge badge-coop" style="margin-top:4px;">🛡️ Coop Verified</span>
+      </div>
+      <div style="margin-left:auto; text-align:right;">
+        <div style="font-size:18px; font-weight:800; color:var(--slate-900);">${currentWorker.price}</div>
+        <div class="body-sm" style="color:var(--green);">★ ${currentWorker.rating}</div>
+      </div>
+    </div>
+
+    <div class="form-row form-group">
+      <div>
+        <label class="form-label" for="book-date">Date</label>
+        <input class="input" id="book-date" type="date" value="${new Date().toISOString().split('T')[0]}" aria-required="true" />
+      </div>
+      <div>
+        <label class="form-label" for="book-time">Time Slot</label>
+        <select class="input" id="book-time" aria-required="true">
+          <option>09:00 AM – 11:00 AM</option>
+          <option>11:00 AM – 01:00 PM</option>
+          <option>02:00 PM – 04:00 PM</option>
+          <option>04:00 PM – 06:00 PM</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="book-address">Service Address</label>
+      <input class="input" id="book-address" type="text" placeholder="Flat 4B, Sunrise Apartments, Koramangala" aria-required="true" />
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="book-desc">Describe the Work Needed</label>
+      <textarea class="input" id="book-desc" placeholder="e.g. Fan wiring repair, 2 rooms need rewiring..."></textarea>
+    </div>
+
+    <div class="price-breakdown">
+      <div class="price-breakdown-title">Estimate Breakdown</div>
+      <div class="price-row">
+        <span class="price-row-label">Service Rate (2 hrs)</span>
+        <span class="price-row-value">₹1,000</span>
+      </div>
+      <div class="price-row">
+        <span class="price-row-label">Cooperative Platform Fee</span>
+        <span class="price-row-value">₹0</span>
+      </div>
+      <div class="price-row">
+        <span class="price-row-label">Materials (estimate)</span>
+        <span class="price-row-value">₹200</span>
+      </div>
+      <div class="price-row total">
+        <span class="price-row-label">Total Estimate</span>
+        <span class="price-row-value" style="color:var(--blue-primary);">₹1,200</span>
+      </div>
+
+      <div class="split-preview">
+        <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:var(--slate-500); margin-bottom:8px;">How ₹1,000 is Split (Cooperative Mandate)</div>
+        <div class="split-bar" role="img" aria-label="Revenue split: 80% worker, 15% cooperative fund, 5% welfare fund">
+          <div class="split-bar-seg" style="width:80%; background:#2563eb;" title="Worker: 80%"></div>
+          <div class="split-bar-seg" style="width:15%; background:#475569;" title="Coop Fund: 15%"></div>
+          <div class="split-bar-seg" style="width:5%; background:#059669;" title="Welfare: 5%"></div>
+        </div>
+        <div class="split-legend">
+          <div class="split-legend-item">
+            <div class="split-legend-dot" style="background:#2563eb;"></div>
+            <span>Worker: ₹800 (80%)</span>
+          </div>
+          <div class="split-legend-item">
+            <div class="split-legend-dot" style="background:#475569;"></div>
+            <span>Coop Fund: ₹150 (15%)</span>
+          </div>
+          <div class="split-legend-item">
+            <div class="split-legend-dot" style="background:#059669;"></div>
+            <span>Welfare: ₹50 (5%)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn btn-primary w-full btn-lg" onclick="confirmBooking()">
+      Confirm Booking & Pay ₹1,200
+    </button>
+  `;
+
+  modal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function confirmBooking() {
+  const bookingId = 'BKG-' + Math.floor(10000 + Math.random() * 90000);
+  const body = document.getElementById('booking-modal-body');
+  body.innerHTML = `
+    <div class="success-state">
+      <div class="success-icon" role="img" aria-label="Booking confirmed">✅</div>
+      <div class="heading-xl text-primary" style="margin-bottom:8px;">Booking Confirmed!</div>
+      <p class="body-md text-secondary">Your cooperative-verified worker is on the way.</p>
+
+      <div class="booking-id-box" aria-label="Booking reference number">
+        Booking ID: <strong>${bookingId}</strong>
+      </div>
+
+      <div class="card card-p-sm" style="text-align:left; margin:16px 0;">
+        <div style="display:flex; justify-content:space-between; font-size:13px; padding:6px 0; border-bottom:1px solid var(--slate-100);">
+          <span class="text-secondary">Worker</span>
+          <span class="font-semibold">${currentWorker ? currentWorker.name : 'Worker'}</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; font-size:13px; padding:6px 0; border-bottom:1px solid var(--slate-100);">
+          <span class="text-secondary">Contact</span>
+          <span class="font-semibold">+91 98765 XXXXX</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; font-size:13px; padding:6px 0;">
+          <span class="text-secondary">Estimated Arrival</span>
+          <span class="font-semibold" style="color:var(--green);">~25 minutes</span>
+        </div>
+      </div>
+
+      <div class="price-breakdown" style="text-align:left;">
+        <div class="price-breakdown-title">Payment Processed — Cooperative Split</div>
+        <div class="split-bar" style="margin:10px 0;">
+          <div class="split-bar-seg" style="width:80%; background:#2563eb;"></div>
+          <div class="split-bar-seg" style="width:15%; background:#475569;"></div>
+          <div class="split-bar-seg" style="width:5%; background:#059669;"></div>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-top:8px;">
+          <div style="text-align:center; padding:8px; background:#eff6ff; border-radius:8px;">
+            <div style="font-size:15px; font-weight:800; color:#2563eb;">₹800</div>
+            <div style="font-size:10px; color:var(--slate-500);">Worker</div>
+          </div>
+          <div style="text-align:center; padding:8px; background:var(--slate-100); border-radius:8px;">
+            <div style="font-size:15px; font-weight:800; color:#475569;">₹150</div>
+            <div style="font-size:10px; color:var(--slate-500);">Coop Fund</div>
+          </div>
+          <div style="text-align:center; padding:8px; background:#f0fdf4; border-radius:8px;">
+            <div style="font-size:15px; font-weight:800; color:#059669;">₹50</div>
+            <div style="font-size:10px; color:var(--slate-500);">Welfare</div>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn btn-ghost w-full" onclick="closeBookingModal()" style="margin-top:8px;">Close</button>
+    </div>
+  `;
+}
+
+function closeBookingModal(e) {
+  if (e && e.target !== document.getElementById('booking-modal')) return;
+  document.getElementById('booking-modal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// =====================================================
+// EMERGENCY MODAL
+// =====================================================
+function openEmergencyModal() {
+  document.getElementById('emergency-modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeEmergencyModal(e) {
+  if (e && e.target !== document.getElementById('emergency-modal')) return;
+  document.getElementById('emergency-modal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function confirmEmergency() {
+  const modal = document.getElementById('emergency-modal');
+  modal.querySelector('.modal-body').innerHTML = `
+    <div class="success-state">
+      <div class="success-icon" style="background:#fee2e2; font-size:32px;">🚨</div>
+      <div class="heading-xl" style="color:var(--red); margin-bottom:8px;">Emergency Dispatched!</div>
+      <p class="body-md text-secondary">3 nearest available workers have been notified simultaneously.</p>
+      <div class="sla-box" style="margin:20px 0; border-color:#fecaca;">
+        <div class="sla-timer" style="font-size:32px;" id="sos-timer">28:00</div>
+        <div class="sla-label">minutes SLA countdown</div>
+      </div>
+      <button class="btn btn-ghost w-full" onclick="closeEmergencyModal()">Close</button>
+    </div>
+  `;
+  startSOSTimer();
+}
+
+function startSOSTimer() {
+  let secs = 28 * 60;
+  const el = document.getElementById('sos-timer');
+  if (!el) return;
+  const t = setInterval(() => {
+    secs--;
+    if (secs <= 0 || !document.getElementById('sos-timer')) { clearInterval(t); return; }
+    const m = Math.floor(secs / 60).toString().padStart(2,'0');
+    const s = (secs % 60).toString().padStart(2,'0');
+    const timerEl = document.getElementById('sos-timer');
+    if (timerEl) timerEl.textContent = `${m}:${s}`;
+  }, 1000);
+}
+
+// =====================================================
+// ADMIN DASHBOARD
+// =====================================================
+function switchAdminTab(tab, btnEl) {
+  document.querySelectorAll('.admin-tab').forEach(b => { b.classList.remove('active'); b.setAttribute('aria-selected','false'); });
+  document.querySelectorAll('.admin-tab-content').forEach(c => c.classList.remove('active'));
+  btnEl.classList.add('active');
+  btnEl.setAttribute('aria-selected','true');
+  document.getElementById('tab-' + tab).classList.add('active');
+}
+
+function renderAdminWorkers() {
+  const tbody = document.getElementById('worker-table-body');
+  if (!tbody) return;
+  tbody.innerHTML = ADMIN_WORKERS.map(w => {
+    const statusBadge = w.status === 'VERIFIED'
+      ? `<span class="badge badge-verified">✓ Verified</span>`
+      : w.status === 'PENDING'
+      ? `<span class="badge badge-pending">⏳ Pending</span>`
+      : `<span class="badge badge-rejected">✕ Rejected</span>`;
+    const kycBadge = w.kyc === 'Verified'
+      ? `<span style="color:var(--green); font-weight:600; font-size:12px;">✓ ${w.kyc}</span>`
+      : w.kyc === 'Pending'
+      ? `<span style="color:var(--amber); font-weight:600; font-size:12px;">⏳ ${w.kyc}</span>`
+      : `<span style="color:var(--red); font-weight:600; font-size:12px;">✕ ${w.kyc}</span>`;
+
+    return `
+      <tr>
+        <td><strong>${w.name}</strong></td>
+        <td>${w.service}</td>
+        <td style="font-family:monospace; font-size:12px;">${w.coopId}</td>
+        <td>${kycBadge}</td>
+        <td>${statusBadge}</td>
+        <td>${w.joined}</td>
+        <td>
+          <div class="action-btns">
+            <button class="btn btn-sm" style="background:var(--green-light); color:#065f46; border:1px solid #a7f3d0;"
+              onclick="alert('Worker approved! KYC verified and added to booking pool.')">✓ Approve</button>
+            <button class="btn btn-sm" style="background:var(--red-light); color:#991b1b; border:1px solid #fca5a5;"
+              onclick="alert('Worker marked for rejection. Notification sent.')">✕ Reject</button>
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function renderAdminBookings() {
+  const tbody = document.getElementById('bookings-table-body');
+  if (!tbody) return;
+  const statusMap = {
+    COMPLETED: 'badge-verified', IN_PROGRESS: 'badge-coop', CONFIRMED: 'badge-pending', CANCELLED: 'badge-rejected'
+  };
+  tbody.innerHTML = ADMIN_BOOKINGS.map(b => `
+    <tr>
+      <td style="font-family:monospace; font-size:12px;">${b.id}</td>
+      <td>${b.customer}</td>
+      <td>${b.worker}</td>
+      <td>${b.service}</td>
+      <td><strong>${b.amount}</strong></td>
+      <td><span class="badge ${statusMap[b.status]}">${b.status}</span></td>
+      <td>${b.date}</td>
+    </tr>
+  `).join('');
+}
+
+// =====================================================
+// CHARTS
+// =====================================================
+let forecastChart, splitChart, statusChart, servicesChart, categoryChart;
+
+function initCharts() {
+  // Split Donut
+  const splitCtx = document.getElementById('splitDonut').getContext('2d');
+  splitChart = new Chart(splitCtx, {
+    type: 'doughnut',
+    data: {
+      labels: ['Worker (80%)', 'Coop Fund (15%)', 'Welfare (5%)'],
+      datasets: [{
+        data: [80, 15, 5],
+        backgroundColor: ['#2563eb', '#475569', '#059669'],
+        borderWidth: 3,
+        borderColor: '#fff',
+        hoverOffset: 6
+      }]
+    },
+    options: {
+      cutout: '70%',
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: ctx => ` ${ctx.label}: ₹${ctx.parsed * 10} (of ₹1000)`
+          }
+        }
+      },
+      animation: { animateRotate: true, duration: 900 }
+    }
+  });
+
+  // Forecast Chart
+  const forecastCtx = document.getElementById('forecastChart').getContext('2d');
+  forecastChart = new Chart(forecastCtx, {
+    type: 'bar',
+    data: {
+      labels: ['6AM','7AM','8AM','9AM','10AM','11AM','12PM','1PM','2PM','3PM','4PM','5PM','6PM','7PM','8PM','9PM'],
+      datasets: [{
+        label: 'Predicted Bookings',
+        data: [2,5,12,28,42,38,30,22,25,31,40,58,62,45,30,15],
+        backgroundColor: '#2563eb',
+        borderRadius: 6,
+        borderSkipped: false
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { grid: { color: '#f1f5f9' }, ticks: { font: { size: 11 } } },
+        x: { grid: { display: false }, ticks: { font: { size: 10 } } }
+      }
+    }
+  });
+
+  // Status Chart
+  const statusCtx = document.getElementById('statusChart').getContext('2d');
+  statusChart = new Chart(statusCtx, {
+    type: 'bar',
+    data: {
+      labels: ['Completed', 'In Progress', 'Confirmed', 'Pending', 'Cancelled'],
+      datasets: [{
+        data: [182, 24, 18, 15, 8],
+        backgroundColor: ['#059669','#2563eb','#d97706','#94a3b8','#dc2626'],
+        borderRadius: 6
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { grid: { color: '#f1f5f9' }, ticks: { font: { size: 11 } } },
+        x: { grid: { display: false }, ticks: { font: { size: 10 } } }
+      }
+    }
+  });
+
+  // Services Chart
+  const servCtx = document.getElementById('servicesChart').getContext('2d');
+  servicesChart = new Chart(servCtx, {
+    type: 'bar',
+    data: {
+      labels: ['Electrician','Cleaner','Plumber','Caregiver','Carpenter'],
+      datasets: [{
+        data: [68, 54, 47, 38, 30],
+        backgroundColor: ['#2563eb','#059669','#d97706','#7c3aed','#0369a1'],
+        borderRadius: 6
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { color: '#f1f5f9' }, ticks: { font: { size: 11 } } },
+        y: { grid: { display: false }, ticks: { font: { size: 11 } } }
+      }
+    }
+  });
+
+  // Category Mix Pie
+  const catCtx = document.getElementById('categoryMixChart').getContext('2d');
+  categoryChart = new Chart(catCtx, {
+    type: 'pie',
+    data: {
+      labels: ['Electrician','Cleaner','Plumber','Other'],
+      datasets: [{
+        data: [28, 22, 19, 31],
+        backgroundColor: ['#2563eb','#059669','#d97706','#94a3b8'],
+        borderWidth: 2,
+        borderColor: '#fff'
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { position: 'bottom', labels: { font: { size: 11 }, padding: 10 } }
+      }
+    }
+  });
+}
+
+function updateForecastChart(category) {
+  const data = {
+    all:        [2,5,12,28,42,38,30,22,25,31,40,58,62,45,30,15],
+    electrician:[1,2,5,14,20,18,12,10,12,15,22,30,34,25,15,8],
+    plumber:    [1,3,8,16,25,22,18,14,16,18,24,32,36,28,18,9],
+    cleaner:    [0,1,4,8,12,10,8,6,7,9,12,16,18,12,8,4],
+    caregiver:  [2,4,6,10,14,12,8,6,7,10,14,18,20,16,10,5]
+  };
+  forecastChart.data.datasets[0].data = data[category] || data['all'];
+  forecastChart.data.datasets[0].label = category === 'all' ? 'All Services' : category.charAt(0).toUpperCase() + category.slice(1);
+  forecastChart.update();
+}
+
+// =====================================================
+// WORKER REGISTRATION STEPS
+// =====================================================
+let currentRegStep = 1;
+
+function regNext(step) {
+  document.getElementById(`reg-panel-${currentRegStep}`).classList.remove('active');
+  currentRegStep = step;
+  document.getElementById(`reg-panel-${step}`).classList.add('active');
+
+  const steps = ['reg-bar-1','reg-bar-2','reg-bar-3'];
+  const labels = ['Step 1 of 3 — Personal Info','Step 2 of 3 — Skills & Certifications','Step 3 of 3 — Cooperative ID'];
+  const pcts = ['33%','66%','100%'];
+
+  steps.forEach((id, i) => {
+    const el = document.getElementById(id);
+    el.classList.remove('done','active');
+    if (i + 1 < step) el.classList.add('done');
+    else if (i + 1 === step) el.classList.add('active');
+  });
+
+  document.getElementById('reg-step-label').textContent = labels[step - 1];
+  document.getElementById('reg-step-pct').textContent = pcts[step - 1];
+}
+
+function regSubmit() {
+  const panel = document.getElementById('reg-panel-3');
+  panel.innerHTML = `
+    <div class="success-state" style="padding:20px 0;">
+      <div class="success-icon">✅</div>
+      <div class="heading-xl text-primary" style="margin-bottom:8px;">Application Submitted!</div>
+      <p class="body-md text-secondary" style="margin-bottom:16px;">Your cooperative membership application is under review. You'll receive an SMS within 48 hours.</p>
+      <div class="badge badge-pending" style="font-size:12px; padding:8px 16px;">⏳ Verification Pending</div>
+    </div>
+  `;
+  document.querySelectorAll('.reg-step').forEach(el => { el.classList.remove('active'); el.classList.add('done'); });
+  document.getElementById('reg-step-label').textContent = 'Application Submitted!';
+  document.getElementById('reg-step-pct').textContent = '✓ Done';
+}
+
+// =====================================================
+// SCROLL ANIMATIONS
+// =====================================================
+function initScrollAnimations() {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.12 });
+
+  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+}
+
+// =====================================================
+// COUNTER ANIMATIONS
+// =====================================================
+function animateCounter(el) {
+  const target = parseInt(el.getAttribute('data-target'));
+  const duration = 1600;
+  const step = target / (duration / 16);
+  let current = 0;
+  const timer = setInterval(() => {
+    current += step;
+    if (current >= target) {
+      el.textContent = target.toLocaleString('en-IN');
+      clearInterval(timer);
+    } else {
+      el.textContent = Math.floor(current).toLocaleString('en-IN');
+    }
+  }, 16);
+}
+
+function initCounters() {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting && !entry.target.dataset.counted) {
+        entry.target.dataset.counted = '1';
+        entry.target.querySelectorAll('.count-up').forEach(animateCounter);
+      }
+    });
+  }, { threshold: 0.5 });
+
+  const hero = document.getElementById('hero');
+  if (hero) observer.observe(hero);
+}
+
+// =====================================================
+// ACTIVE NAV LINK ON SCROLL
+// =====================================================
+function initNavHighlight() {
+  const sections = document.querySelectorAll('section[id], footer[id]');
+  const links = document.querySelectorAll('.nav-link');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        links.forEach(l => l.classList.remove('active'));
+        const active = document.querySelector(`.nav-link[href="#${entry.target.id}"]`);
+        if (active) active.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-40% 0px -50% 0px' });
+  sections.forEach(s => observer.observe(s));
+}
+
+// =====================================================
+// INIT
+// =====================================================
+document.addEventListener('DOMContentLoaded', () => {
+  renderServices();
+  renderWorkers();
+  renderAdminWorkers();
+  renderAdminBookings();
+  initCharts();
+  initScrollAnimations();
+  initCounters();
+  initNavHighlight();
+
+  // Trigger hero fade-up animations
+  setTimeout(() => {
+    document.querySelectorAll('#how-it-works .fade-up').forEach((el, i) => {
+      setTimeout(() => el.classList.add('visible'), i * 120);
+    });
+  }, 400);
+});
+</script>
+</body>
+</html>

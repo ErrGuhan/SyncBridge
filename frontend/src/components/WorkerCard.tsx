@@ -28,9 +28,11 @@ export default function WorkerCard({
   variant = 'full',
   isEmergency = false,
   onBook,
-  bookingHref = '/services'
+  bookingHref
 }: WorkerCardProps) {
   const { t, language } = useLanguage();
+
+  const finalBookingHref = bookingHref || (worker?.id ? `/services?workerId=${worker.id}` : '/services');
 
   const isResponder = isEmergency && worker.isAvailable;
   const effectiveRate = isEmergency ? worker.hourlyRate + 250 : worker.hourlyRate;
@@ -118,7 +120,7 @@ export default function WorkerCard({
             </button>
           ) : (
             <Link
-              href={bookingHref}
+              href={finalBookingHref}
               className="min-h-[40px] px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors shadow-2xs"
             >
               <span>{t('bookNow')}</span>
@@ -253,7 +255,7 @@ export default function WorkerCard({
             </button>
           ) : (
             <Link
-              href={bookingHref}
+              href={finalBookingHref}
               className={`h-10 px-4 rounded-xl text-white text-xs font-semibold flex items-center gap-1.5 shadow-xs transition-all ${
                 isEmergency
                   ? 'bg-rose-600 hover:bg-rose-700'

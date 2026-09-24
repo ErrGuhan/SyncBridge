@@ -93,6 +93,7 @@ export default function ServiceDiscovery() {
 
   const urlCategory = searchParams?.get('category');
   const urlQuery = searchParams?.get('q');
+  const urlWorkerId = searchParams?.get('workerId') || searchParams?.get('book');
   const isEmergency = searchParams?.get('emergency') === 'true';
   const isAiDirected = searchParams?.get('ai') === 'true';
   const aiProblem = searchParams?.get('desc') || searchParams?.get('problem') || '';
@@ -107,7 +108,7 @@ export default function ServiceDiscovery() {
   const [userLocation, setUserLocation] = useState<{ lat: number; lng: number; label: string; isGpsActive: boolean }>({
     lat: 12.9716,
     lng: 77.5946,
-    label: 'Indiranagar / Bengaluru (Default)',
+    label: 'Indiranagar / Bengaluru (HQ)',
     isGpsActive: false
   });
   const [isLocating, setIsLocating] = useState(false);
@@ -186,6 +187,15 @@ export default function ServiceDiscovery() {
 
   // Merge apiWorkers (if available) with workers from CoopDataContext
   const activeWorkerPool = apiWorkers && apiWorkers.length > 0 ? apiWorkers : workers;
+
+  // Pre-select worker and trigger booking drawer if workerId / book query param is supplied
+  React.useEffect(() => {
+    if (!urlWorkerId) return;
+    const match = activeWorkerPool.find((w) => w.id === urlWorkerId) || workers.find((w) => w.id === urlWorkerId);
+    if (match) {
+      setBookingWorker(match);
+    }
+  }, [urlWorkerId, activeWorkerPool, workers]);
 
   // Filter & Prioritize Workers dynamically
   const filteredWorkers = useMemo(() => {
@@ -363,6 +373,11 @@ export default function ServiceDiscovery() {
             <span className={`w-2 h-2 rounded-full shrink-0 ${userLocation.isGpsActive ? 'bg-emerald-500 animate-pulse' : 'bg-blue-500'}`} />
             <span className="truncate font-medium flex-1 text-slate-800" title={userLocation.label}>
               {userLocation.label}
+              {!userLocation.isGpsActive && (
+                <span className="hidden md:inline text-[10px] text-slate-400 font-normal ml-1">
+                  (Click GPS for live distance)
+                </span>
+              )}
             </span>
             <button
               onClick={requestLiveGps}

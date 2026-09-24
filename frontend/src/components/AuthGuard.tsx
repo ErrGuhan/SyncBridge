@@ -20,23 +20,30 @@ export default function AuthGuard({
   const pathname = usePathname();
   const { user, isAuthenticated, isLoading } = useAuth();
   const [isClientReady, setIsClientReady] = useState(false);
+  const [timedOut, setTimedOut] = useState(false);
 
   useEffect(() => {
     setIsClientReady(true);
+    const timer = setTimeout(() => {
+      setTimedOut(true);
+    }, 1800);
+    return () => clearTimeout(timer);
   }, []);
+
+  const targetRole = redirectRole;
+  const redirectParam = pathname ? `&redirect=${encodeURIComponent(pathname)}` : '';
+  const loginUrl = `/auth/login?role=${targetRole}${redirectParam}`;
 
   useEffect(() => {
     if (!isClientReady || isLoading) return;
 
     if (!isAuthenticated) {
-      const targetRole = redirectRole;
-      const redirectParam = pathname ? `&redirect=${encodeURIComponent(pathname)}` : '';
-      router.replace(`/auth/login?role=${targetRole}${redirectParam}`);
+      router.replace(loginUrl);
       return;
     }
 
     if (allowedRoles && allowedRoles.length > 0 && user) {
-      const hasAllowedRole = allowedRoles.includes(user.role) || user.role === 'SUPER_ADMIN' as any;
+      const hasAllowedRole = allowedRoles.includes(user.role) || (user.role as any) === 'SUPER_ADMIN';
       if (!hasAllowedRole) {
         // Redirect to appropriate portal based on their actual role
         let targetPortal = '/portal/customer';
@@ -47,7 +54,44 @@ export default function AuthGuard({
         router.replace(targetPortal);
       }
     }
-  }, [isClientReady, isAuthenticated, isLoading, user, allowedRoles, redirectRole, pathname, router]);
+  }, [isClientReady, isAuthenticated, isLoading, user, allowedRoles, loginUrl, router]);
+
+  // If timeout reached and not authenticated, render explicit sign-in prompt instead of spinning forever
+  if ((!isClientReady || !isAuthenticated) && timedOut) {
+    return (
+      <div className="min-h-[55vh] flex flex-col items-center justify-center p-4">
+        <div className="max-w-md w-full bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-md text-center space-y-5 animate-in fade-in zoom-in-95 duration-200">
+          <div className="w-13 h-13 rounded-2xl bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-700 mx-auto shadow-2xs">
+            <ShieldCheck className="w-7 h-7" />
+          </div>
+          
+          <div className="space-y-2">
+            <h2 className="text-lg sm:text-xl font-bold text-slate-900">
+              Sign in as Federation Admin to Continue
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-500 leading-relaxed">
+              This sovereign audit console is restricted to authorized cooperative administrators, state federation officers, and auditors.
+            </p>
+          </div>
+
+          <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-2.5">
+            <a
+              href={loginUrl}
+              className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs sm:text-sm transition-colors shadow-2xs"
+            >
+              Sign In to Continue
+            </a>
+            <a
+              href="/"
+              className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs sm:text-sm transition-colors"
+            >
+              Return Home
+            </a>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // While checking auth state on client side, render minimal secure loading state
   if (!isClientReady || isLoading || !isAuthenticated) {

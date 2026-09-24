@@ -25,14 +25,15 @@ const ROUTE_ROLE_MAP: Record<string, string[]> = {
   '/portal/customer': ['CUSTOMER', 'SUPER_ADMIN'],
   '/portal/developer': ['WORKER', 'SOCIETY_SECRETARY', 'FEDERATION_ADMIN', 'CUSTOMER', 'SUPER_ADMIN', 'MANAGEMENT', 'DEVELOPER'],
   '/bookings': ['CUSTOMER', 'WORKER', 'SOCIETY_SECRETARY', 'FEDERATION_ADMIN', 'SUPER_ADMIN', 'MANAGEMENT', 'DEVELOPER'],
+  '/federation': ['FEDERATION_ADMIN', 'SUPER_ADMIN', 'COOP_ADMIN', 'SOCIETY_SECRETARY'],
 };
 
 // ---------------------------------------------------------------------------
-// Middleware config — run on portal and bookings routes
+// Middleware config — run on portal, bookings, and federation routes
 // ---------------------------------------------------------------------------
 
 export const config = {
-  matcher: ['/portal/:path*', '/bookings', '/bookings/:path*'],
+  matcher: ['/portal/:path*', '/bookings', '/bookings/:path*', '/federation', '/federation/:path*'],
 };
 
 export function middleware(req: NextRequest) {
@@ -66,7 +67,7 @@ export function middleware(req: NextRequest) {
     loginUrl.pathname = '/auth/login';
     if (pathname.startsWith('/portal/worker')) {
       loginUrl.searchParams.set('role', 'worker');
-    } else if (pathname.startsWith('/portal/admin') || pathname.startsWith('/portal/management')) {
+    } else if (pathname.startsWith('/portal/admin') || pathname.startsWith('/portal/management') || pathname.startsWith('/federation')) {
       loginUrl.searchParams.set('role', 'admin');
     } else if (pathname.startsWith('/portal/customer') || pathname.startsWith('/bookings')) {
       loginUrl.searchParams.set('role', 'customer');
