@@ -22,6 +22,15 @@ export const metadata: Metadata = {
   title: 'SyncBridge — Cooperative Gig Services Platform',
   description:
     'Democratic labour cooperative platform empowering trade workers with direct patronage, fair transparent wages, and mutual aid.',
+  icons: {
+    icon: [
+      { url: '/icon.svg', type: 'image/svg+xml' },
+      { url: '/favicon.ico', sizes: 'any' },
+    ],
+    apple: [
+      { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
+    ],
+  },
 };
 
 export default function RootLayout({
