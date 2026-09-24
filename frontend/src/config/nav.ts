@@ -53,5 +53,5 @@ export const NAV_LINKS = PUBLIC_NAV_LINKS;
 
 export const EMERGENCY_LINK = {
   label: 'Emergency SOS',
-  href: '/services?emergency=true'
+  href: '/emergency'
 };

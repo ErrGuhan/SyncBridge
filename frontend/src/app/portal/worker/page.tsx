@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { useCoopData } from '@/context/CoopDataContext';
@@ -101,6 +101,24 @@ export default function WorkerPortalPage() {
   const incomingLead = orders.find(o => o.status === 'CONFIRMED' && !declinedOrderIds.includes(o.id));
   const activeOngoingOrders = orders.filter(o => o.status === 'IN_PROGRESS');
   const recentCompletedOrders = orders.filter(o => o.status === 'COMPLETED');
+
+  // Listen for real-time emergency dispatch events across browser tabs/windows
+  useEffect(() => {
+    const handleEmergencyAlert = (e: any) => {
+      const detail = e.detail;
+      if (!detail) return;
+      // Audio cue when emergency broadcast occurs
+      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        const text = `आपातकालीन सहायता सूचना। सेवा: ${detail.trade}। स्थान: ${detail.location}।`;
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'hi-IN';
+        utterance.rate = 1.0;
+        window.speechSynthesis.speak(utterance);
+      }
+    };
+    window.addEventListener('syncbridge_emergency_dispatch', handleEmergencyAlert);
+    return () => window.removeEventListener('syncbridge_emergency_dispatch', handleEmergencyAlert);
+  }, []);
 
   // Tools assigned to this worker
   const myAssignedTools = toolInventory.filter(t => t.assignedWorkerId === workerId || t.assignedWorkerName?.includes('Ramesh'));

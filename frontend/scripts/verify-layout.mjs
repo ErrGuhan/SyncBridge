@@ -35,7 +35,8 @@ const ROUTES = [
   { path: '/federation', name: 'Federation Dashboard' },
   { path: '/portal/worker', name: 'Worker Portal' },
   { path: '/portal/admin', name: 'Admin Console' },
-  { path: '/auth/login', name: 'Login & Identity' }
+  { path: '/auth/login', name: 'Login & Identity' },
+  { path: '/emergency', name: 'Emergency SOS Flow' }
 ];
 
 async function runLayoutAudit() {

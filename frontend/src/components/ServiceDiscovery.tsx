@@ -319,11 +319,21 @@ export default function ServiceDiscovery() {
             Zero platform commission, zero corporate clawback. Nearest on-duty cooperative trade members are prioritized by real-time GPS proximity.
           </div>
 
-          <div className="flex items-center gap-2 text-xs text-rose-800 font-semibold flex-wrap">
-            <span>Supported Emergency Trades:</span>
-            <span className="px-2 py-0.5 rounded bg-rose-100 text-rose-800 border border-rose-200">⚡ Electrical</span>
-            <span className="px-2 py-0.5 rounded bg-rose-100 text-rose-800 border border-rose-200">💧 Plumbing</span>
-            <span className="px-2 py-0.5 rounded bg-rose-100 text-rose-800 border border-rose-200">❄️ HVAC / Appliance</span>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
+            <div className="flex items-center gap-2 text-xs text-rose-800 font-semibold flex-wrap">
+              <span>Supported Emergency Trades:</span>
+              <span className="px-2 py-0.5 rounded bg-rose-100 text-rose-800 border border-rose-200">⚡ Electrical</span>
+              <span className="px-2 py-0.5 rounded bg-rose-100 text-rose-800 border border-rose-200">💧 Plumbing</span>
+              <span className="px-2 py-0.5 rounded bg-rose-100 text-rose-800 border border-rose-200">❄️ HVAC / Appliance</span>
+            </div>
+
+            <Link
+              href="/emergency"
+              className="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm transition-all"
+            >
+              <Zap className="w-3.5 h-3.5 fill-white" />
+              <span>Launch 5-Step Emergency Dispatcher →</span>
+            </Link>
           </div>
         </div>
       )}

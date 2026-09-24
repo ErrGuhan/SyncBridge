@@ -168,6 +168,19 @@ export default function HomePage() {
           </div>
         </form>
 
+        {/* Urgent Emergency SOS Callout */}
+        <div className="flex flex-wrap items-center justify-center gap-2 pt-1 text-xs">
+          <span className="text-slate-500 font-medium">Facing an urgent household hazard?</span>
+          <Link
+            href="/emergency"
+            className="inline-flex items-center gap-1.5 font-bold text-rose-600 hover:text-rose-700 bg-rose-50 hover:bg-rose-100 px-3 py-1 rounded-full border border-rose-200 transition-colors shadow-2xs"
+          >
+            <span className="w-1.5 h-1.5 rounded-full bg-rose-600 animate-ping" />
+            <Zap className="w-3.5 h-3.5 fill-rose-600" />
+            <span>Emergency SOS Dispatch (&lt; 15 Mins) →</span>
+          </Link>
+        </div>
+
         {/* Clean Service Category Cards */}
         <div className="pt-4">
           <div className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">
