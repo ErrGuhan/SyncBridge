@@ -11,6 +11,8 @@ interface CachedForecastData {
 const FORECAST_CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
 let forecastCache: CachedForecastData | null = null;
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   const now = Date.now();
 

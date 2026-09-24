@@ -6,20 +6,36 @@
 
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const serviceRoleKey =
-  process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SECRET_KEY;
+const DEFAULT_SUPABASE_URL = 'https://qniqutaavdjnutnprjdk.supabase.co';
+const DEFAULT_SERVICE_ROLE_KEY = 'dummy-service-role-key-for-build';
 
-if (!supabaseUrl || !serviceRoleKey) {
+const supabaseUrl =
+  process.env.NEXT_PUBLIC_SUPABASE_URL ||
+  process.env.SUPABASE_URL ||
+  DEFAULT_SUPABASE_URL;
+
+const serviceRoleKey =
+  process.env.SUPABASE_SERVICE_ROLE_KEY ||
+  process.env.SUPABASE_SECRET_KEY ||
+  DEFAULT_SERVICE_ROLE_KEY;
+
+if (!process.env.NEXT_PUBLIC_SUPABASE_URL && !process.env.SUPABASE_URL) {
   console.warn(
-    '[supabaseServer] Missing NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY. ' +
-    'Server-side Supabase calls will fail. Check .env.local.'
+    '[supabaseServer] NEXT_PUBLIC_SUPABASE_URL not found in environment. ' +
+    'Using fallback project URL. In Vercel, set NEXT_PUBLIC_SUPABASE_URL in Project Settings > Environment Variables.'
+  );
+}
+
+if (!process.env.SUPABASE_SERVICE_ROLE_KEY && !process.env.SUPABASE_SECRET_KEY) {
+  console.warn(
+    '[supabaseServer] SUPABASE_SERVICE_ROLE_KEY not found in environment. ' +
+    'Using fallback key. In Vercel, set SUPABASE_SERVICE_ROLE_KEY in Project Settings > Environment Variables.'
   );
 }
 
 export const supabaseServer = createClient(
-  supabaseUrl ?? '',
-  serviceRoleKey ?? '',
+  supabaseUrl,
+  serviceRoleKey,
   {
     auth: {
       autoRefreshToken: false,

@@ -15,6 +15,8 @@ interface CachedMetricsData {
 const CACHE_TTL_MS = 60 * 1000; // 60 seconds
 let memoryCache: CachedMetricsData | null = null;
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   const now = Date.now();
 
